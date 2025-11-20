@@ -150,6 +150,12 @@
         return '\t';
     }
 
+    function splitOnce(line, delimiter) {
+        const idx = line.indexOf(delimiter);
+        if (idx === -1) return [line];
+        return [line.slice(0, idx), line.slice(idx + delimiter.length)];
+    }
+
     function parseTableText(name, text) {
         const delimiter = detectDelimiter(name);
         const lines = text.split(/\\r?\\n/).filter(l => l.length > 0);
@@ -157,7 +163,7 @@
             return { rows: [], header: [], delimiter };
         }
 
-        const header = lines[0].split(delimiter);
+        const header = splitOnce(lines[0], delimiter);
         const idIndex = header.indexOf('ID');
         const textIndex = header.indexOf('OriginalText');
         const idCol = idIndex >= 0 ? idIndex : 0;
@@ -165,11 +171,10 @@
 
         const rows = [];
         for (let i = 1; i < lines.length; i++) {
-            const parts = lines[i].split(delimiter);
-            if (parts.length <= Math.max(idCol, txtCol)) continue;
-            const id = (parts[idCol] || '').trim();
+            const parts = splitOnce(lines[i], delimiter);
+            const id = (parts[0] || '').trim();
             if (!id) continue;
-            const txt = parts[txtCol] || '';
+            const txt = parts.length > 1 ? parts[1] : '';
             rows.push({ id, text: txt });
         }
 
