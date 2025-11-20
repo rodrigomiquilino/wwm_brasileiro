@@ -4,6 +4,8 @@ import struct
 import pyzstd
 import sys
 import csv
+import configparser
+import random
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTextEdit, QVBoxLayout, QHBoxLayout, QFileDialog, QLabel, QGroupBox, QGridLayout, QMessageBox
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
@@ -266,6 +268,7 @@ class WorkerThread(QThread):
 class MyApp(QWidget):
     def __init__(self):
         super().__init__()
+        self.config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.ini")
         self.initUI()
 
     def initUI(self):
@@ -277,6 +280,7 @@ class MyApp(QWidget):
         group_box_pack_files = QGroupBox(f'📦 Запаковка файлов')
         group_box_extr_texts = QGroupBox(f'📦 Распаковка текста')
         group_box_pack_texts = QGroupBox(f'📦 Запаковка текста')
+        group_box_translate = QGroupBox(f'📑 Перевод по ID')
 
         # Создаем QPushButton's в "Распаковка файлов"
         group_layout = QGridLayout()
@@ -381,6 +385,36 @@ class MyApp(QWidget):
         buttonPT_run.clicked.connect(self.start_processing4)
         group_layout.addWidget(buttonPT_run, 2, 0, 1, 0)
         group_box_pack_texts.setLayout(group_layout)
+
+        # Создаем QPushButton's в "Перевод по ID"
+        group_layout = QGridLayout()
+        group_layout.setColumnMinimumWidth(0, 250)
+        group_layout.setColumnStretch(0, 0)
+        group_layout.setColumnStretch(1, 1)
+
+        buttonTR_select_file = QPushButton(f'📄 Выберите TextExtractor.csv')
+        self.labelTR_select_file = QLabel('Файл не выбран')
+        self.labelTR_select_file.setWordWrap(True)
+        buttonTR_select_file.clicked.connect(self.selectTR_input_file)
+        group_layout.addWidget(buttonTR_select_file, 0, 0)
+        group_layout.addWidget(self.labelTR_select_file, 0, 1)
+
+        buttonTR_export = QPushButton(f'Создать CSV: ID,OriginalText')
+        buttonTR_export.setStyleSheet("background: #2196F3; color: white; font-weight: bold;")
+        buttonTR_export.clicked.connect(self.export_translation_csv)
+        group_layout.addWidget(buttonTR_export, 1, 0, 1, 0)
+
+        buttonTR_apply = QPushButton(f'Применить переводы из CSV')
+        buttonTR_apply.setStyleSheet("background: #4CAF50; color: white; font-weight: bold;")
+        buttonTR_apply.clicked.connect(self.apply_translation_csv)
+        group_layout.addWidget(buttonTR_apply, 2, 0, 1, 0)
+
+        buttonTR_debug = QPushButton(f'Создать debug TextExtractor.csv (теги)')
+        buttonTR_debug.setStyleSheet("background: #FF9800; color: white; font-weight: bold;")
+        buttonTR_debug.clicked.connect(self.create_debug_csv)
+        group_layout.addWidget(buttonTR_debug, 3, 0, 1, 0)
+
+        group_box_translate.setLayout(group_layout)
         
         self.log_box = QTextEdit()
         self.log_box.setReadOnly(True)
@@ -389,6 +423,7 @@ class MyApp(QWidget):
         main_layout.addWidget(group_box_pack_files)
         main_layout.addWidget(group_box_extr_texts)
         main_layout.addWidget(group_box_pack_texts)
+        main_layout.addWidget(group_box_translate)
         main_layout.addWidget(self.log_box)
 
         self.setLayout(main_layout)
@@ -401,10 +436,82 @@ class MyApp(QWidget):
         self.PFoutput_dir = None
         self.PTinput_path = None
         self.PToutput_dir = None
-        
+        self.TRinput_path = None
+
+        # Загружаем сохранённые пути, если есть
+        self.load_paths_config()
+
         self.setWindowTitle("WWM Распаковка/Запаковка файлов и текста")
         self.setGeometry(100, 100, 800, 600)
         self.show()
+
+    def load_paths_config(self):
+        """Загрузка путей из config.ini и установка лейблов, если файлы/папки существуют."""
+        config = configparser.ConfigParser()
+        if not os.path.isfile(self.config_path):
+            return
+
+        try:
+            config.read(self.config_path, encoding="utf-8")
+        except Exception:
+            return
+
+        if "paths" not in config:
+            return
+
+        paths = config["paths"]
+
+        def _set_path(attr_name, label, key, is_dir):
+            value = paths.get(key, "").strip()
+            if not value:
+                return
+            if is_dir and not os.path.isdir(value):
+                return
+            if not is_dir and not os.path.isfile(value):
+                return
+            setattr(self, attr_name, value)
+            if label is not None:
+                label.setText(value)
+
+        _set_path("EFinput_path", self.labelEF_select_file, "EFinput_path", False)
+        _set_path("EFoutput_dir", self.labelEF_output_folder, "EFoutput_dir", True)
+        _set_path("ETinput_path", self.labelET_select_folder, "ETinput_path", True)
+        _set_path("EToutput_dir", self.labelET_output_folder, "EToutput_dir", True)
+        _set_path("PFinput_path", self.labelPF_select_folder, "PFinput_path", True)
+        _set_path("PFoutput_dir", self.labelPF_output_folder, "PFoutput_dir", True)
+        _set_path("PTinput_path", self.labelPT_select_file, "PTinput_path", False)
+        _set_path("PToutput_dir", self.labelPT_output_folder, "PToutput_dir", True)
+        _set_path("TRinput_path", self.labelTR_select_file, "TRinput_path", False)
+
+    def save_paths_config(self):
+        """Сохранение текущих путей в config.ini."""
+        config = configparser.ConfigParser()
+        if os.path.isfile(self.config_path):
+            try:
+                config.read(self.config_path, encoding="utf-8")
+            except Exception:
+                config = configparser.ConfigParser()
+
+        if "paths" not in config:
+            config["paths"] = {}
+
+        paths = config["paths"]
+        for key in [
+            "EFinput_path", "EFoutput_dir",
+            "ETinput_path", "EToutput_dir",
+            "PFinput_path", "PFoutput_dir",
+            "PTinput_path", "PToutput_dir",
+            "TRinput_path",
+        ]:
+            value = getattr(self, key, None)
+            if value:
+                paths[key] = value
+
+        try:
+            with open(self.config_path, "w", encoding="utf-8") as cfg:
+                config.write(cfg)
+        except Exception:
+            pass
 
     # Функция записи в лог
     def log(self, message):
@@ -417,6 +524,7 @@ class MyApp(QWidget):
             self.EFinput_path = file_path
             self.log(f"Для распаковки файла выбран файл: {file_path}")
             self.labelEF_select_file.setText(f"{file_path}")
+            self.save_paths_config()
             
     # Функция открытия папки сохранения для распаковки файла
     def selectEF_output_dir(self):
@@ -425,6 +533,7 @@ class MyApp(QWidget):
             self.EFoutput_dir = folder_path
             self.log(f"Для распаковки файла выбрана папка сохранения: {folder_path}")
             self.labelEF_output_folder.setText(f"{folder_path}")
+            self.save_paths_config()
 
     # Функция открытия папки с *.dat файлами для запаковки файла
     def selectPF_input_dir(self):
@@ -433,6 +542,7 @@ class MyApp(QWidget):
             self.PFinput_path = folder_path
             self.log(f"Для запаковки файла выбрана папка с dat: {folder_path}")
             self.labelPF_select_folder.setText(f"{folder_path}")
+            self.save_paths_config()
             
     # Функция открытия папки сохранения для запаковки файла
     def selectPF_output_dir(self):
@@ -441,6 +551,7 @@ class MyApp(QWidget):
             self.PFoutput_dir = folder_path
             self.log(f"Для запаковки файла выбрана папка сохранения: {folder_path}")
             self.labelPF_output_folder.setText(f"{folder_path}")
+            self.save_paths_config()
             
     # Функция открытия папки с *.dat файлами для распаковки текста
     def selectET_input_dir(self):
@@ -449,6 +560,7 @@ class MyApp(QWidget):
             self.ETinput_path = folder_path
             self.log(f"Для распаковки текста выбрана папка с *.dat: {folder_path}")
             self.labelET_select_folder.setText(f"{folder_path}")
+            self.save_paths_config()
             
     # Функция открытия папки сохранения для распаковки текста
     def selectET_output_dir(self):
@@ -457,6 +569,16 @@ class MyApp(QWidget):
             self.EToutput_dir = folder_path
             self.log(f"Для распаковки текста выбрана папка сохранения: {folder_path}")
             self.labelET_output_folder.setText(f"{folder_path}")
+            self.save_paths_config()
+
+    # Функция выбора TextExtractor.csv для работы с переводом
+    def selectTR_input_file(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Выберите TextExtractor.csv", filter='*.csv')
+        if file_path:
+            self.TRinput_path = file_path
+            self.log(f"Для перевода выбран файл: {file_path}")
+            self.labelTR_select_file.setText(f"{file_path}")
+            self.save_paths_config()
             
     # Функция открытия файла CSV для запаковки текста
     def selectPT_input_file(self):
@@ -465,6 +587,7 @@ class MyApp(QWidget):
             self.PTinput_path = file_path
             self.log(f"Для запаковки текста выбран файл: {file_path}")
             self.labelPT_select_file.setText(f"{file_path}")
+            self.save_paths_config()
             
     # Функция открытия папки сохранения для запаковки текста
     def selectPT_output_dir(self):
@@ -473,6 +596,214 @@ class MyApp(QWidget):
             self.PToutput_dir = folder_path
             self.log(f"Для запаковки текста выбрана папка сохранения: {folder_path}")
             self.labelPT_output_folder.setText(f"{folder_path}")
+            self.save_paths_config()
+
+    # Создать CSV ID,OriginalText из TextExtractor.csv
+    def export_translation_csv(self):
+        if not self.TRinput_path:
+            self.log("Пожалуйста, выберите TextExtractor.csv для экспорта перевода")
+            return
+
+        output_path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Сохранить CSV для перевода (ID,OriginalText)",
+            "translation.csv",
+            "CSV Files (*.csv)"
+        )
+        if not output_path:
+            return
+
+        try:
+            with open(self.TRinput_path, 'r', encoding='utf-8', newline='') as src_f:
+                reader = csv.reader(src_f, delimiter=';')
+                header = next(reader, None)
+                if not header:
+                    self.log("❌ В исходном CSV нет заголовка")
+                    return
+
+                try:
+                    id_idx = header.index('ID')
+                    text_idx = header.index('OriginalText')
+                except ValueError:
+                    self.log("❌ В исходном CSV не найдены колонки 'ID' и 'OriginalText'")
+                    return
+
+                with open(output_path, 'w', encoding='utf-8', newline='') as out_f:
+                    writer = csv.writer(out_f, delimiter=';')
+                    writer.writerow(['ID', 'OriginalText'])
+                    count = 0
+                    for row in reader:
+                        if len(row) <= max(id_idx, text_idx):
+                            continue
+                        text = row[text_idx]
+                        if text and text.strip():
+                            writer.writerow([row[id_idx], text])
+                            count += 1
+
+            self.log(f"✅ Создан файл перевода: {output_path} (строк: {count})")
+        except Exception as e:
+            self.log(f"❌ Ошибка при создании файла перевода: {str(e)}")
+
+    # Применить переводы из CSV обратно в TextExtractor.csv
+    def apply_translation_csv(self):
+        if not self.TRinput_path:
+            self.log("Пожалуйста, выберите TextExtractor.csv для применения перевода")
+            return
+
+        trans_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Выберите CSV с переводом (ID,OriginalText)",
+            filter='*.csv'
+        )
+        if not trans_path:
+            return
+
+        output_path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Сохранить обновлённый TextExtractor.csv",
+            "TextExtractor_translated.csv",
+            "CSV Files (*.csv)"
+        )
+        if not output_path:
+            return
+
+        try:
+            # Определяем разделитель в файле перевода
+            with open(trans_path, 'r', encoding='utf-8', newline='') as tf:
+                sample = tf.read(2048)
+                if not sample:
+                    self.log("❌ Файл перевода пуст")
+                    return
+                delim = ';' if sample.count(';') > sample.count(',') else ','
+
+            translations = {}
+            with open(trans_path, 'r', encoding='utf-8', newline='') as tf:
+                reader = csv.reader(tf, delimiter=delim)
+                header = next(reader, None)
+                if header:
+                    try:
+                        id_idx = header.index('ID')
+                        text_idx = header.index('OriginalText')
+                    except ValueError:
+                        # Если нет заголовков, считаем, что первые две колонки — ID и текст
+                        id_idx = 0
+                        text_idx = 1
+                        # обработаем первую строку как данные
+                        if len(header) > 1 and header[0].strip():
+                            translations[header[0].strip()] = header[1]
+                for row in reader:
+                    if len(row) <= max(id_idx, text_idx):
+                        continue
+                    key = row[id_idx].strip()
+                    if not key:
+                        continue
+                    text = row[text_idx]
+                    # Преобразуем реальные переводчикиные переносы в \n и \r для совместимости с pak_text
+                    text = text.replace('\n', '\\n').replace('\r', '\\r')
+                    translations[key] = text
+
+            if not translations:
+                self.log("❌ В файле перевода не найдено ни одной строки с ID")
+                return
+
+            replaced = 0
+            total = 0
+            with open(self.TRinput_path, 'r', encoding='utf-8', newline='') as src_f, \
+                 open(output_path, 'w', encoding='utf-8', newline='') as out_f:
+
+                reader = csv.reader(src_f, delimiter=';')
+                writer = csv.writer(out_f, delimiter=';')
+
+                header = next(reader, None)
+                if not header:
+                    self.log("❌ В исходном TextExtractor.csv нет заголовка")
+                    return
+
+                writer.writerow(header)
+
+                try:
+                    id_idx_csv = header.index('ID')
+                    text_idx_csv = header.index('OriginalText')
+                except ValueError:
+                    self.log("❌ В исходном TextExtractor.csv не найдены колонки 'ID' и 'OriginalText'")
+                    return
+
+                for row in reader:
+                    if len(row) <= max(id_idx_csv, text_idx_csv):
+                        writer.writerow(row)
+                        continue
+                    total += 1
+                    key = row[id_idx_csv]
+                    if key in translations:
+                        row[text_idx_csv] = translations[key]
+                        replaced += 1
+                    writer.writerow(row)
+
+            self.log(f"✅ Применён перевод к файлу: {output_path} (заменено строк: {replaced} из {total})")
+        except Exception as e:
+            self.log(f"❌ Ошибка при применении файла перевода: {str(e)}")
+
+    # Создать debug-версию TextExtractor.csv с тегами [xxxx] в начале текста
+    def create_debug_csv(self):
+        if not self.TRinput_path:
+            self.log("Пожалуйста, выберите TextExtractor.csv для создания debug файла")
+            return
+
+        output_path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Сохранить debug TextExtractor.csv",
+            "TextExtractor_debug.csv",
+            "CSV Files (*.csv)"
+        )
+        if not output_path:
+            return
+
+        allowed_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789"
+        used_tags = set()
+
+        def gen_tag():
+            # Генерация уникального 4-символьного тега
+            while True:
+                t = "".join(random.choice(allowed_chars) for _ in range(4))
+                if t not in used_tags:
+                    used_tags.add(t)
+                    return t
+
+        try:
+            with open(self.TRinput_path, 'r', encoding='utf-8', newline='') as src_f, \
+                 open(output_path, 'w', encoding='utf-8', newline='') as out_f:
+
+                reader = csv.reader(src_f, delimiter=';')
+                writer = csv.writer(out_f, delimiter=';')
+
+                header = next(reader, None)
+                if not header:
+                    self.log("❌ В исходном TextExtractor.csv нет заголовка")
+                    return
+
+                writer.writerow(header)
+
+                try:
+                    text_idx = header.index('OriginalText')
+                except ValueError:
+                    self.log("❌ В исходном TextExtractor.csv не найдена колонка 'OriginalText'")
+                    return
+
+                count = 0
+                for row in reader:
+                    if len(row) <= text_idx:
+                        writer.writerow(row)
+                        continue
+                    text = row[text_idx]
+                    if text and text.strip():
+                        tag = gen_tag()
+                        row[text_idx] = f"[{tag}]{text}"
+                        count += 1
+                    writer.writerow(row)
+
+            self.log(f"✅ Создан debug файл: {output_path} (строк с тегами: {count})")
+        except Exception as e:
+            self.log(f"❌ Ошибка при создании debug файла: {str(e)}")
     
     # Функция запуска скрипта распаковки файла
     def start_processing1(self):
