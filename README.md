@@ -24,8 +24,8 @@
 
 ## Участники проекта
 
-- [DOG729](https://github.com/DOG729)
-- [Dontaz](https://github.com/Dontaz)
-- [grifon102](https://github.com/grifon102)
-- [Rotten_Toxic](https://forum.zoneofgames.ru/profile/1455647-rotten_toxic/)
-- ... *(если вы участвовали в проекте и вас здесь нет — напишите в теме на [Zone of Games](https://forum.zoneofgames.ru/topic/80635-where-winds-meet))*
+-
+-
+-
+-
+- 
