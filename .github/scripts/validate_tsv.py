@@ -43,10 +43,13 @@ def validate_tsv(file_path: str) -> tuple[bool, list[str]]:
     if len(lines) < 1:
         errors.append("❌ Файл должен содержать заголовок")
         return False, errors
-    
-    header = lines[0].rstrip('\n\r')
+
+    # Убираем возможный BOM (UTF-8 BOM: \ufeff) и переводы строк
+    header = lines[0].lstrip('\ufeff').rstrip('\n\r')
     if not header.startswith('ID\tOriginalText'):
-        errors.append(f"❌ Неверный заголовок. Ожидается: 'ID\\tOriginalText', получено: '{header[:50]}'")
+        errors.append(
+            f"❌ Неверный заголовок. Ожидается: 'ID\\tOriginalText', получено: '{header[:50]}'"
+        )
     
     # ID должен быть 16 символов hex
     id_pattern = re.compile(r'^[0-9a-fA-F]{16}$')

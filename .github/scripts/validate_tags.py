@@ -201,7 +201,7 @@ def _validate_entry_tags(
         # Проверяем только если есть символ | (это тег-ссылка)
         if '|' in link_content:
             parts = link_content.split('|')
-            if len(parts) != 4 and len(parts) != 5:
+            if len(parts) != 3 and len(parts) != 4 and len(parts) != 5:
                 errors_by_id[current_id].add(ERROR_CODE_LINK_TAG_INVALID)
         # Если нет |, то это просто текст в угловых скобках - не ошибка
     
