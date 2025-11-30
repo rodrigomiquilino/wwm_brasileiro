@@ -41,3 +41,8 @@ ENV/
 *.tmp
 *.bak
 *.backup
+/.vs
+/.gitignore
+/.gitignore
+/.gitignore
+/.gitignore
