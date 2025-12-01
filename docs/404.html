@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página não encontrada | WWM Brasileiro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --gold-primary: #c9a227;
+            --gold-dark: #8b7019;
+            --text-primary: #e8e6e3;
+            --text-secondary: #9d9d9d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 500px;
+        }
+        
+        .error-code {
+            font-family: 'Cinzel', serif;
+            font-size: 8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+        
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin: 1rem 0;
+        }
+        
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: var(--bg-dark);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-code">404</div>
+        <h1>Página não encontrada</h1>
+        <p>O caminho que você procura não existe. Talvez tenha se perdido nas brumas do Jianghu...</p>
+        <a href="/wwm_brasileiro/" class="btn">
+            <i class="fas fa-home"></i>
+            Voltar ao início
+        </a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tradução PT-BR para Where Winds Meet - Projeto Open Source da Comunidade Brasileira">
+    <meta name="keywords" content="Where Winds Meet, WWM, tradução, português, Brasil, PT-BR, wuxia, RPG">
+    <meta name="author" content="rodrigomiquilino">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="WWM Brasileiro - Tradução PT-BR">
+    <meta property="og:description" content="Tradução não-oficial em Português Brasileiro para Where Winds Meet">
+    <meta property="og:image" content="https://rodrigomiquilino.github.io/wwm_brasileiro/assets/og-image.png">
+    
+    <title>WWM Brasileiro | Tradução PT-BR para Where Winds Meet</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-medium: #12121a;
+            --bg-light: #1a1a24;
+            --bg-card: #1e1e2a;
+            
+            --gold-primary: #c9a227;
+            --gold-light: #e6c355;
+            --gold-dark: #8b7019;
+            
+            --red-primary: #8b2635;
+            --red-light: #a63446;
+            
+            --text-primary: #e8e6e3;
+            --text-secondary: #9d9d9d;
+            --text-muted: #5a5a5a;
+            
+            --success: #2e7d32;
+            --gradient-gold: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* ========== NAVIGATION ========== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+            padding: 1rem 0;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-logo i {
+            font-size: 1.2rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--gold-primary);
+        }
+        
+        .nav-github {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-light);
+            border: 1px solid var(--gold-dark);
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .nav-github:hover {
+            background: var(--gold-dark);
+            color: var(--bg-dark);
+        }
+        
+        /* ========== HERO ========== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: 
+                radial-gradient(ellipse at top, rgba(201, 162, 39, 0.1), transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(139, 38, 53, 0.1), transparent 50%),
+                var(--bg-dark);
+            padding: 6rem 2rem 4rem;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="80" fill="rgba(201,162,39,0.03)">⚔</text></svg>') repeat;
+            background-size: 200px;
+            opacity: 0.5;
+        }
+        
+        .hero-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(201, 162, 39, 0.1);
+            border: 1px solid var(--gold-dark);
+            border-radius: 50px;
+            font-size: 0.875rem;
+            color: var(--gold-primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero-badge i {
+            font-size: 0.75rem;
+        }
+        
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero h2 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 400;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-gold);
+            color: var(--bg-dark);
+            box-shadow: 0 4px 20px rgba(201, 162, 39, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(201, 162, 39, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-primary);
+            border: 1px solid var(--gold-dark);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--gold-primary);
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+            padding-top: 3rem;
+            border-top: 1px solid rgba(201, 162, 39, 0.2);
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            font-family: 'Cinzel', serif;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+        
+        /* ========== SECTIONS ========== */
+        section {
+            padding: 5rem 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-header h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: var(--gold-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-header p {
+            color: var(--text-secondary);
+        }
+        
+        /* ========== DOWNLOAD SECTION ========== */
+        #download {
+            background: var(--bg-medium);
+        }
+        
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        
+        .download-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .download-card:hover {
+            border-color: var(--gold-primary);
+            transform: translateY(-4px);
+        }
+        
+        .download-card.featured {
+            border-color: var(--gold-primary);
+        }
+        
+        .download-card.featured::before {
+            content: 'RECOMENDADO';
+            position: absolute;
+            top: 1rem;
+            right: -2rem;
+            background: var(--gradient-gold);
+            color: var(--bg-dark);
+            padding: 0.25rem 2rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            transform: rotate(45deg);
+        }
+        
+        .download-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(201, 162, 39, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--gold-primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .download-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .download-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .download-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        .download-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .download-features li i {
+            color: var(--success);
+            font-size: 0.8rem;
+        }
+        
+        /* ========== FEATURES ========== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            border-color: var(--gold-dark);
+        }
+        
+        .feature-card i {
+            font-size: 1.5rem;
+            color: var(--gold-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        /* ========== INSTALLATION ========== */
+        #instalacao {
+            background: var(--bg-medium);
+        }
+        
+        .install-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .install-step {
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(201, 162, 39, 0.1);
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--bg-dark);
+            margin: 0 auto 1rem;
+        }
+        
+        .install-step h3 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .install-step p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* ========== RELEASES ========== */
+        .releases-container {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .releases-header {
+            background: rgba(201, 162, 39, 0.1);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+        }
+        
+        .releases-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .releases-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .release-item {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .release-item:hover {
+            background: rgba(201, 162, 39, 0.05);
+        }
+        
+        .release-item:last-child {
+            border-bottom: none;
+        }
+        
+        .release-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(201, 162, 39, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold-primary);
+        }
+        
+        .release-info {
+            flex: 1;
+        }
+        
+        .release-version {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .release-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .release-tag {
+            padding: 0.25rem 0.75rem;
+            background: rgba(46, 125, 50, 0.2);
+            color: var(--success);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .release-tag.latest {
+            background: rgba(201, 162, 39, 0.2);
+            color: var(--gold-primary);
+        }
+        
+        /* ========== COMMITS ========== */
+        #atualizacoes {
+            background: var(--bg-medium);
+        }
+        
+        .commits-container {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .commits-header {
+            background: rgba(201, 162, 39, 0.1);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+        }
+        
+        .commits-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .commit-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .commit-item:last-child {
+            border-bottom: none;
+        }
+        
+        .commit-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--bg-dark);
+            flex-shrink: 0;
+        }
+        
+        .commit-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .commit-message {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .commit-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .commit-sha {
+            font-family: monospace;
+            color: var(--gold-dark);
+        }
+        
+        /* ========== OPEN SOURCE ========== */
+        .opensource-banner {
+            background: linear-gradient(135deg, rgba(201, 162, 39, 0.1), rgba(139, 38, 53, 0.1));
+            border: 1px solid var(--gold-dark);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        
+        .opensource-banner h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--gold-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .opensource-banner p {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .opensource-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        /* ========== FOOTER ========== */
+        footer {
+            background: var(--bg-dark);
+            border-top: 1px solid rgba(201, 162, 39, 0.2);
+            padding: 3rem 2rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-brand h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-brand p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .footer-links h4 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .footer-links a {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.25rem 0;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--gold-primary);
+        }
+        
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        .footer-bottom a {
+            color: var(--gold-primary);
+            text-decoration: none;
+        }
+        
+        /* ========== LOADING ========== */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+        
+        .loading i {
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+        
+        /* ========== SCROLLBAR ========== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold-dark);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <i class="fas fa-torii-gate"></i>
+                WWM Brasileiro
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="#download">Download</a></li>
+                <li><a href="#instalacao">Instalação</a></li>
+                <li><a href="#versoes">Versões</a></li>
+                <li><a href="#atualizacoes">Atualizações</a></li>
+            </ul>
+            
+            <a href="https://github.com/rodrigomiquilino/wwm_brasileiro" target="_blank" class="nav-github">
+                <i class="fab fa-github"></i>
+                GitHub
+            </a>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-code-branch"></i>
+                Open Source • MIT License
+            </div>
+            
+            <h1>WWM Brasileiro</h1>
+            <h2>Where Winds Meet em Português</h2>
+            
+            <p>
+                Tradução não-oficial da comunidade brasileira para Where Winds Meet.
+                Jogue o RPG Wuxia em mundo aberto completamente em PT-BR.
+            </p>
+            
+            <div class="hero-buttons">
+                <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases/latest/download/WWM_Tradutor_PTBR.exe" class="btn btn-primary">
+                    <i class="fas fa-download"></i>
+                    Baixar Launcher
+                </a>
+                <a href="#download" class="btn btn-secondary">
+                    <i class="fas fa-file-archive"></i>
+                    Download Manual
+                </a>
+            </div>
+            
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-value" id="stat-downloads">—</div>
+                    <div class="stat-label">Downloads</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="stat-strings">30k+</div>
+                    <div class="stat-label">Strings Traduzidas</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="stat-version">—</div>
+                    <div class="stat-label">Versão Atual</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Download Section -->
+    <section id="download">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-download"></i> Downloads</h2>
+                <p>Escolha a melhor opção para você</p>
+            </div>
+            
+            <div class="download-grid">
+                <!-- Launcher -->
+                <div class="download-card featured">
+                    <div class="download-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>WWM Tradutor PT-BR</h3>
+                    <p>Instalador automático com interface gráfica moderna. Instala e atualiza a tradução com um clique.</p>
+                    
+                    <ul class="download-features">
+                        <li><i class="fas fa-check"></i> Detecção automática do jogo</li>
+                        <li><i class="fas fa-check"></i> Backup automático dos arquivos</li>
+                        <li><i class="fas fa-check"></i> Verificação de atualizações</li>
+                        <li><i class="fas fa-check"></i> Iniciar jogo direto via Steam</li>
+                    </ul>
+                    
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases/latest/download/WWM_Tradutor_PTBR.exe" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-download"></i>
+                        Baixar Launcher (.exe)
+                    </a>
+                </div>
+                
+                <!-- Manual -->
+                <div class="download-card">
+                    <div class="download-icon">
+                        <i class="fas fa-file-archive"></i>
+                    </div>
+                    <h3>Arquivos de Tradução</h3>
+                    <p>Faça a instalação manual se preferir ter controle total sobre os arquivos.</p>
+                    
+                    <ul class="download-features">
+                        <li><i class="fas fa-check"></i> translate_words_map_en</li>
+                        <li><i class="fas fa-check"></i> translate_words_map_en_diff</li>
+                        <li><i class="fas fa-check"></i> Sem dependências</li>
+                        <li><i class="fas fa-check"></i> Portátil</li>
+                    </ul>
+                    
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases/latest/download/traducao_ptbr.zip" class="btn btn-secondary" style="width: 100%;">
+                        <i class="fas fa-file-archive"></i>
+                        Baixar ZIP
+                    </a>
+                </div>
+                
+                <!-- Source -->
+                <div class="download-card">
+                    <div class="download-icon">
+                        <i class="fab fa-github"></i>
+                    </div>
+                    <h3>Código Fonte</h3>
+                    <p>Acesse o repositório completo, contribua com melhorias ou faça sua própria versão.</p>
+                    
+                    <ul class="download-features">
+                        <li><i class="fas fa-check"></i> Ferramentas de tradução</li>
+                        <li><i class="fas fa-check"></i> Documentação completa</li>
+                        <li><i class="fas fa-check"></i> Licença MIT</li>
+                        <li><i class="fas fa-check"></i> Issues & Pull Requests</li>
+                    </ul>
+                    
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro" target="_blank" class="btn btn-secondary" style="width: 100%;">
+                        <i class="fab fa-github"></i>
+                        Ver no GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features -->
+    <section id="recursos">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-star"></i> Recursos</h2>
+                <p>O que está incluso na tradução</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-comments"></i>
+                    <h3>Diálogos</h3>
+                    <p>Todos os diálogos de NPCs, missões e história traduzidos</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-window-maximize"></i>
+                    <h3>Interface</h3>
+                    <p>Menus, botões e toda a UI em português</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-book"></i>
+                    <h3>Itens</h3>
+                    <p>Nomes e descrições de equipamentos e consumíveis</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Habilidades</h3>
+                    <p>Skills, talentos e sistemas de combate</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h3>Localizações</h3>
+                    <p>Nomes de regiões, cidades e pontos de interesse</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-scroll"></i>
+                    <h3>Lore</h3>
+                    <p>Textos de história e ambientação Wuxia</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Installation -->
+    <section id="instalacao">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-cogs"></i> Instalação</h2>
+                <p>Siga os passos abaixo para instalar a tradução</p>
+            </div>
+            
+            <div class="install-steps">
+                <div class="install-step">
+                    <div class="step-number">1</div>
+                    <h3>Baixe o Launcher</h3>
+                    <p>Clique no botão de download acima para baixar o instalador</p>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">2</div>
+                    <h3>Execute</h3>
+                    <p>Abra o arquivo WWM_Tradutor_PTBR.exe</p>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">3</div>
+                    <h3>Instale</h3>
+                    <p>O launcher detecta o jogo automaticamente. Clique em Instalar.</p>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">4</div>
+                    <h3>Jogue!</h3>
+                    <p>Inicie o jogo direto pelo launcher ou pela Steam</p>
+                </div>
+            </div>
+            
+            <!-- Manual Installation -->
+            <div class="opensource-banner" style="margin-top: 3rem;">
+                <h3><i class="fas fa-wrench"></i> Instalação Manual</h3>
+                <p>
+                    Se preferir instalar manualmente, baixe o arquivo ZIP e extraia os arquivos para:
+                </p>
+                <code style="display: block; background: var(--bg-dark); padding: 1rem; border-radius: 8px; margin: 1rem 0; color: var(--gold-primary); font-size: 0.9rem;">
+                    Steam\steamapps\common\Where Winds Meet\Package\HD\oversea\locale\
+                </code>
+                <p style="font-size: 0.875rem;">
+                    Substitua os arquivos <strong>translate_words_map_en</strong> e <strong>translate_words_map_en_diff</strong>
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Releases -->
+    <section id="versoes">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-tags"></i> Versões</h2>
+                <p>Histórico de releases do projeto</p>
+            </div>
+            
+            <div class="releases-container">
+                <div class="releases-header">
+                    <h3><i class="fas fa-tag"></i> Releases</h3>
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases" target="_blank" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                        Ver todas
+                    </a>
+                </div>
+                <div class="releases-list" id="releases-list">
+                    <div class="loading">
+                        <i class="fas fa-spinner"></i>
+                        Carregando releases...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Commits / Updates -->
+    <section id="atualizacoes">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-code-commit"></i> Atualizações</h2>
+                <p>Últimas alterações no projeto</p>
+            </div>
+            
+            <div class="commits-container">
+                <div class="commits-header">
+                    <h3><i class="fas fa-history"></i> Commits Recentes</h3>
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/commits/main" target="_blank" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                        Ver todos
+                    </a>
+                </div>
+                <div class="commits-list" id="commits-list">
+                    <div class="loading">
+                        <i class="fas fa-spinner"></i>
+                        Carregando commits...
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Open Source Banner -->
+            <div class="opensource-banner">
+                <h3><i class="fas fa-heart"></i> Projeto Open Source</h3>
+                <p>
+                    Este projeto é totalmente gratuito e de código aberto sob a licença MIT.
+                    Qualquer pessoa pode contribuir, modificar ou distribuir.
+                </p>
+                <div class="opensource-links">
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/issues" target="_blank" class="btn btn-secondary">
+                        <i class="fas fa-bug"></i>
+                        Reportar Bug
+                    </a>
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/pulls" target="_blank" class="btn btn-secondary">
+                        <i class="fas fa-code-pull-request"></i>
+                        Contribuir
+                    </a>
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/stargazers" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-star"></i>
+                        Dar uma Estrela
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3><i class="fas fa-torii-gate"></i> WWM Brasileiro</h3>
+                <p>Tradução não-oficial da comunidade brasileira para Where Winds Meet.</p>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Downloads</h4>
+                <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases/latest/download/WWM_Tradutor_PTBR.exe">Launcher (.exe)</a>
+                <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases/latest/download/traducao_ptbr.zip">Arquivos ZIP</a>
+                <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases">Todas as versões</a>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Projeto</h4>
+                <a href="https://github.com/rodrigomiquilino/wwm_brasileiro">GitHub</a>
+                <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/issues">Issues</a>
+                <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/blob/main/LICENSE">Licença MIT</a>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Comunidade</h4>
+                <a href="https://discordapp.com/users/rodrigo.dev">Discord</a>
+                <a href="https://store.steampowered.com/app/3564740/Where_Winds_Meet/">Steam</a>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>
+                Feito com ❤️ pela <a href="https://github.com/rodrigomiquilino">Comunidade WWM Brasil</a><br>
+                Este é um projeto não-oficial. Where Winds Meet © Everstone Games.
+            </p>
+        </div>
+    </footer>
+    
+    <script>
+        // ========== API CALLS ==========
+        const GITHUB_API = 'https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro';
+        
+        // Fetch releases
+        async function fetchReleases() {
+            try {
+                const response = await fetch(`${GITHUB_API}/releases`);
+                const releases = await response.json();
+                
+                const container = document.getElementById('releases-list');
+                
+                if (!releases.length) {
+                    container.innerHTML = '<div class="loading">Nenhuma release encontrada</div>';
+                    return;
+                }
+                
+                // Update stats
+                let totalDownloads = 0;
+                releases.forEach(r => {
+                    r.assets.forEach(a => totalDownloads += a.download_count);
+                });
+                
+                document.getElementById('stat-downloads').textContent = totalDownloads.toLocaleString('pt-BR');
+                document.getElementById('stat-version').textContent = releases[0].tag_name || 'v1.0.0';
+                
+                // Render releases
+                container.innerHTML = releases.slice(0, 10).map((release, index) => `
+                    <a href="${release.html_url}" target="_blank" class="release-item" style="text-decoration: none; color: inherit;">
+                        <div class="release-icon">
+                            <i class="fas fa-tag"></i>
+                        </div>
+                        <div class="release-info">
+                            <div class="release-version">${release.name || release.tag_name}</div>
+                            <div class="release-date">${new Date(release.published_at).toLocaleDateString('pt-BR')}</div>
+                        </div>
+                        ${index === 0 ? '<span class="release-tag latest">Mais recente</span>' : ''}
+                    </a>
+                `).join('');
+                
+            } catch (error) {
+                document.getElementById('releases-list').innerHTML = 
+                    '<div class="loading"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar releases</div>';
+            }
+        }
+        
+        // Fetch commits
+        async function fetchCommits() {
+            try {
+                const response = await fetch(`${GITHUB_API}/commits?per_page=15`);
+                const commits = await response.json();
+                
+                const container = document.getElementById('commits-list');
+                
+                if (!commits.length) {
+                    container.innerHTML = '<div class="loading">Nenhum commit encontrado</div>';
+                    return;
+                }
+                
+                container.innerHTML = commits.map(commit => {
+                    const author = commit.author?.login || commit.commit.author.name;
+                    const initial = author.charAt(0).toUpperCase();
+                    const date = new Date(commit.commit.author.date).toLocaleDateString('pt-BR');
+                    const sha = commit.sha.substring(0, 7);
+                    const message = commit.commit.message.split('\n')[0];
+                    
+                    return `
+                        <a href="${commit.html_url}" target="_blank" class="commit-item" style="text-decoration: none; color: inherit;">
+                            <div class="commit-avatar">${initial}</div>
+                            <div class="commit-content">
+                                <div class="commit-message">${message}</div>
+                                <div class="commit-meta">
+                                    <span>${author}</span>
+                                    <span class="commit-sha">${sha}</span>
+                                    <span>${date}</span>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                document.getElementById('commits-list').innerHTML = 
+                    '<div class="loading"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar commits</div>';
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchReleases();
+            fetchCommits();
+        });
+        
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

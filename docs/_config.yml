@@ -1,0 +1,26 @@
+theme: null
+title: WWM Brasileiro - Tradução PT-BR para Where Winds Meet
+description: Tradução não-oficial em Português Brasileiro para Where Winds Meet. Projeto Open Source da comunidade brasileira.
+url: https://rodrigomiquilino.github.io
+baseurl: /wwm_brasileiro
+logo: /assets/logo.png
+
+# Social
+github_username: rodrigomiquilino
+repository: rodrigomiquilino/wwm_brasileiro
+
+# Build
+markdown: kramdown
+highlighter: rouge
+
+# Exclude
+exclude:
+  - tools/
+  - launcher/
+  - old_russo/
+  - output/
+  - xmod-translate/
+  - "*.py"
+  - "*.bat"
+  - "*.tsv"
+  - requirements.txt

@@ -16,6 +16,7 @@ import shutil
 import tempfile
 import threading
 import webbrowser
+import zipfile
 from pathlib import Path
 from datetime import datetime
 
@@ -48,7 +49,7 @@ except ImportError:
 # ============================================================================
 
 APP_NAME = "WWM Tradutor PT-BR"
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.1.0"
 GITHUB_REPO = "rodrigomiquilino/wwm_brasileiro"
 GITHUB_API_RELEASES = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
 GITHUB_RELEASES_PAGE = f"https://github.com/{GITHUB_REPO}/releases"
@@ -63,7 +64,11 @@ DEFAULT_STEAM_PATHS = [
 ]
 
 GAME_EXE_RELATIVE = r"Engine\Binaries\Win64r\wwm.exe"
-TRANSLATION_FILE_RELATIVE = r"Package\HD\oversea\locale\translate_words_map_en"
+TRANSLATION_PATH_RELATIVE = r"Package\HD\oversea\locale"
+TRANSLATION_FILES = [
+    "translate_words_map_en",
+    "translate_words_map_en_diff"
+]
 CONFIG_FILE = "wwm_ptbr_config.json"
 
 
@@ -153,15 +158,24 @@ class CheckUpdateThread(QThread):
             data = response.json()
             latest_version = data.get('tag_name', '').lstrip('v')
             
-            # Procura o arquivo de tradução nos assets
+            # Procura o arquivo ZIP de tradução nos assets
             download_url = None
             for asset in data.get('assets', []):
-                if 'translate_words_map_en' in asset['name'].lower():
+                asset_name = asset['name'].lower()
+                # Prioriza arquivos ZIP contendo a tradução
+                if asset_name.endswith('.zip') and ('traducao' in asset_name or 'translation' in asset_name or 'ptbr' in asset_name):
                     download_url = asset['browser_download_url']
                     break
             
+            # Se não encontrou ZIP específico, procura por qualquer ZIP
             if not download_url:
-                # Se não encontrou asset específico, usa o zipball
+                for asset in data.get('assets', []):
+                    if asset['name'].lower().endswith('.zip'):
+                        download_url = asset['browser_download_url']
+                        break
+            
+            # Último recurso: usa o zipball do código fonte
+            if not download_url:
                 download_url = data.get('zipball_url', '')
             
             # Compara versões
@@ -626,7 +640,7 @@ class LauncherWindow(QMainWindow):
                 color: {Theme.GOLD_LIGHT};
             }}
         """)
-        # discord_btn.clicked.connect(lambda: webbrowser.open("https://discord.gg/..."))
+        discord_btn.clicked.connect(lambda: webbrowser.open("https://discordapp.com/users/rodrigo.dev"))
         links_layout.addWidget(discord_btn)
         
         footer_layout.addLayout(links_layout)
@@ -786,7 +800,8 @@ class LauncherWindow(QMainWindow):
             self,
             "Confirmar Instalação",
             f"Deseja instalar/atualizar a tradução para a versão {self.latest_version}?\n\n"
-            "O arquivo original será substituído.",
+            "Os arquivos originais serão copiados como backup (.backup)\n"
+            "Arquivos: translate_words_map_en e translate_words_map_en_diff",
             QMessageBox.Yes | QMessageBox.No
         )
         
@@ -799,8 +814,8 @@ class LauncherWindow(QMainWindow):
         self.progress_bar.setVisible(True)
         self.progress_bar.setValue(0)
         
-        # Baixa para arquivo temporário
-        temp_file = tempfile.mktemp(suffix='.tmp')
+        # Baixa para arquivo temporário (ZIP)
+        temp_file = tempfile.mktemp(suffix='.zip')
         
         self.download_thread = DownloadThread(self.download_url, temp_file)
         self.download_thread.progress_signal.connect(self.progress_bar.setValue)
@@ -814,35 +829,88 @@ class LauncherWindow(QMainWindow):
         """Callback quando o download termina"""
         if success:
             try:
-                # Caminho de destino
-                dest_path = Path(self.game_path) / TRANSLATION_FILE_RELATIVE
+                self.status_label.setText("Extraindo arquivos...")
                 
-                # Backup do arquivo original (se existir)
-                if dest_path.exists():
-                    backup_path = dest_path.with_suffix('.backup')
-                    shutil.copy2(dest_path, backup_path)
+                # Pasta de destino dos arquivos de tradução
+                locale_path = Path(self.game_path) / TRANSLATION_PATH_RELATIVE
                 
-                # Copia o arquivo baixado
-                shutil.copy2(result, dest_path)
+                # Pasta temporária para extração
+                temp_extract_dir = tempfile.mkdtemp(prefix='wwm_translation_')
                 
-                # Remove o temporário
+                # Extrai o ZIP
+                files_installed = []
+                files_backed_up = []
+                
+                try:
+                    with zipfile.ZipFile(result, 'r') as zip_ref:
+                        zip_ref.extractall(temp_extract_dir)
+                    
+                    # Procura os arquivos de tradução dentro do ZIP extraído
+                    for translation_file in TRANSLATION_FILES:
+                        source_file = self._find_file_in_directory(temp_extract_dir, translation_file)
+                        
+                        if source_file:
+                            dest_file = locale_path / translation_file
+                            
+                            # Backup do arquivo original (se existir)
+                            if dest_file.exists():
+                                backup_file = dest_file.with_suffix('.backup')
+                                shutil.copy2(dest_file, backup_file)
+                                files_backed_up.append(translation_file)
+                            
+                            # Copia o novo arquivo
+                            shutil.copy2(source_file, dest_file)
+                            files_installed.append(translation_file)
+                        else:
+                            # Arquivo não encontrado no ZIP - pode não existir ainda
+                            pass
+                    
+                    # Limpa pasta temporária
+                    shutil.rmtree(temp_extract_dir, ignore_errors=True)
+                    
+                except zipfile.BadZipFile:
+                    # Se não é um ZIP válido, tenta usar como arquivo único (fallback)
+                    shutil.rmtree(temp_extract_dir, ignore_errors=True)
+                    
+                    # Assume que é o arquivo principal
+                    dest_file = locale_path / TRANSLATION_FILES[0]
+                    if dest_file.exists():
+                        backup_file = dest_file.with_suffix('.backup')
+                        shutil.copy2(dest_file, backup_file)
+                        files_backed_up.append(TRANSLATION_FILES[0])
+                    
+                    shutil.copy2(result, dest_file)
+                    files_installed.append(TRANSLATION_FILES[0])
+                
+                # Remove o arquivo temporário baixado
                 os.unlink(result)
                 
-                # Atualiza versão instalada
-                self.installed_version = self.latest_version
-                self.card_installed.set_value(self.installed_version, Theme.SUCCESS)
-                self.save_config()
-                
-                self.status_label.setText("✓ Tradução instalada com sucesso!")
-                self.status_label.setStyleSheet(f"color: {Theme.SUCCESS};")
-                self.install_btn.setText("✓ INSTALADO")
-                
-                QMessageBox.information(
-                    self,
-                    "Sucesso!",
-                    f"Tradução v{self.latest_version} instalada com sucesso!\n\n"
-                    "Você já pode iniciar o jogo."
-                )
+                if files_installed:
+                    # Atualiza versão instalada
+                    self.installed_version = self.latest_version
+                    self.card_installed.set_value(self.installed_version, Theme.SUCCESS)
+                    self.save_config()
+                    
+                    self.status_label.setText("✓ Tradução instalada com sucesso!")
+                    self.status_label.setStyleSheet(f"color: {Theme.SUCCESS};")
+                    self.install_btn.setText("✓ INSTALADO")
+                    
+                    # Mensagem de sucesso detalhada
+                    msg = f"Tradução v{self.latest_version} instalada com sucesso!\n\n"
+                    msg += f"📦 Arquivos instalados:\n"
+                    for f in files_installed:
+                        msg += f"   • {f}\n"
+                    
+                    if files_backed_up:
+                        msg += f"\n💾 Backups criados:\n"
+                        for f in files_backed_up:
+                            msg += f"   • {f}.backup\n"
+                    
+                    msg += "\nVocê já pode iniciar o jogo."
+                    
+                    QMessageBox.information(self, "Sucesso!", msg)
+                else:
+                    raise Exception("Nenhum arquivo de tradução encontrado no pacote baixado.")
                 
             except Exception as e:
                 self.status_label.setText(f"❌ Erro ao instalar: {str(e)}")
@@ -855,6 +923,13 @@ class LauncherWindow(QMainWindow):
         self.install_btn.setEnabled(True)
         self.check_btn.setEnabled(True)
         self.progress_bar.setVisible(False)
+    
+    def _find_file_in_directory(self, directory: str, filename: str) -> str:
+        """Procura um arquivo recursivamente em um diretório"""
+        for root, dirs, files in os.walk(directory):
+            if filename in files:
+                return os.path.join(root, filename)
+        return None
     
     def launch_game(self):
         """Inicia o jogo via Steam"""

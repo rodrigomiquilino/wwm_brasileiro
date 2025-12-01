@@ -94,6 +94,7 @@ def list_existing_sessions() -> list:
 def extract_game_file(input_file: str, output_dir: str, log_callback=None) -> bool:
     """
     Extrai um arquivo binário do jogo para múltiplos arquivos .dat
+    Suporta arquivos normais e arquivos _diff
     """
     try:
         base_name = os.path.splitext(os.path.basename(input_file))[0]
@@ -137,11 +138,22 @@ def extract_game_file(input_file: str, output_dir: str, log_callback=None) -> bo
                 offsets = [struct.unpack('<I', f.read(4))[0] for _ in range(offset_count)]
                 data_start = f.tell()
                 
+                # Calcula o tamanho total dos dados disponíveis
+                file_size = os.path.getsize(input_file)
+                data_available = file_size - data_start
+                
                 extracted_count = 0
                 for i in range(offset_count - 1):
                     current_offset = offsets[i]
                     next_offset = offsets[i + 1]
                     block_len = next_offset - current_offset
+                    
+                    # Verifica se block_len é válido (proteção para arquivos _diff)
+                    if block_len <= 0:
+                        # Tenta calcular o tamanho restante
+                        block_len = data_available - current_offset
+                        if block_len <= 0:
+                            continue
                     
                     f.seek(data_start + current_offset)
                     comp_block = f.read(block_len)

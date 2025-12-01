@@ -23,8 +23,13 @@ cd /d "%~dp0"
 echo.
 echo [2/3] Compilando...
 pyinstaller --noconfirm --onefile --windowed ^
-    --name "WWM Tradutor PT-BR" ^
-    wwm_ptbr_launcher.py
+    --name "WWM_Tradutor_PTBR" ^
+    --icon "icon.ico" ^
+    wwm_ptbr_launcher.py 2>nul || (
+        pyinstaller --noconfirm --onefile --windowed ^
+            --name "WWM_Tradutor_PTBR" ^
+            wwm_ptbr_launcher.py
+    )
 
 echo.
 echo [3/3] Finalizando...
