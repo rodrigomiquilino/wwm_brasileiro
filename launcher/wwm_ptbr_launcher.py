@@ -857,16 +857,13 @@ class LauncherWindow(QMainWindow):
         self.progress_bar.setVisible(False)
     
     def launch_game(self):
-        """Inicia o jogo"""
+        """Inicia o jogo via Steam"""
         if not self.game_path:
             return
         
-        game_exe = Path(self.game_path) / GAME_EXE_RELATIVE
-        if game_exe.exists():
-            os.startfile(str(game_exe))
-            self.showMinimized()
-        else:
-            QMessageBox.warning(self, "Erro", "Executável do jogo não encontrado!")
+        # Abre o jogo via Steam usando o App ID
+        webbrowser.open("steam://rungameid/3564740")
+        self.showMinimized()
     
     # ========================================================================
     # EVENTOS DE JANELA (arrastar janela sem bordas)
