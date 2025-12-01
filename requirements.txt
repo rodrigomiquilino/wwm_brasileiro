@@ -1,5 +1,6 @@
-# Dependências do WWM Tradutor PT-BR
-# Instalar com: pip install -r requirements.txt
+# WWM Brasileiro - Dependências
+# pip install -r requirements.txt
 
 pyzstd>=0.15.0
 PyQt5>=5.15.0
+requests>=2.28.0

@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 """
 WWM Tradutor PT-BR - Launcher
-Launcher para instalação e atualização da tradução brasileira de Where Winds Meet
+Instalador automático da tradução brasileira para Where Winds Meet
 
-Autor: Comunidade WWM Brasil
-GitHub: https://github.com/rodrigomiquilino/wwm_brasileiro
+Autor: rodrigomiquilino
+Projeto: https://github.com/rodrigomiquilino/wwm_brasileiro
+Licença: MIT
 """
 
 import os
@@ -18,11 +19,9 @@ import webbrowser
 from pathlib import Path
 from datetime import datetime
 
-# Verificação de dependências
 try:
     import requests
 except ImportError:
-    print("Instalando dependência: requests...")
     os.system(f"{sys.executable} -m pip install requests")
     import requests
 
@@ -38,7 +37,6 @@ try:
     )
     from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer, QSize
 except ImportError:
-    print("Instalando dependência: PyQt5...")
     os.system(f"{sys.executable} -m pip install PyQt5")
     from PyQt5.QtWidgets import *
     from PyQt5.QtGui import *
@@ -46,7 +44,7 @@ except ImportError:
 
 
 # ============================================================================
-# CONFIGURAÇÕES
+# CONFIGURAÇÃO
 # ============================================================================
 
 APP_NAME = "WWM Tradutor PT-BR"
@@ -55,7 +53,6 @@ GITHUB_REPO = "rodrigomiquilino/wwm_brasileiro"
 GITHUB_API_RELEASES = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
 GITHUB_RELEASES_PAGE = f"https://github.com/{GITHUB_REPO}/releases"
 
-# Caminhos padrão do jogo
 DEFAULT_STEAM_PATHS = [
     r"C:\Program Files (x86)\Steam\steamapps\common\Where Winds Meet",
     r"C:\Program Files\Steam\steamapps\common\Where Winds Meet",
@@ -67,37 +64,30 @@ DEFAULT_STEAM_PATHS = [
 
 GAME_EXE_RELATIVE = r"Engine\Binaries\Win64r\wwm.exe"
 TRANSLATION_FILE_RELATIVE = r"Package\HD\oversea\locale\translate_words_map_en"
-
-# Arquivo de configuração local
 CONFIG_FILE = "wwm_ptbr_config.json"
 
 
 # ============================================================================
-# CORES DO TEMA (Estilo Wuxia/Oriental)
+# TEMA
 # ============================================================================
 
 class Theme:
-    # Cores principais
     BACKGROUND_DARK = "#0a0a0f"
     BACKGROUND_MEDIUM = "#12121a"
     BACKGROUND_LIGHT = "#1a1a24"
     
-    # Acentos dourados (estilo oriental)
     GOLD_PRIMARY = "#c9a227"
     GOLD_LIGHT = "#e6c355"
     GOLD_DARK = "#8b7019"
     
-    # Acentos vermelhos (estilo chinês)
     RED_PRIMARY = "#8b2635"
     RED_LIGHT = "#a63446"
     RED_DARK = "#5c1a24"
     
-    # Texto
     TEXT_PRIMARY = "#e8e6e3"
     TEXT_SECONDARY = "#9d9d9d"
     TEXT_MUTED = "#5a5a5a"
     
-    # Status
     SUCCESS = "#2e7d32"
     WARNING = "#f57c00"
     ERROR = "#c62828"
@@ -874,7 +864,6 @@ class LauncherWindow(QMainWindow):
         game_exe = Path(self.game_path) / GAME_EXE_RELATIVE
         if game_exe.exists():
             os.startfile(str(game_exe))
-            # Minimiza o launcher
             self.showMinimized()
         else:
             QMessageBox.warning(self, "Erro", "Executável do jogo não encontrado!")

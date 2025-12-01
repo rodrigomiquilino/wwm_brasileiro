@@ -1,97 +1,134 @@
-# 🇧🇷 Tradução PT-BR para Where Winds Meet
+# 🇧🇷 WWM Brasileiro - Tradução PT-BR para Where Winds Meet
 
-[![Steam Store Game](https://img.shields.io/badge/Jogo%20na-Steam-blue?style=flat&logo=steam)](https://store.steampowered.com/app/3564740/Where_Winds_Meet/)
-[![MIT License](https://img.shields.io/badge/Licença-MIT-green?style=flat)](LICENSE)
-[![Português Brasileiro](https://img.shields.io/badge/Idioma-PT--BR-yellow?style=flat)](translation_ptbr.tsv)
+<div align="center">
 
-## ℹ️ Sobre o Projeto
+[![Steam](https://img.shields.io/badge/Steam-Where%20Winds%20Meet-1b2838?style=for-the-badge&logo=steam)](https://store.steampowered.com/app/3564740/Where_Winds_Meet/)
+[![Licença](https://img.shields.io/badge/Licença-MIT-green?style=for-the-badge)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/rodrigomiquilino/wwm_brasileiro?style=for-the-badge&label=Versão)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/rodrigomiquilino/wwm_brasileiro/total?style=for-the-badge&label=Downloads)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
 
-Esta é uma **tradução não-oficial** em Português do Brasil para o MMO [Where Winds Meet](https://store.steampowered.com/app/3564740/Where_Winds_Meet/) da Everstone Studio e NetEase Games. O projeto foi criado pela comunidade e não está vinculado aos desenvolvedores oficiais do jogo.
+**Tradução não-oficial em Português Brasileiro para Where Winds Meet**
 
-**Where Winds Meet** é um épico RPG de ação-aventura em mundo aberto no gênero Wuxia (artes marciais chinesas), ambientado na China do século X durante a Dinastia Song. O jogo é gratuito na Steam e suporta modo solo, cooperativo e PvP.
+[📥 Download](#-instalação) • [🛠️ Ferramentas](#️-ferramentas) • [📖 Documentação](#-documentação) • [🤝 Contribuir](#-como-contribuir)
 
-> 🙏 Este projeto é baseado no trabalho incrível da comunidade russa [wwm_russian](https://github.com/DOG729/wwm_russian)
+</div>
 
 ---
 
-## 📚 Documentação
+## 📖 Sobre
 
-- **[`docs/tags.md`](docs/tags.md)** — Descrição das tags e formatações usadas no jogo (links, variáveis, cores)
-- **[`docs/localization_ptbr.md`](docs/localization_ptbr.md)** — Regras de tradução para **[`translation_ptbr.tsv`](translation_ptbr.tsv)**
-- **[`tools/`](tools/)** — Ferramentas de extração e empacotamento
+**Where Winds Meet** é um RPG de ação-aventura em mundo aberto no gênero Wuxia, ambientado na China do século X durante a Dinastia Song. O jogo é gratuito na Steam e suporta modo solo, cooperativo e PvP.
+
+Este projeto oferece uma tradução completa da interface e textos do jogo para Português Brasileiro.
+
+> Baseado no trabalho da comunidade russa [wwm_russian](https://github.com/DOG729/wwm_russian)
+
+---
+
+## 📥 Instalação
+
+### Método 1: Launcher (Recomendado)
+
+1. Baixe o **[WWM Tradutor PT-BR.exe](https://github.com/rodrigomiquilino/wwm_brasileiro/releases/latest)**
+2. Execute o launcher
+3. O programa detectará automaticamente sua instalação
+4. Clique em **Instalar Tradução**
+5. Pronto!
+
+### Método 2: Manual
+
+1. Baixe `translate_words_map_en` da [releases](https://github.com/rodrigomiquilino/wwm_brasileiro/releases/latest)
+2. Navegue até:
+   ```
+   Steam\steamapps\common\Where Winds Meet\Package\HD\oversea\locale\
+   ```
+3. Substitua o arquivo `translate_words_map_en`
+4. Inicie o jogo
+
+---
 
 ## 🛠️ Ferramentas
 
-### WWM Tradutor PT-BR
-
-Ferramenta GUI em Python para facilitar o processo de tradução:
+### Tradutor (Para desenvolvedores)
 
 ```bash
-# Instalar dependências
-pip install pyzstd PyQt5
-
-# Executar
+pip install -r requirements.txt
 python tools/wwm_tradutor_ptbr.py
 ```
 
-**Funcionalidades:**
-- 📦 Extrair arquivos do jogo (.bin → .dat)
-- 📝 Extrair textos para TSV editável
-- 🌐 Aplicar traduções de arquivo TSV
-- 📦 Empacotar de volta para o jogo
+- 📦 Extrair arquivos do jogo
+- 📝 Editar traduções em TSV
+- 📦 Empacotar de volta
 
-## 📁 Estrutura do Projeto
+### Launcher (Para usuários)
+
+```bash
+python launcher/wwm_ptbr_launcher.py
+```
+
+---
+
+## 📁 Estrutura
 
 ```
 wwm_brasileiro/
-├── translation_en.tsv      # Textos originais em inglês (base)
-├── translation_ptbr.tsv    # Traduções em Português BR
-├── tools/                  # Ferramentas de tradução
+├── launcher/                    # Instalador automático
+│   └── wwm_ptbr_launcher.py
+├── tools/                       # Ferramentas de tradução
 │   └── wwm_tradutor_ptbr.py
-├── docs/                   # Documentação
-│   ├── tags.md
-│   └── localization_ptbr.md
-├── output/                 # Arquivos gerados
-├── www/                    # Interface web
-└── old_russo/              # Arquivos do projeto russo original
+├── docs/                        # Documentação
+│   ├── localization_ptbr.md
+│   └── tags.md
+├── translation_en.tsv          # Textos originais
+├── translation_ptbr.tsv        # Traduções PT-BR
+└── requirements.txt
 ```
 
-## 🚀 Como Contribuir
+---
 
-1. **Fork** este repositório
-2. **Clone** para sua máquina
-3. **Traduza** strings do `translation_en.tsv`
-4. **Adicione** ao `translation_ptbr.tsv`
-5. **Envie** um Pull Request
+## 📖 Documentação
 
-### Regras de Tradução
+| Documento | Descrição |
+|-----------|-----------|
+| [localization_ptbr.md](docs/localization_ptbr.md) | Guia de tradução |
+| [tags.md](docs/tags.md) | Referência de tags |
 
-- ✅ Preservar TODAS as tags (`{0}`, `#G...#E`, `<...|...>`, etc.)
-- ✅ Manter nomes próprios chineses em Pinyin
-- ✅ Traduzir de forma natural, não literal
+---
+
+## 🤝 Como Contribuir
+
+1. Fork este repositório
+2. Edite `translation_ptbr.tsv`
+3. Envie um Pull Request
+
+### Regras
+
+- ✅ Preservar tags (`{0}`, `#G...#E`, `<...|...>`)
+- ✅ Manter nomes próprios em Pinyin
+- ✅ Traduzir naturalmente
 - ✅ Verificar ortografia
 
-Veja [docs/localization_ptbr.md](docs/localization_ptbr.md) para regras detalhadas.
+---
 
-## 🔗 Links Úteis
+## 🔗 Links
 
-- [Página do jogo na Steam](https://store.steampowered.com/app/3564740/Where_Winds_Meet/)
-- [Projeto russo original](https://github.com/DOG729/wwm_russian)
+- [Steam](https://store.steampowered.com/app/3564740/Where_Winds_Meet/)
+- [Projeto Russo](https://github.com/DOG729/wwm_russian)
+- [Releases](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
 
 ---
 
 ## 👥 Créditos
 
-<details open>
-<summary>Expandir</summary>
+### WWM Brasileiro
+- **[rodrigomiquilino](https://github.com/rodrigomiquilino)** — Criador e mantenedor
 
-### Projeto PT-BR
-* [rodrigomiquilino](https://github.com/rodrigomiquilino) - Criador e mantenedor
+### Projeto Original
+- **[DOG729](https://github.com/DOG729)** — Criador do projeto russo
+- **[ZoG Community](https://forum.zoneofgames.ru/topic/80635-where-winds-meet)**
 
-### Projeto Russo Original
-* [DOG729](https://github.com/DOG729) - Criador do projeto original
-* [Dontaz](https://github.com/Dontaz) - Publicação e promoção
-* [Claymore0098](https://github.com/Kirito0098) - Tradução com IA
-* [ZoG Community](https://forum.zoneofgames.ru/topic/80635-where-winds-meet)
+---
 
-</details>
+## 📄 Licença
+
+[MIT License](LICENSE) — Projeto da comunidade, não oficial.

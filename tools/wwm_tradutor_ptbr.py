@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-WWM Tradutor PT-BR - Ferramenta de Tradução para Where Winds Meet
-Versão brasileira baseada no projeto russo original.
+WWM Tradutor PT-BR
+Ferramenta de extração e empacotamento para tradução de Where Winds Meet
 
-Funcionalidades:
-- Extrair arquivos do jogo (.bin → .dat → .tsv) em um clique
-- Empacotar traduções de volta (.tsv → .dat → .bin) em um clique
-
-Autor: Comunidade WWM Brasil
+Autor: rodrigomiquilino
+Projeto: https://github.com/rodrigomiquilino/wwm_brasileiro
+Licença: MIT
 """
 
 import re
@@ -23,7 +21,7 @@ from pathlib import Path
 try:
     import pyzstd
 except ImportError:
-    print("Erro: Biblioteca pyzstd não encontrada. Instale com: pip install pyzstd")
+    print("Erro: pyzstd não encontrado. Instale com: pip install pyzstd")
     sys.exit(1)
 
 try:
@@ -36,23 +34,20 @@ try:
     from PyQt5.QtGui import QFont, QPalette, QColor
     from PyQt5.QtCore import Qt, QThread, pyqtSignal
 except ImportError:
-    print("Erro: Biblioteca PyQt5 não encontrada. Instale com: pip install PyQt5")
+    print("Erro: PyQt5 não encontrado. Instale com: pip install PyQt5")
     sys.exit(1)
 
 
 # ============================================================================
-# CONFIGURAÇÕES GLOBAIS
+# CONFIGURAÇÃO
 # ============================================================================
 
 APP_NAME = "WWM Tradutor PT-BR"
 APP_VERSION = "2.1.0"
 CONFIG_FILE = "config_ptbr.ini"
 
-# Assinatura dos arquivos do jogo
 GAME_FILE_SIGNATURE = b'\xEF\xBE\xAD\xDE'
 TEXT_BLOCK_SIGNATURE = b'\xDC\x96\x58\x59'
-
-# Pasta de output padrão (relativa ao projeto)
 OUTPUT_FOLDER = "output"
 
 
