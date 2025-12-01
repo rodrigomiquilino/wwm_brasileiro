@@ -29,6 +29,14 @@ env/
 ENV/
 .venv
 
+# Output - arquivos extraídos do jogo
+output/
+*.dat
+*.bin
+
+# Config do tradutor
+tools/config_ptbr.ini
+
 # IDE
 .vscode/
 .idea/
@@ -42,7 +50,5 @@ ENV/
 *.bak
 *.backup
 /.vs
-/.gitignore
-/.gitignore
-/.gitignore
-/.gitignore
+.history/
+
