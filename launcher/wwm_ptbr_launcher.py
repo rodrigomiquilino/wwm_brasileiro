@@ -18,6 +18,7 @@ import webbrowser
 import zipfile
 import hashlib
 import ctypes
+import re
 from pathlib import Path
 from datetime import datetime
 
@@ -104,7 +105,7 @@ except ImportError:
 APP_NAME = "WWM Tradutor PT-BR"
 APP_VERSION = "2.0.0"
 GITHUB_REPO = "rodrigomiquilino/wwm_brasileiro"
-GITHUB_API_RELEASES = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
+GITHUB_API_RELEASES = f"https://api.github.com/repos/{GITHUB_REPO}/releases"
 GITHUB_RELEASES_PAGE = f"https://github.com/{GITHUB_REPO}/releases"
 
 # Arquivo de configuração local (na pasta do launcher)
@@ -441,74 +442,19 @@ class DownloadThread(QThread):
 
 
 class CheckUpdateThread(QThread):
-    """Thread para verificar atualizações"""
+    """Thread para verificar atualizações da tradução
     
-    # success, version, timestamp, download_url, message
+    Busca releases com tag no formato "x.x.x" ou "vx.x.x" (sem prefixo "launcher-")
+    """
+    
+    # success, translation_version, timestamp, download_url, message
     finished_signal = pyqtSignal(bool, str, str, str, str)
     
     def __init__(self):
         super().__init__()
     
-    def run(self):
-        try:
-            response = requests.get(GITHUB_API_RELEASES, timeout=10)
-            response.raise_for_status()
-            
-            data = response.json()
-            latest_version = data.get('tag_name', '').lstrip('v')
-            published_at = data.get('published_at', '')  # ISO timestamp do GitHub
-            
-            # Procura o arquivo ZIP de tradução nos assets
-            download_url = None
-            for asset in data.get('assets', []):
-                asset_name = asset['name'].lower()
-                if asset_name.endswith('.zip') and ('traducao' in asset_name or 'translation' in asset_name or 'ptbr' in asset_name):
-                    download_url = asset['browser_download_url']
-                    break
-            
-            # Se não encontrou ZIP específico, procura qualquer ZIP
-            if not download_url:
-                for asset in data.get('assets', []):
-                    if asset['name'].lower().endswith('.zip'):
-                        download_url = asset['browser_download_url']
-                        break
-            
-            # Último recurso: zipball
-            if not download_url:
-                download_url = data.get('zipball_url', '')
-            
-            self.finished_signal.emit(True, latest_version, published_at, download_url, "Verificação concluída!")
-            
-        except Exception as e:
-            self.finished_signal.emit(False, "", "", "", f"Erro: {str(e)}")
-
-
-class CheckLauncherUpdateThread(QThread):
-    """Thread para verificar atualizações do launcher"""
-    
-    finished_signal = pyqtSignal(bool, str, str)  # success, version, message
-    
-    def __init__(self, current_version: str):
-        super().__init__()
-        self.current_version = current_version
-    
-    def run(self):
-        try:
-            response = requests.get(GITHUB_API_RELEASES, timeout=10)
-            response.raise_for_status()
-            
-            data = response.json()
-            latest_version = data.get('tag_name', '').lstrip('v')
-            
-            if self._compare_versions(latest_version, self.current_version) > 0:
-                self.finished_signal.emit(True, latest_version, "Nova versão do launcher disponível!")
-            else:
-                self.finished_signal.emit(True, latest_version, "Launcher atualizado!")
-                
-        except Exception as e:
-            self.finished_signal.emit(False, "", f"Erro: {str(e)}")
-    
     def _compare_versions(self, v1: str, v2: str) -> int:
+        """Compara duas versões. Retorna 1 se v1 > v2, -1 se v1 < v2, 0 se iguais"""
         try:
             parts1 = [int(x) for x in v1.split('.')]
             parts2 = [int(x) for x in v2.split('.')]
@@ -523,6 +469,134 @@ class CheckLauncherUpdateThread(QThread):
             return 0
         except:
             return 0
+    
+    def run(self):
+        try:
+            response = requests.get(GITHUB_API_RELEASES, timeout=10)
+            response.raise_for_status()
+            
+            releases = response.json()
+            
+            # Procura o release de tradução mais recente
+            # Tags de tradução: "x.x.x" ou "vx.x.x" (NÃO começam com "launcher-")
+            best_version = None
+            best_release = None
+            
+            for release in releases:
+                tag = release.get('tag_name', '')
+                
+                # Ignora releases do launcher
+                if tag.lower().startswith('launcher'):
+                    continue
+                
+                # Extrai versão da tag
+                version_match = re.search(r'v?(\d+\.\d+\.\d+)', tag)
+                if version_match:
+                    version = version_match.group(1)
+                    
+                    # Verifica se é a versão mais recente
+                    if best_version is None or self._compare_versions(version, best_version) > 0:
+                        best_version = version
+                        best_release = release
+            
+            if best_release:
+                published_at = best_release.get('published_at', '')
+                
+                # Procura o ZIP de tradução nos assets
+                download_url = None
+                for asset in best_release.get('assets', []):
+                    if asset['name'].lower().endswith('.zip'):
+                        download_url = asset['browser_download_url']
+                        break
+                
+                # Fallback: zipball
+                if not download_url:
+                    download_url = best_release.get('zipball_url', '')
+                
+                self.finished_signal.emit(True, best_version, published_at, download_url, "Verificação concluída!")
+            else:
+                self.finished_signal.emit(False, "", "", "", "Nenhuma tradução encontrada")
+            
+        except Exception as e:
+            self.finished_signal.emit(False, "", "", "", f"Erro: {str(e)}")
+
+
+class CheckLauncherUpdateThread(QThread):
+    """Thread para verificar atualizações do launcher
+    
+    Busca releases com tag no formato "launcher-x.x.x"
+    """
+    
+    finished_signal = pyqtSignal(bool, str, str, str)  # success, version, download_url, message
+    
+    def __init__(self, current_version: str):
+        super().__init__()
+        self.current_version = current_version
+    
+    def _compare_versions(self, v1: str, v2: str) -> int:
+        """Compara duas versões. Retorna 1 se v1 > v2, -1 se v1 < v2, 0 se iguais"""
+        try:
+            parts1 = [int(x) for x in v1.split('.')]
+            parts2 = [int(x) for x in v2.split('.')]
+            
+            for i in range(max(len(parts1), len(parts2))):
+                p1 = parts1[i] if i < len(parts1) else 0
+                p2 = parts2[i] if i < len(parts2) else 0
+                if p1 > p2:
+                    return 1
+                elif p1 < p2:
+                    return -1
+            return 0
+        except:
+            return 0
+    
+    def run(self):
+        try:
+            response = requests.get(GITHUB_API_RELEASES, timeout=10)
+            response.raise_for_status()
+            
+            releases = response.json()
+            
+            # Procura o release do launcher mais recente
+            # Tags de launcher: "launcher-x.x.x"
+            best_version = None
+            best_release = None
+            
+            for release in releases:
+                tag = release.get('tag_name', '')
+                
+                # Só considera releases do launcher
+                if not tag.lower().startswith('launcher'):
+                    continue
+                
+                # Extrai versão da tag (launcher-x.x.x -> x.x.x)
+                version_match = re.search(r'launcher-v?(\d+\.\d+\.\d+)', tag, re.IGNORECASE)
+                if version_match:
+                    version = version_match.group(1)
+                    
+                    # Verifica se é a versão mais recente
+                    if best_version is None or self._compare_versions(version, best_version) > 0:
+                        best_version = version
+                        best_release = release
+            
+            if best_release and best_version:
+                # Procura o .exe nos assets
+                download_url = ""
+                for asset in best_release.get('assets', []):
+                    if asset['name'].lower().endswith('.exe'):
+                        download_url = asset['browser_download_url']
+                        break
+                
+                if self._compare_versions(best_version, self.current_version) > 0:
+                    self.finished_signal.emit(True, best_version, download_url, "Nova versão do launcher disponível!")
+                else:
+                    self.finished_signal.emit(True, best_version, "", "Launcher atualizado!")
+            else:
+                # Não encontrou release do launcher, está atualizado
+                self.finished_signal.emit(True, self.current_version, "", "Launcher atualizado!")
+                
+        except Exception as e:
+            self.finished_signal.emit(False, "", "", f"Erro: {str(e)}")
 
 
 # ============================================================================
@@ -891,7 +965,7 @@ class LauncherWindow(QMainWindow):
         selector_layout.addWidget(label)
         
         # Caminho do executável
-        self.path_label = QLabel("Nenhum executável selecionado")
+        self.path_label = QLabel("Localize o arquivo wwm.exe do jogo")
         self.path_label.setFont(QFont("Segoe UI", 8))
         self.path_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; border: none;")
         self.path_label.setWordWrap(True)
@@ -907,7 +981,7 @@ class LauncherWindow(QMainWindow):
         selector_layout.addWidget(self.game_status)
         
         # Botão embaixo (largura total)
-        browse_btn = StyledButton("📁 Selecionar Executável do Jogo")
+        browse_btn = StyledButton("📁 Procurar wwm.exe")
         browse_btn.setFixedHeight(36)
         browse_btn.clicked.connect(self.browse_game)
         selector_layout.addWidget(browse_btn)
@@ -923,7 +997,7 @@ class LauncherWindow(QMainWindow):
         progress_layout.setSpacing(6)
         progress_layout.setContentsMargins(0, 0, 0, 0)
         
-        self.status_label = QLabel("Selecione o executável do jogo para começar")
+        self.status_label = QLabel("Localize o wwm.exe para começar")
         self.status_label.setFont(QFont("Segoe UI", 9))
         self.status_label.setFixedHeight(20)
         self.status_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY};")
@@ -1089,9 +1163,9 @@ class LauncherWindow(QMainWindow):
         """Abre diálogo para selecionar o executável do jogo"""
         file_path, _ = QFileDialog.getOpenFileName(
             self,
-            "Selecionar executável do jogo",
+            "Selecionar executável do jogo (wwm.exe)",
             "",
-            "Executável (wwm.exe launcher.exe)"
+            "Executável do jogo (wwm.exe)"
         )
         
         if file_path:
@@ -1141,8 +1215,11 @@ class LauncherWindow(QMainWindow):
         self.play_btn.setEnabled(True)
         self.install_btn.setEnabled(True)
         
-        # Verifica status da tradução
+        # Verifica status da tradução local
         self._update_translation_status()
+        
+        # Verifica automaticamente se há atualizações online
+        self.check_for_updates()
     
     def _update_translation_status(self):
         """Atualiza o status da tradução instalada"""
@@ -1214,12 +1291,21 @@ class LauncherWindow(QMainWindow):
                     self.status_label.setText("Pronto para instalar a tradução PT-BR")
                     self.status_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY};")
                 elif installed_version and version:
-                    if self._compare_versions(version, installed_version) > 0:
+                    comparison = self._compare_versions(version, installed_version)
+                    if comparison > 0:
                         # Há atualização disponível - mostra botão
                         self.status_label.setText(f"🎉 Nova versão disponível: v{version}")
                         self.status_label.setStyleSheet(f"color: {Theme.GOLD_PRIMARY};")
                         self.install_btn.setText("⬆ ATUALIZAR TRADUÇÃO")
                         self.install_btn.setVisible(True)
+                    elif comparison < 0:
+                        # Versão instalada é MAIOR que a disponível (release apagada)
+                        # Oferece reinstalar para a versão estável
+                        self.status_label.setText(f"⚠ Versão instalada ({installed_version}) não encontrada online")
+                        self.status_label.setStyleSheet(f"color: {Theme.WARNING};")
+                        self.install_btn.setText("🔄 REINSTALAR v" + version)
+                        self.install_btn.setVisible(True)
+                        self.card_installed.set_value(installed_version, Theme.WARNING)
                     else:
                         # Tradução está atualizada - oculta botão
                         self.status_label.setText("✓ Tradução está atualizada")
@@ -1266,7 +1352,8 @@ class LauncherWindow(QMainWindow):
             self,
             "Confirmar Instalação",
             f"Deseja instalar a tradução PT-BR v{self.latest_version}?\n\n"
-            "Os arquivos originais serão salvos como backup (.backup)",
+            "📁 O backup dos arquivos originais será preservado.\n"
+            "(Atualizações não sobrescrevem o backup original)",
             QMessageBox.Yes | QMessageBox.No
         )
         

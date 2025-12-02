@@ -1,5 +1,39 @@
 # 🇧🇷 WWM Brasileiro - Tradução PT-BR para Where Winds Meet
 
+<!--
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    🔒 NOTAS DO DESENVOLVEDOR (INVISÍVEL)                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  📌 SISTEMA DE VERSÕES (TAGS DO GITHUB RELEASES):                            ║
+║                                                                              ║
+║  • TRADUÇÃO:  Tag "x.x.x" ou "vx.x.x"  (ex: 1.0.0, v1.0.1, 1.0.2)            ║
+║  • LAUNCHER:  Tag "launcher-x.x.x"    (ex: launcher-2.0.0)                   ║
+║                                                                              ║
+║  ⚠️ IMPORTANTE:                                                              ║
+║  - Cada tipo de release é INDEPENDENTE                                       ║
+║  - O launcher busca a MAIOR versão de cada tipo automaticamente              ║
+║  - Pode atualizar tradução sem afetar launcher e vice-versa                  ║
+║                                                                              ║
+║  📦 EXEMPLOS DE RELEASES:                                                    ║
+║                                                                              ║
+║  Para atualizar TRADUÇÃO:                                                    ║
+║    Tag: 1.0.2                                                                ║
+║    Assets: traducao_ptbr.zip                                                 ║
+║                                                                              ║
+║  Para atualizar LAUNCHER:                                                    ║
+║    Tag: launcher-2.1.0                                                       ║
+║    Assets: WWM_Tradutor_PTBR.exe                                             ║
+║                                                                              ║
+║  🔄 SEGURANÇA: Se apagar uma release, usuários com versão "fantasma"         ║
+║     verão "Reinstalar" quando a versão online for MENOR que a instalada.     ║
+║                                                                              ║
+║  💡 LEMBRE-SE: Mudar APP_VERSION no código antes de compilar novo launcher!  ║
+║     Arquivo: launcher/wwm_ptbr_launcher.py → APP_VERSION = "x.x.x"           ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+-->
+
 <div align="center">
 
 ![WWM Brasileiro Banner](https://img.shields.io/badge/⚔_Where_Winds_Meet-Tradução_Brasileiro-c9a227?style=for-the-badge&labelColor=0a0a0f)
