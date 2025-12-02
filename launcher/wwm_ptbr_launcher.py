@@ -52,10 +52,12 @@ def run_as_admin():
     """Reinicia o programa como administrador"""
     try:
         if sys.platform == 'win32':
-            # Obtém o caminho do executável
             if getattr(sys, 'frozen', False):
                 # Executando como .exe compilado
                 executable = sys.executable
+                ctypes.windll.shell32.ShellExecuteW(
+                    None, "runas", executable, None, None, 1
+                )
             else:
                 # Executando como script Python
                 executable = sys.executable
@@ -63,11 +65,6 @@ def run_as_admin():
                 ctypes.windll.shell32.ShellExecuteW(
                     None, "runas", executable, f'"{script}"', None, 1
                 )
-                sys.exit(0)
-            
-            ctypes.windll.shell32.ShellExecuteW(
-                None, "runas", executable, None, None, 1
-            )
             sys.exit(0)
     except Exception as e:
         return False
@@ -103,7 +100,7 @@ except ImportError:
 # ============================================================================
 
 APP_NAME = "WWM Tradutor PT-BR"
-APP_VERSION = "2.1.0"
+APP_VERSION = "2.2.0"
 GITHUB_REPO = "rodrigomiquilino/wwm_brasileiro"
 GITHUB_API_RELEASES = f"https://api.github.com/repos/{GITHUB_REPO}/releases"
 GITHUB_RELEASES_PAGE = f"https://github.com/{GITHUB_REPO}/releases"
@@ -407,11 +404,14 @@ class TranslationChecker:
 # ============================================================================
 
 class DownloadThread(QThread):
-    """Thread para download de arquivos"""
+    """Thread para download de arquivos com retry automático"""
     
     progress_signal = pyqtSignal(int)
     status_signal = pyqtSignal(str)
     finished_signal = pyqtSignal(bool, str)
+    
+    MAX_RETRIES = 3
+    TIMEOUT = 60  # segundos
     
     def __init__(self, url: str, dest_path: str):
         super().__init__()
@@ -419,29 +419,48 @@ class DownloadThread(QThread):
         self.dest_path = dest_path
     
     def run(self):
-        try:
-            self.status_signal.emit("Conectando ao servidor...")
-            response = requests.get(self.url, stream=True, timeout=30)
-            response.raise_for_status()
+        last_error = None
+        
+        for attempt in range(self.MAX_RETRIES):
+            try:
+                if attempt > 0:
+                    self.status_signal.emit(f"Tentativa {attempt + 1}/{self.MAX_RETRIES}...")
+                else:
+                    self.status_signal.emit("Conectando ao servidor...")
+                
+                response = requests.get(self.url, stream=True, timeout=self.TIMEOUT)
+                response.raise_for_status()
+                
+                total_size = int(response.headers.get('content-length', 0))
+                downloaded = 0
+                
+                self.status_signal.emit("Baixando tradução...")
+                
+                with open(self.dest_path, 'wb') as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+                            downloaded += len(chunk)
+                            if total_size > 0:
+                                progress = int((downloaded / total_size) * 100)
+                                self.progress_signal.emit(progress)
+                
+                self.finished_signal.emit(True, self.dest_path)
+                return
+                
+            except requests.exceptions.Timeout:
+                last_error = "Tempo limite excedido. Verifique sua conexão."
+            except requests.exceptions.ConnectionError:
+                last_error = "Erro de conexão. Verifique sua internet."
+            except Exception as e:
+                last_error = str(e)
             
-            total_size = int(response.headers.get('content-length', 0))
-            downloaded = 0
-            
-            self.status_signal.emit("Baixando tradução...")
-            
-            with open(self.dest_path, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:
-                        f.write(chunk)
-                        downloaded += len(chunk)
-                        if total_size > 0:
-                            progress = int((downloaded / total_size) * 100)
-                            self.progress_signal.emit(progress)
-            
-            self.finished_signal.emit(True, self.dest_path)
-            
-        except Exception as e:
-            self.finished_signal.emit(False, str(e))
+            # Aguarda antes de tentar novamente
+            if attempt < self.MAX_RETRIES - 1:
+                import time
+                time.sleep(2)
+        
+        self.finished_signal.emit(False, f"Falha após {self.MAX_RETRIES} tentativas: {last_error}")
 
 
 class CheckUpdateThread(QThread):
@@ -739,9 +758,18 @@ class LauncherWindow(QMainWindow):
         QTimer.singleShot(500, self.check_for_updates)
         QTimer.singleShot(1000, self.check_launcher_update)
     
+    def _get_app_dir(self) -> Path:
+        """Retorna o diretório do aplicativo (funciona tanto como .py quanto como .exe)"""
+        if getattr(sys, 'frozen', False):
+            # Executando como .exe compilado
+            return Path(sys.executable).parent
+        else:
+            # Executando como script Python
+            return Path(__file__).parent
+    
     def _load_local_config(self) -> dict:
         """Carrega configuração local do launcher"""
-        config_path = Path(__file__).parent / LOCAL_CONFIG_FILE
+        config_path = self._get_app_dir() / LOCAL_CONFIG_FILE
         if config_path.exists():
             try:
                 with open(config_path, 'r', encoding='utf-8') as f:
@@ -752,7 +780,7 @@ class LauncherWindow(QMainWindow):
     
     def _save_local_config(self):
         """Salva configuração local"""
-        config_path = Path(__file__).parent / LOCAL_CONFIG_FILE
+        config_path = self._get_app_dir() / LOCAL_CONFIG_FILE
         self.config['exe_path'] = self.exe_path
         try:
             with open(config_path, 'w', encoding='utf-8') as f:
@@ -1038,6 +1066,7 @@ class LauncherWindow(QMainWindow):
         self.install_btn.setFont(QFont("Segoe UI", 11, QFont.Bold))
         self.install_btn.clicked.connect(self.install_translation)
         self.install_btn.setEnabled(False)
+        self.install_btn.setToolTip("Baixa e instala a tradução PT-BR do GitHub")
         buttons_layout.addWidget(self.install_btn)
         
         # Botão de restaurar original (inicialmente oculto)
@@ -1045,6 +1074,7 @@ class LauncherWindow(QMainWindow):
         self.restore_btn.setFixedHeight(40)
         self.restore_btn.clicked.connect(self.restore_backup)
         self.restore_btn.setVisible(False)
+        self.restore_btn.setToolTip("Restaura os arquivos originais do jogo (remove a tradução)")
         buttons_layout.addWidget(self.restore_btn)
         
         # Botões secundários
@@ -1055,6 +1085,7 @@ class LauncherWindow(QMainWindow):
         self.check_btn = StyledButton("🔄 Verificar")
         self.check_btn.setFixedHeight(38)
         self.check_btn.clicked.connect(self.check_for_updates)
+        self.check_btn.setToolTip("Verifica se há nova versão da tradução disponível")
         secondary_layout.addWidget(self.check_btn)
         
         # Iniciar jogo
@@ -1062,6 +1093,7 @@ class LauncherWindow(QMainWindow):
         self.play_btn.setFixedHeight(38)
         self.play_btn.clicked.connect(self.launch_game)
         self.play_btn.setEnabled(False)
+        self.play_btn.setToolTip("Inicia o jogo pela plataforma detectada")
         secondary_layout.addWidget(self.play_btn)
         
         buttons_layout.addLayout(secondary_layout)
@@ -1274,8 +1306,10 @@ class LauncherWindow(QMainWindow):
     def check_for_updates(self):
         """Verifica atualizações da tradução"""
         self.check_btn.setEnabled(False)
-        self.card_available.set_value("Verificando...", Theme.TEXT_SECONDARY)
-        self.status_label.setText("Verificando atualizações...")
+        self.check_btn.setText("⏳ Verificando...")
+        self.card_available.set_value("🔍 Buscando...", Theme.TEXT_SECONDARY)
+        self.status_label.setText("Conectando ao GitHub...")
+        self.status_label.setStyleSheet(f"color: {Theme.INFO};")
         
         self.update_thread = CheckUpdateThread()
         self.update_thread.finished_signal.connect(self.on_update_check_finished)
@@ -1284,6 +1318,7 @@ class LauncherWindow(QMainWindow):
     def on_update_check_finished(self, success: bool, version: str, timestamp: str, url: str, message: str):
         """Callback da verificação de atualização"""
         self.check_btn.setEnabled(True)
+        self.check_btn.setText("🔄 Verificar")
         
         if success:
             self.latest_version = version
@@ -1604,7 +1639,7 @@ class LauncherWindow(QMainWindow):
         self.launcher_check_thread.finished_signal.connect(self.on_launcher_update_check)
         self.launcher_check_thread.start()
     
-    def on_launcher_update_check(self, success: bool, version: str, message: str):
+    def on_launcher_update_check(self, success: bool, version: str, download_url: str, message: str):
         """Callback da verificação do launcher"""
         if success and version:
             if self._compare_versions(version, APP_VERSION) > 0:
