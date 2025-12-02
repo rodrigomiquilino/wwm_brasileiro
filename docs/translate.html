@@ -1687,6 +1687,9 @@
         }
         
         // Envia todas as sugestões
+        // GitHub Token storage
+        let githubToken = localStorage.getItem('github_token') || null;
+        
         function submitAllSuggestions() {
             if (suggestionCart.length === 0) return;
             
@@ -1706,7 +1709,7 @@
             // Monta o título
             const issueTitle = `[Tradução] Lote com ${suggestionCart.length} sugestão(ões)`;
             
-            // Monta o corpo da Issue COMPACTO (só o JSON essencial)
+            // Monta o corpo da Issue
             let issueBody = `## 📝 Sugestões de Tradução
 
 **Total:** ${suggestionCart.length} | **Data:** ${new Date().toLocaleString('pt-BR')}
@@ -1723,78 +1726,71 @@ ${suggestionCart.map((item, i) => `${i+1}. \`${item.id}\` → ${item.suggestion.
 ---
 > ⚠️ Adicione a label \`approved\` para aplicar automaticamente.`;
 
-            // Verifica tamanho da URL (limite ~8000 chars)
-            const testUrl = `https://github.com/${CONFIG.GITHUB_REPO}/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}`;
-            
-            if (testUrl.length > 7500) {
-                // URL muito longa - mostrar modal para copiar
-                showCopyModal(issueTitle, issueBody, jsonData);
-            } else {
-                // URL ok - abrir diretamente
-                window.open(testUrl + '&labels=translation,batch-suggestion', '_blank');
-                
-                // Limpa o carrinho após enviar
-                suggestionCart = [];
-                updateCartUI();
-                toggleCart();
-                showToast('Redirecionando para o GitHub...');
-            }
+            // Sempre usa o modal de cópia (mais confiável)
+            showCopyModal(issueTitle, issueBody, jsonData);
         }
         
-        // Modal para quando a URL é muito longa
+        // Modal para criar Issue
         function showCopyModal(title, body, jsonData) {
-            // Cria modal de cópia
             const modal = document.createElement('div');
             modal.className = 'modal';
             modal.id = 'copy-modal';
             modal.innerHTML = `
                 <div class="modal-content" style="max-width: 700px;">
                     <div class="modal-header">
-                        <h2><i class="fas fa-copy"></i> Criar Issue Manualmente</h2>
+                        <h2><i class="fab fa-github"></i> Enviar Sugestões</h2>
                         <button class="modal-close" onclick="closeCopyModal()">&times;</button>
                     </div>
                     <div class="modal-body">
                         <p style="margin-bottom: 1rem; color: var(--text-secondary);">
                             <i class="fas fa-info-circle"></i> 
-                            As sugestões são muito grandes para URL. Siga os passos abaixo:
+                            Copie o conteúdo e cole na nova Issue do GitHub.
                         </p>
                         
                         <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                            <strong>Passo 1:</strong> Copie o título
+                            <strong><i class="fas fa-heading"></i> Título:</strong>
                             <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
                                 <input type="text" id="copy-title" value="${title}" readonly 
-                                    style="flex: 1; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-secondary);">
-                                <button onclick="copyToClipboard('copy-title')" class="btn btn-secondary" style="padding: 0.5rem 1rem;">
+                                    style="flex: 1; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary);">
+                                <button onclick="copyField('copy-title', this)" class="btn btn-secondary" style="padding: 0.5rem 1rem;">
                                     <i class="fas fa-copy"></i>
                                 </button>
                             </div>
                         </div>
                         
                         <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                            <strong>Passo 2:</strong> Copie o conteúdo
+                            <strong><i class="fas fa-file-alt"></i> Conteúdo:</strong>
                             <div style="margin-top: 0.5rem;">
-                                <textarea id="copy-body" readonly style="width: 100%; height: 150px; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-secondary); font-family: monospace; font-size: 0.8rem;">${body.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                                <button onclick="copyToClipboard('copy-body')" class="btn btn-secondary" style="margin-top: 0.5rem; width: 100%;">
+                                <textarea id="copy-body" readonly style="width: 100%; height: 200px; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary); font-family: monospace; font-size: 0.75rem; resize: vertical;">${body.replace(/`/g, '\\`')}</textarea>
+                                <button onclick="copyField('copy-body', this)" class="btn btn-secondary" style="margin-top: 0.5rem; width: 100%;">
                                     <i class="fas fa-copy"></i> Copiar Conteúdo
                                 </button>
                             </div>
                         </div>
                         
-                        <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px;">
-                            <strong>Passo 3:</strong> Crie a Issue no GitHub
-                            <a href="https://github.com/${CONFIG.GITHUB_REPO}/issues/new" target="_blank" 
-                                class="btn btn-primary" style="display: block; margin-top: 0.5rem; text-align: center;">
-                                <i class="fab fa-github"></i> Abrir GitHub Issues
-                            </a>
-                        </div>
+                        <a href="https://github.com/${CONFIG.GITHUB_REPO}/issues/new?labels=translation,batch-suggestion" target="_blank" 
+                            class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 1rem; font-size: 1.1rem;">
+                            <i class="fab fa-github"></i> Abrir GitHub para Criar Issue
+                        </a>
+                        
+                        <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted); text-align: center;">
+                            <i class="fas fa-lightbulb"></i> Cole o título e conteúdo na página que abrirá
+                        </p>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" onclick="closeCopyModal()">Fechar</button>
+                        <button class="btn btn-secondary" onclick="closeCopyModal()">
+                            <i class="fas fa-times"></i> Fechar
+                        </button>
                     </div>
                 </div>
             `;
             document.body.appendChild(modal);
             modal.style.display = 'flex';
+            
+            // Preencher o textarea corretamente
+            setTimeout(() => {
+                document.getElementById('copy-body').value = body;
+            }, 100);
         }
         
         function closeCopyModal() {
@@ -1805,7 +1801,47 @@ ${suggestionCart.map((item, i) => `${i+1}. \`${item.id}\` → ${item.suggestion.
                 suggestionCart = [];
                 updateCartUI();
                 toggleCart();
+                showToast('Carrinho limpo!');
             }
+        }
+        
+        function copyField(elementId, button) {
+            const element = document.getElementById(elementId);
+            
+            // Usar Clipboard API moderna
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(element.value).then(() => {
+                    showCopySuccess(button);
+                }).catch(() => {
+                    fallbackCopy(element, button);
+                });
+            } else {
+                fallbackCopy(element, button);
+            }
+        }
+        
+        function fallbackCopy(element, button) {
+            element.select();
+            element.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            showCopySuccess(button);
+        }
+        
+        function showCopySuccess(button) {
+            const originalHTML = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+            button.classList.add('btn-success');
+            button.style.background = 'var(--success)';
+            
+            setTimeout(() => {
+                button.innerHTML = originalHTML;
+                button.classList.remove('btn-success');
+                button.style.background = '';
+            }, 2000);
+        }
+        
+        function copyToClipboard(elementId) {
+            copyField(elementId, document.querySelector(`#${elementId} + button, button[onclick*="${elementId}"]`));
         }
         
         function copyToClipboard(elementId) {
