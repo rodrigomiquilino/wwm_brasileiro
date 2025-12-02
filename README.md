@@ -40,7 +40,8 @@
 
 [![Website](https://img.shields.io/badge/🌐_Site_Oficial-Acesse_Aqui-c9a227?style=for-the-badge)](https://rodrigomiquilino.github.io/wwm_brasileiro/)
 [![Tradução Colaborativa](https://img.shields.io/badge/🌍_Ajude_a_Traduzir-Colabore_Agora-2e7d32?style=for-the-badge)](https://rodrigomiquilino.github.io/wwm_brasileiro/translate)
-[![Steam](https://img.shields.io/badge/Steam-Jogo_Gratuito-1b2838?style=for-the-badge&logo=steam)](https://store.steampowered.com/app/3564740/Where_Winds_Meet/)
+[![Steam](https://img.shields.io/badge/Steam-Gratuito-1b2838?style=for-the-badge&logo=steam)](https://store.steampowered.com/app/3564740/Where_Winds_Meet/)
+[![Epic Games](https://img.shields.io/badge/Epic_Games-Gratuito-313131?style=for-the-badge&logo=epicgames)](https://store.epicgames.com/pt-BR/p/where-winds-meet)
 
 [![Tradução](https://img.shields.io/github/v/release/rodrigomiquilino/wwm_brasileiro?filter=!launcher*&style=flat-square&label=📦%20Tradução&color=2e7d32)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
 [![Launcher](https://img.shields.io/github/v/release/rodrigomiquilino/wwm_brasileiro?filter=launcher*&style=flat-square&label=🚀%20Launcher&color=1565c0)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
@@ -93,7 +94,12 @@
 
 **Where Winds Meet** (逆水寒) é um RPG de ação-aventura em mundo aberto no gênero **Wuxia**, ambientado na China do século X durante a **Dinastia Song**. 
 
-O jogo é **gratuito na Steam** e oferece:
+O jogo é **gratuito** e disponível em:
+- 🎮 **Steam**
+- 🎮 **Epic Games**
+- 🎮 **Standalone** (cliente próprio)
+
+Modos de jogo:
 - 🎭 Modo **Solo** com história profunda
 - 👥 Modo **Cooperativo** com amigos
 - ⚔️ Modo **PvP** competitivo
@@ -115,6 +121,14 @@ Este projeto oferece uma **tradução completa** para **Português Brasileiro**,
 | 📦 Itens | ✅ |
 | 📜 Lore | ✅ |
 | 🗺️ Localizações | ✅ |
+
+### 🎮 Plataformas Compatíveis
+
+| Plataforma | Suporte |
+|:-----------|:-------:|
+| Steam | ✅ |
+| Epic Games | ✅ |
+| Standalone | ✅ |
 
 </td>
 </tr>
@@ -205,9 +219,21 @@ A forma mais **fácil** de instalar a tradução! O launcher faz tudo automatica
 
 1. **Baixe** o arquivo `traducao_ptbr.zip` da [página de releases](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
 
-2. **Localize** a pasta do jogo:
+2. **Localize** a pasta do jogo conforme sua plataforma:
+
+   **Steam:**
    ```
    Steam → Biblioteca → Where Winds Meet → ⚙️ → Gerenciar → Ver arquivos locais
+   ```
+   
+   **Epic Games:**
+   ```
+   C:\Program Files\Epic Games\WhereWindsMeet\
+   ```
+   
+   **Standalone:**
+   ```
+   Pasta onde você instalou o jogo (ex: C:\Games\WhereWindsMeet\)
    ```
 
 3. **Navegue** até:
@@ -431,22 +457,79 @@ Quando você envia uma sugestão, ela vira uma **Issue** no GitHub. Usamos **lab
 
 <div align="center">
 
-*Agradecemos a todos que contribuíram com a tradução!*
+### ✨ Este projeto só existe graças a vocês!
+
+*Cada contribuição, por menor que seja, faz diferença!*
+
+<br>
 
 [![Contributors](https://contrib.rocks/image?repo=rodrigomiquilino/wwm_brasileiro)](https://github.com/rodrigomiquilino/wwm_brasileiro/graphs/contributors)
 
-### 🌟 Contribuidores Especiais
+<br>
 
-| Contribuidor | Contribuição |
-|:------------:|:-------------|
-| [@rodrigomiquilino](https://github.com/rodrigomiquilino) | 🏗️ Criador do projeto, Launcher, Site |
-| [@DOG729](https://github.com/DOG729) | 📚 Base da tradução (wwm_russian) |
+### 🌟 Fundadores do Projeto
+
+<table>
+<tr>
+<td align="center" width="200">
+<a href="https://github.com/rodrigomiquilino">
+<img src="https://avatars.githubusercontent.com/rodrigomiquilino?s=100" width="100" style="border-radius: 50%;" alt="rodrigomiquilino"/>
+<br>
+<b>@rodrigomiquilino</b>
+</a>
+<br>
+<sub>🏠 Criador do Projeto</sub>
+<br>
+<sub>🚀 Launcher & Site</sub>
+<br>
+<sub>🌐 Manutenção Geral</sub>
+</td>
+<td align="center" width="200">
+<a href="https://github.com/DOG729">
+<img src="https://avatars.githubusercontent.com/DOG729?s=100" width="100" style="border-radius: 50%;" alt="DOG729"/>
+<br>
+<b>@DOG729</b>
+</a>
+<br>
+<sub>🇷🇺 Projeto Original</sub>
+<br>
+<sub>📚 wwm_russian</sub>
+<br>
+<sub>🙏 Base da Tradução</sub>
+</td>
+</tr>
+</table>
+
+<br>
+
+### 🤝 Agradecimento Especial
+
+> *Este projeto é baseado no trabalho incrível da comunidade russa **[wwm_russian](https://github.com/DOG729/wwm_russian)**.* 
+> *Sem o trabalho deles, este projeto não seria possível. Огромное спасибо!* 🇷🇺❤️🇧🇷
+
+<br>
 
 ---
 
-**✨ Seu nome pode estar aqui!**
+### 🌟 **Quer ver seu nome aqui?**
 
-[![Contribuir Agora](https://img.shields.io/badge/🌍_Contribuir_Agora-Tradução_Colaborativa-c9a227?style=for-the-badge)](https://rodrigomiquilino.github.io/wwm_brasileiro/translate)
+<table>
+<tr>
+<td align="center">
+
+🎯 **Contribua com traduções e seja reconhecido!**
+
+Todas as contribuições aparecem automaticamente nesta página.
+
+Além disso, seu nome fica registrado para sempre no histórico do projeto!
+
+</td>
+</tr>
+</table>
+
+<br>
+
+[![Contribuir Agora](https://img.shields.io/badge/🌟_QUERO_CONTRIBUIR-Começar_Agora-c9a227?style=for-the-badge)](https://rodrigomiquilino.github.io/wwm_brasileiro/translate)
 
 </div>
 
@@ -513,15 +596,6 @@ O projeto usa automação para aplicar traduções aprovadas:
 5. Faz commit automático
 6. Fecha a Issue com comentário
 
-### 🔑 Configuração OAuth
-
-| Parâmetro | Valor |
-|:----------|:------|
-| Client ID | `Ov23liLPua7ghOOFV8WG` |
-| Callback URL | `https://rodrigomiquilino.github.io/wwm_brasileiro/translate` |
-| Proxy | Cloudflare Worker para exchange de token |
-| Scope | `public_repo` |
-
 ### 📦 Compilar Launcher
 
 ```bash
@@ -564,7 +638,7 @@ Sim, desde que não modifiquem os mesmos arquivos de localização (`translate_w
 <details>
 <summary><b>📱 Funciona na versão mobile?</b></summary>
 
-Não, esta tradução é apenas para a versão **PC (Steam)**.
+Não, esta tradução é apenas para a versão **PC** (Steam, Epic Games e Standalone).
 
 </details>
 
@@ -588,7 +662,7 @@ Atualizações do jogo podem adicionar novos textos. Aguarde uma nova versão da
 <details>
 <summary><b>💰 O projeto aceita doações?</b></summary>
 
-Sim! Você pode apoiar o projeto via **PIX** na [página principal](https://rodrigomiquilino.github.io/wwm_brasileiro/). Toda contribuição ajuda a manter o projeto ativo!
+Sim! Você pode apoiar o projeto na [página de apoio](https://rodrigomiquilino.github.io/wwm_brasileiro/#apoiar). Toda contribuição ajuda a manter o projeto ativo!
 
 </details>
 
@@ -608,6 +682,7 @@ Se este projeto te ajudou, considere:
 
 [![Star](https://img.shields.io/badge/⭐_Dar_Estrela-GitHub-c9a227?style=for-the-badge&logo=github)](https://github.com/rodrigomiquilino/wwm_brasileiro)
 [![Contribuir](https://img.shields.io/badge/🌍_Contribuir-Tradução-2e7d32?style=for-the-badge)](https://rodrigomiquilino.github.io/wwm_brasileiro/translate)
+[![Apoiar](https://img.shields.io/badge/☕_Apoiar-Projeto-ff6b6b?style=for-the-badge)](https://rodrigomiquilino.github.io/wwm_brasileiro/#apoiar)
 [![Share](https://img.shields.io/badge/📢_Compartilhar-Twitter-1da1f2?style=for-the-badge&logo=twitter)](https://twitter.com/intent/tweet?text=Tradução%20PT-BR%20para%20Where%20Winds%20Meet!%20🇧🇷⚔️&url=https://github.com/rodrigomiquilino/wwm_brasileiro)
 
 ---
