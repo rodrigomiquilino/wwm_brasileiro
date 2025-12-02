@@ -40,8 +40,9 @@
 
 [![Website](https://img.shields.io/badge/🌐_Site_Oficial-Acesse_Aqui-c9a227?style=for-the-badge)](https://rodrigomiquilino.github.io/wwm_brasileiro/)
 [![Steam](https://img.shields.io/badge/Steam-Jogo_Gratuito-1b2838?style=for-the-badge&logo=steam)](https://store.steampowered.com/app/3564740/Where_Winds_Meet/)
-[![Release](https://img.shields.io/github/v/release/rodrigomiquilino/wwm_brasileiro?style=for-the-badge&label=Versão&color=2e7d32)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/rodrigomiquilino/wwm_brasileiro/total?style=for-the-badge&label=Downloads&color=1565c0)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
+[![Tradução](https://img.shields.io/github/v/release/rodrigomiquilino/wwm_brasileiro?filter=!launcher*&style=for-the-badge&label=Tradução&color=2e7d32)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
+[![Launcher](https://img.shields.io/github/v/release/rodrigomiquilino/wwm_brasileiro?filter=launcher*&style=for-the-badge&label=Launcher&color=1565c0)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
+[![Downloads](https://img.shields.io/github/downloads/rodrigomiquilino/wwm_brasileiro/total?style=for-the-badge&label=Downloads&color=7b1fa2)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
 [![Licença](https://img.shields.io/badge/Licença-MIT-green?style=for-the-badge)](LICENSE)
 
 **Tradução completa e não-oficial em Português Brasileiro para Where Winds Meet**
@@ -50,9 +51,9 @@
 
 ### ⬇️ Download Rápido
 
-[![Download Launcher](https://img.shields.io/badge/⬇_BAIXAR_LAUNCHER-WWM__Tradutor__PTBR.exe-c9a227?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases/latest/download/WWM_Tradutor_PTBR.exe)
+[![Download Launcher](https://img.shields.io/badge/⬇_BAIXAR_LAUNCHER_v2.0.0-WWM__Tradutor__PTBR.exe-c9a227?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases/download/launcher-2.0.0/WWM_Tradutor_PTBR.exe)
 
-[![Download Manual](https://img.shields.io/badge/📦_Download_Manual-traducao__ptbr.zip-blue?style=flat-square)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases/latest/download/traducao_ptbr.zip)
+[![Download Manual](https://img.shields.io/badge/📦_Download_Manual-traducao__ptbr.zip-blue?style=flat-square)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
 
 ---
 
@@ -89,7 +90,7 @@ A forma mais fácil de instalar a tradução! O launcher faz tudo por você.
 
 <div align="center">
 
-[![Download Launcher](https://img.shields.io/badge/⬇_BAIXAR_LAUNCHER_(40MB)-WWM__Tradutor__PTBR.exe-c9a227?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases/latest/download/WWM_Tradutor_PTBR.exe)
+[![Download Launcher](https://img.shields.io/badge/⬇_BAIXAR_LAUNCHER_v2.0.0_(~40MB)-WWM__Tradutor__PTBR.exe-c9a227?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases/download/launcher-2.0.0/WWM_Tradutor_PTBR.exe)
 
 </div>
 
@@ -101,7 +102,7 @@ A forma mais fácil de instalar a tradução! O launcher faz tudo por você.
 | 🔍 **Detecção Automática** | Identifica a plataforma pelo executável selecionado |
 | 📦 **Instalação com 1 Clique** | Baixa e instala a tradução instantaneamente |
 | 💾 **Backup Automático** | Cria backup dos arquivos originais (.backup) |
-| 🔄 **Verificação de Atualizações** | Verifica se há novas versões disponíveis |
+| 🔄 **Atualizações Independentes** | Tradução e launcher com versões separadas |
 | 🔒 **Permissão de Admin** | Solicita elevação quando necessário |
 | 🔙 **Restaurar Original** | Remove a tradução e restaura arquivos originais |
 | 🎮 **Iniciar Jogo** | Inicia o jogo pela Steam, Epic ou Standalone |
@@ -140,7 +141,9 @@ Prefere instalar manualmente? Sem problemas!
 
 <div align="center">
 
-[![Download ZIP](https://img.shields.io/badge/📦_BAIXAR_ZIP-traducao__ptbr.zip-blue?style=for-the-badge)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases/latest/download/traducao_ptbr.zip)
+[![Download ZIP](https://img.shields.io/badge/📦_BAIXAR_ZIP-traducao__ptbr.zip-blue?style=for-the-badge)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
+
+> 💡 **Dica:** Na página de releases, baixe o `traducao_ptbr.zip` da versão mais recente de tradução (tags sem "launcher-")
 
 </div>
 
@@ -254,6 +257,17 @@ Gostou? Dê uma estrela no repositório! ⭐
 | [📋 Releases](https://github.com/rodrigomiquilino/wwm_brasileiro/releases) | Histórico de versões |
 | [📝 localization_ptbr.md](docs/localization_ptbr.md) | Guia de tradução |
 | [🏷️ tags.md](docs/tags.md) | Referência de tags especiais |
+
+### 🏷️ Sistema de Versões
+
+O projeto usa **tags separadas** para tradução e launcher:
+
+| Tipo | Formato da Tag | Exemplo | Asset |
+|------|---------------|---------|-------|
+| **Tradução** | `x.x.x` ou `vx.x.x` | `1.0.0` | `traducao_ptbr.zip` |
+| **Launcher** | `launcher-x.x.x` | `launcher-2.0.0` | `WWM_Tradutor_PTBR.exe` |
+
+> 💡 Isso permite atualizar tradução e launcher de forma independente!
 
 ---
 
