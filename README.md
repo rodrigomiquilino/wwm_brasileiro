@@ -1,4 +1,6 @@
-# 🇧🇷 WWM Brasileiro - Tradução PT-BR para Where Winds Meet
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0a0a0f,50:1a1a24,100:c9a227&height=200&section=header&text=WWM%20Brasileiro&fontSize=60&fontColor=c9a227&fontAlignY=35&desc=Tradução%20PT-BR%20para%20Where%20Winds%20Meet&descSize=20&descAlignY=55&descAlign=50&animation=fadeIn" alt="WWM Brasileiro Banner" width="100%"/>
+</p>
 
 <!--
 ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -25,327 +27,603 @@
 ║    Tag: launcher-2.1.0                                                       ║
 ║    Assets: WWM_Tradutor_PTBR.exe                                             ║
 ║                                                                              ║
-║  🔄 SEGURANÇA: Se apagar uma release, usuários com versão "fantasma"         ║
-║     verão "Reinstalar" quando a versão online for MENOR que a instalada.     ║
-║                                                                              ║
-║  💡 LEMBRE-SE: Mudar APP_VERSION no código antes de compilar novo launcher!  ║
-║     Arquivo: launcher/wwm_ptbr_launcher.py → APP_VERSION = "x.x.x"           ║
+║  🔄 LABELS DE ISSUES:                                                        ║
+║  - translation: Sugestão de tradução                                         ║
+║  - batch-suggestion: Lote com múltiplas sugestões                            ║
+║  - approved: Aprovada (dispara GitHub Action)                                ║
+║  - rejected: Rejeitada                                                       ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 -->
 
 <div align="center">
 
-![WWM Brasileiro Banner](https://img.shields.io/badge/⚔_Where_Winds_Meet-Tradução_Brasileiro-c9a227?style=for-the-badge&labelColor=0a0a0f)
-
 [![Website](https://img.shields.io/badge/🌐_Site_Oficial-Acesse_Aqui-c9a227?style=for-the-badge)](https://rodrigomiquilino.github.io/wwm_brasileiro/)
+[![Tradução Colaborativa](https://img.shields.io/badge/🌍_Ajude_a_Traduzir-Colabore_Agora-2e7d32?style=for-the-badge)](https://rodrigomiquilino.github.io/wwm_brasileiro/translate)
 [![Steam](https://img.shields.io/badge/Steam-Jogo_Gratuito-1b2838?style=for-the-badge&logo=steam)](https://store.steampowered.com/app/3564740/Where_Winds_Meet/)
-[![Tradução](https://img.shields.io/github/v/release/rodrigomiquilino/wwm_brasileiro?filter=!launcher*&style=for-the-badge&label=Tradução&color=2e7d32)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
-[![Launcher](https://img.shields.io/github/v/release/rodrigomiquilino/wwm_brasileiro?filter=launcher*&style=for-the-badge&label=Launcher&color=1565c0)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
-[![Downloads](https://img.shields.io/github/downloads/rodrigomiquilino/wwm_brasileiro/total?style=for-the-badge&label=Downloads&color=7b1fa2)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
-[![Licença](https://img.shields.io/badge/Licença-MIT-green?style=for-the-badge)](LICENSE)
 
-**Tradução completa e não-oficial em Português Brasileiro para Where Winds Meet**
-
----
-
-### ⬇️ Download Rápido
-
-[![Download Launcher](https://img.shields.io/badge/⬇_BAIXAR_LAUNCHER-WWM__Tradutor__PTBR.exe-c9a227?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases?q=launcher)
-
-[![Download Tradução](https://img.shields.io/badge/📦_BAIXAR_TRADUÇÃO-traducao__ptbr.zip-blue?style=flat-square)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
-
----
-
-[🚀 Launcher](#-launcher-automático) • [📁 Manual](#-instalação-manual) • [✨ Recursos](#-recursos-do-launcher) • [🛠️ Desenvolvedores](#️-para-desenvolvedores) • [🤝 Contribuir](#-como-contribuir)
+[![Tradução](https://img.shields.io/github/v/release/rodrigomiquilino/wwm_brasileiro?filter=!launcher*&style=flat-square&label=📦%20Tradução&color=2e7d32)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
+[![Launcher](https://img.shields.io/github/v/release/rodrigomiquilino/wwm_brasileiro?filter=launcher*&style=flat-square&label=🚀%20Launcher&color=1565c0)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
+[![Downloads](https://img.shields.io/github/downloads/rodrigomiquilino/wwm_brasileiro/total?style=flat-square&label=⬇️%20Downloads&color=7b1fa2)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
+[![Contributors](https://img.shields.io/github/contributors/rodrigomiquilino/wwm_brasileiro?style=flat-square&label=🏆%20Contribuidores&color=c9a227)](https://github.com/rodrigomiquilino/wwm_brasileiro/graphs/contributors)
+[![Issues](https://img.shields.io/github/issues/rodrigomiquilino/wwm_brasileiro?style=flat-square&label=📝%20Issues&color=f59e0b)](https://github.com/rodrigomiquilino/wwm_brasileiro/issues)
+[![License](https://img.shields.io/badge/📜_Licença-MIT-green?style=flat-square)](LICENSE)
 
 </div>
 
 ---
 
+<div align="center">
+
+## ⚔️ *"Onde os ventos se encontram, heróis ascendem"*
+
+**Tradução completa e não-oficial em Português Brasileiro para Where Winds Meet**
+
+</div>
+
+---
+
+## 📑 Índice
+
+<details>
+<summary>🗂️ Clique para expandir</summary>
+
+- [📖 Sobre o Projeto](#-sobre-o-projeto)
+- [⬇️ Download Rápido](#️-download-rápido)
+- [🚀 Launcher Automático](#-launcher-automático)
+- [📁 Instalação Manual](#-instalação-manual)
+- [🌍 Tradução Colaborativa](#-tradução-colaborativa)
+  - [Como Contribuir](#-como-contribuir-com-traduções)
+  - [Sistema de Labels](#️-sistema-de-labels)
+  - [Fluxo de Aprovação](#-fluxo-de-aprovação)
+- [🏆 Heróis da Tradução](#-heróis-da-tradução)
+- [🛠️ Para Desenvolvedores](#️-para-desenvolvedores)
+- [❓ FAQ](#-faq)
+- [📜 Licença](#-licença)
+
+</details>
+
+---
+
 ## 📖 Sobre o Projeto
 
-**Where Winds Meet** é um RPG de ação-aventura em mundo aberto no gênero Wuxia, ambientado na China do século X durante a Dinastia Song. O jogo é **gratuito na Steam** e suporta modo solo, cooperativo e PvP.
+<table>
+<tr>
+<td width="60%">
 
-Este projeto oferece uma **tradução completa** para **Português Brasileiro**, desenvolvida pela comunidade brasileira.
+**Where Winds Meet** (逆水寒) é um RPG de ação-aventura em mundo aberto no gênero **Wuxia**, ambientado na China do século X durante a **Dinastia Song**. 
 
-### O que está traduzido?
+O jogo é **gratuito na Steam** e oferece:
+- 🎭 Modo **Solo** com história profunda
+- 👥 Modo **Cooperativo** com amigos
+- ⚔️ Modo **PvP** competitivo
+- 🌏 **Mundo aberto** vasto e detalhado
+- 🥋 Combate estilo **artes marciais chinesas**
+
+Este projeto oferece uma **tradução completa** para **Português Brasileiro**, desenvolvida pela comunidade.
+
+</td>
+<td width="40%">
+
+### 📊 Status da Tradução
 
 | Conteúdo | Status |
-|----------|--------|
-| 💬 Diálogos e Missões | ✅ Traduzido |
-| 🖥️ Interface e Menus | ✅ Traduzido |
-| ⚔️ Habilidades e Talentos | ✅ Traduzido |
-| 📦 Itens e Equipamentos | ✅ Traduzido |
-| 📜 Lore e Ambientação | ✅ Traduzido |
-| 🗺️ Localizações | ✅ Traduzido |
+|:---------|:------:|
+| 💬 Diálogos e Missões | ✅ |
+| 🖥️ Interface e Menus | ✅ |
+| ⚔️ Habilidades | ✅ |
+| 📦 Itens | ✅ |
+| 📜 Lore | ✅ |
+| 🗺️ Localizações | ✅ |
 
-> 📚 Baseado no trabalho da comunidade russa [wwm_russian](https://github.com/DOG729/wwm_russian)
+</td>
+</tr>
+</table>
+
+> 📚 *Baseado no trabalho da comunidade russa [wwm_russian](https://github.com/DOG729/wwm_russian)*
+
+---
+
+## ⬇️ Download Rápido
+
+<div align="center">
+
+### 🎯 Escolha sua forma de instalação
+
+| Método | Dificuldade | Recomendado |
+|:-------|:-----------:|:-----------:|
+| [🚀 Launcher](#-launcher-automático) | ⭐ Fácil | ✅ **SIM** |
+| [📁 Manual](#-instalação-manual) | ⭐⭐ Médio | Para avançados |
+
+<br>
+
+[![Download Launcher](https://img.shields.io/badge/⬇️_BAIXAR_LAUNCHER-WWM__Tradutor__PTBR.exe-c9a227?style=for-the-badge&logo=windows&logoColor=white&labelColor=0a0a0f)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases?q=launcher)
+
+<sub>💡 Tamanho: ~40MB | Windows 10/11</sub>
+
+</div>
 
 ---
 
 ## 🚀 Launcher Automático
 
-A forma mais fácil de instalar a tradução! O launcher faz tudo por você.
+A forma mais **fácil** de instalar a tradução! O launcher faz tudo automaticamente.
 
 <div align="center">
 
-[![Download Launcher](https://img.shields.io/badge/⬇_BAIXAR_LAUNCHER_(~40MB)-WWM__Tradutor__PTBR.exe-c9a227?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases?q=launcher)
-
-> 💡 Na página de releases, baixe o `WWM_Tradutor_PTBR.exe` da versão mais recente com tag `launcher-x.x.x`
+```
+┌─────────────────────────────────────────────────────────────┐
+│  🎮  WWM TRADUTOR PT-BR                               ─ □ X │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│     ⚔️  WHERE WINDS MEET - TRADUÇÃO BRASILEIRO             │
+│                                                             │
+│     📦 Versão da Tradução: 1.0.0                           │
+│     🚀 Versão do Launcher: 2.0.0                           │
+│                                                             │
+│     ┌─────────────────────────────────────────────────┐    │
+│     │        ▶️  INSTALAR TRADUÇÃO                    │    │
+│     └─────────────────────────────────────────────────┘    │
+│                                                             │
+│     ┌──────────────────┐  ┌──────────────────────────┐    │
+│     │ 🔄 Atualizar     │  │ 🗑️ Desinstalar          │    │
+│     └──────────────────┘  └──────────────────────────┘    │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
 
 </div>
 
 ### ✨ Recursos do Launcher
 
 | Recurso | Descrição |
-|---------|-----------|
-| 🎮 **Multi-Plataforma** | Suporta Steam, Epic Games e Standalone |
-| 🔍 **Detecção Automática** | Identifica a plataforma pelo executável selecionado |
-| 📦 **Instalação com 1 Clique** | Baixa e instala a tradução instantaneamente |
-| 💾 **Backup Automático** | Cria backup dos arquivos originais (.backup) |
-| 🔄 **Atualizações Independentes** | Tradução e launcher com versões separadas |
-| 🔒 **Permissão de Admin** | Solicita elevação quando necessário |
-| 🔙 **Restaurar Original** | Remove a tradução e restaura arquivos originais |
-| 🎮 **Iniciar Jogo** | Inicia o jogo pela Steam, Epic ou Standalone |
-| 🎨 **Interface Moderna** | Design escuro com tema oriental/wuxia |
-| 🖥️ **Suporte a DPI** | Funciona em qualquer escala de tela |
+|:--------|:----------|
+| 🔍 **Detecção Automática** | Encontra a pasta do jogo automaticamente |
+| 📦 **Instalação com 1 Clique** | Baixa e instala a tradução |
+| 🔄 **Atualizações Automáticas** | Detecta e baixa novas versões |
+| 🗑️ **Desinstalação Limpa** | Remove a tradução completamente |
+| 🛡️ **Backup Automático** | Cria backup antes de modificar |
+| 📊 **Verificação de Integridade** | Valida arquivos instalados |
 
-### Como Usar
+### 📋 Como Usar
 
-1. **Baixe** o `WWM_Tradutor_PTBR.exe`
-2. **Execute** o arquivo (não precisa instalar)
-3. **Selecione** o executável `wwm.exe` do seu jogo:
-   - **Steam:** `Steam\steamapps\common\...\Engine\Binaries\Win64r\wwm.exe`
-   - **Epic:** `Epic Games\...\Engine\Binaries\Win64r\wwm.exe`
-   - **Standalone:** `wwm\wwm_standard\Engine\Binaries\Win64r\wwm.exe`
-4. **Clique** em "Instalar Tradução"
-5. **Pronto!** Jogue em português 🎮
-
-> 💡 Se a pasta do jogo exigir permissão de administrador, o launcher perguntará se deseja reiniciar como admin.
-
-<details>
-<summary>📸 Screenshots do Launcher</summary>
-
-O launcher possui uma interface moderna com:
-- Detecção automática do caminho do jogo
-- Cards mostrando versão instalada e disponível
-- Barra de progresso durante o download
-- Botões para instalar, verificar atualizações e iniciar o jogo
-
-</details>
+```
+1️⃣  Baixe o WWM_Tradutor_PTBR.exe
+2️⃣  Execute o programa (não precisa instalar)
+3️⃣  Clique em "Instalar Tradução"
+4️⃣  Pronto! Abra o jogo e divirta-se! 🎮
+```
 
 ---
 
 ## 📁 Instalação Manual
 
-Prefere instalar manualmente? Sem problemas!
-
-<div align="center">
-
-[![Download ZIP](https://img.shields.io/badge/📦_BAIXAR_ZIP-traducao__ptbr.zip-blue?style=for-the-badge)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
-
-> 💡 **Dica:** Na página de releases, baixe o `traducao_ptbr.zip` da versão mais recente de tradução (tags sem "launcher-")
-
-</div>
+<details>
+<summary>📖 Clique para ver as instruções manuais</summary>
 
 ### Passo a Passo
 
-1. **Baixe** o arquivo `traducao_ptbr.zip`
+1. **Baixe** o arquivo `traducao_ptbr.zip` da [página de releases](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
 
-2. **Extraia** os arquivos
-
-3. **Copie** para a pasta do jogo:
+2. **Localize** a pasta do jogo:
    ```
-   C:\Program Files (x86)\Steam\steamapps\common\Where Winds Meet\Package\HD\oversea\locale\
+   Steam → Biblioteca → Where Winds Meet → ⚙️ → Gerenciar → Ver arquivos locais
    ```
 
-4. **Substitua** os arquivos quando perguntado:
-   - `translate_words_map_en`
-   - `translate_words_map_en_diff`
+3. **Navegue** até:
+   ```
+   Where Winds Meet/Game/
+   ```
 
-5. **Inicie** o jogo pela Steam!
+4. **Extraia** o conteúdo do ZIP na pasta `Game/`
 
-### 📂 Arquivos Incluídos no ZIP
+5. **Verifique** se a estrutura ficou assim:
+   ```
+   Where Winds Meet/
+   └── Game/
+       └── LocalizationByUser/
+           └── translate_words_map_en.tsv    ← Arquivo da tradução
+   ```
 
-| Arquivo | Descrição |
-|---------|-----------|
-| `translate_words_map_en` | Arquivo principal de tradução (~30k strings) |
-| `translate_words_map_en_diff` | Arquivo de traduções adicionais (~20k strings) |
+6. **Inicie** o jogo e selecione **Inglês** como idioma
 
-> 💡 **Dica:** Faça backup dos arquivos originais antes de substituir!
+</details>
+
+---
+
+## 🌍 Tradução Colaborativa
+
+<div align="center">
+
+### 🤝 Ajude a melhorar a tradução!
+
+[![Acessar Tradução Colaborativa](https://img.shields.io/badge/🌐_ACESSAR_PÁGINA_DE_TRADUÇÃO-Colabore_Agora-c9a227?style=for-the-badge)](https://rodrigomiquilino.github.io/wwm_brasileiro/translate)
+
+*Qualquer pessoa pode sugerir melhorias na tradução!*
+
+</div>
+
+---
+
+### 📝 Como Contribuir com Traduções
+
+<table>
+<tr>
+<td width="50%">
+
+#### 🔰 Para Iniciantes
+
+1. **Acesse** a [página de tradução](https://rodrigomiquilino.github.io/wwm_brasileiro/translate)
+2. **Faça login** com sua conta do GitHub
+3. **Encontre** uma linha para traduzir/melhorar
+4. **Clique** em "Sugerir" ao lado da linha
+5. **Digite** sua sugestão
+6. **Adicione ao lote** e envie!
+
+</td>
+<td width="50%">
+
+#### 🎯 Dicas de Tradução
+
+- ✅ Mantenha símbolos especiais: `#Y`, `#E`, `\n`
+- ✅ Preserve a formatação original
+- ✅ Use português brasileiro natural
+- ✅ Adapte expressões culturalmente
+- ❌ Não traduza nomes próprios de lugares
+- ❌ Não remova tags de formatação
+
+</td>
+</tr>
+</table>
+
+#### ⌨️ Atalhos de Teclado
+
+| Atalho | Ação |
+|:-------|:-----|
+| `Enter` | Adiciona sugestão ao lote |
+| `Shift + Enter` | Nova linha no texto |
+| `Esc` | Fecha modal ou carrinho |
+
+#### 💾 Salvamento Automático
+
+Suas sugestões são **salvas automaticamente** no navegador! Se fechar a página sem enviar, elas estarão lá quando voltar.
+
+---
+
+### 🏷️ Sistema de Labels
+
+Quando você envia uma sugestão, ela vira uma **Issue** no GitHub. Usamos **labels** para organizar:
+
+<div align="center">
+
+| Label | Cor | Significado | Ação |
+|:------|:---:|:------------|:-----|
+| `translation` | 🔵 Azul | Sugestão de tradução | *Aplicada automaticamente* |
+| `batch-suggestion` | 🟣 Roxo | Lote com múltiplas linhas | *Aplicada automaticamente* |
+| `approved` | 🟢 Verde | **Aprovada para aplicar** | *Dispara automação* |
+| `rejected` | 🔴 Vermelho | **Sugestão rejeitada** | *Fechada sem aplicar* |
+
+</div>
+
+#### 📋 Descrição Detalhada das Labels
+
+<details>
+<summary><b>🔵 translation</b> - Sugestão de Tradução</summary>
+
+- **Quando é aplicada:** Automaticamente em toda Issue criada pelo site
+- **Significado:** Identifica que a Issue é uma sugestão de tradução
+- **O que fazer:** Revisar o conteúdo da sugestão
+
+</details>
+
+<details>
+<summary><b>🟣 batch-suggestion</b> - Lote de Sugestões</summary>
+
+- **Quando é aplicada:** Automaticamente quando há múltiplas linhas
+- **Significado:** A Issue contém várias sugestões de uma vez
+- **O que fazer:** Revisar cada linha individualmente
+
+</details>
+
+<details>
+<summary><b>🟢 approved</b> - Aprovada ✅</summary>
+
+- **Quando aplicar:** Após revisar e aprovar a sugestão
+- **O que acontece:** 
+  - 🤖 GitHub Action é disparado automaticamente
+  - 📝 As traduções são aplicadas nos arquivos TSV
+  - ✅ Issue é fechada automaticamente
+  - 🎉 Contribuidor é creditado no histórico
+
+</details>
+
+<details>
+<summary><b>🔴 rejected</b> - Rejeitada ❌</summary>
+
+- **Quando aplicar:** Se a sugestão não for adequada
+- **Motivos comuns:**
+  - ❌ Tradução incorreta ou imprecisa
+  - ❌ Perda de formatação especial (`#Y`, `#E`, `\n`)
+  - ❌ Tradução igual à existente
+  - ❌ Spam ou conteúdo inadequado
+  - ❌ Tradução literal que não faz sentido em PT-BR
+- **O que fazer:** Adicionar comentário explicando o motivo da rejeição
+
+</details>
+
+---
+
+### 🔄 Fluxo de Aprovação
+
+<div align="center">
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                                                                      │
+│   👤 USUÁRIO                 🔍 REVISOR                🤖 AUTOMAÇÃO  │
+│                                                                      │
+│   ┌─────────────┐                                                    │
+│   │ Acessa site │                                                    │
+│   │ de tradução │                                                    │
+│   └──────┬──────┘                                                    │
+│          ▼                                                           │
+│   ┌─────────────┐                                                    │
+│   │ Faz login   │                                                    │
+│   │ com GitHub  │                                                    │
+│   └──────┬──────┘                                                    │
+│          ▼                                                           │
+│   ┌─────────────┐                                                    │
+│   │ Busca linha │                                                    │
+│   │ pendente    │                                                    │
+│   └──────┬──────┘                                                    │
+│          ▼                                                           │
+│   ┌─────────────┐         ┌─────────────┐                            │
+│   │ Envia       │────────▶│ 📝 Issue    │                            │
+│   │ sugestão    │         │ criada      │                            │
+│   └─────────────┘         └──────┬──────┘                            │
+│                                  ▼                                   │
+│                           ┌─────────────┐                            │
+│                           │ 🔍 Revisor  │                            │
+│                           │ analisa     │                            │
+│                           └──────┬──────┘                            │
+│                                  │                                   │
+│                        ┌─────────┴─────────┐                         │
+│                        ▼                   ▼                         │
+│                 ┌─────────────┐     ┌─────────────┐                  │
+│                 │ ✅ approved │     │ ❌ rejected │                  │
+│                 └──────┬──────┘     └──────┬──────┘                  │
+│                        ▼                   ▼                         │
+│                 ┌─────────────┐     ┌─────────────┐                  │
+│                 │ 🤖 GitHub   │     │ 💬 Comenta  │                  │
+│                 │ Action roda │     │ o motivo    │                  │
+│                 └──────┬──────┘     └──────┬──────┘                  │
+│                        ▼                   ▼                         │
+│                 ┌─────────────┐     ┌─────────────┐                  │
+│                 │ 📄 Arquivos │     │ ❌ Issue    │                  │
+│                 │ atualizados │     │ fechada     │                  │
+│                 └──────┬──────┘     └─────────────┘                  │
+│                        ▼                                             │
+│                 ┌─────────────┐                                      │
+│                 │ ✅ Issue    │                                      │
+│                 │ fechada     │                                      │
+│                 └─────────────┘                                      │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+</div>
+
+---
+
+### 🛡️ Proteções do Sistema
+
+| Proteção | Descrição |
+|:---------|:----------|
+| 🔐 **Autenticação OAuth** | Login seguro via GitHub |
+| 🔍 **Detecção de Duplicatas** | Avisa se já existe Issue para a mesma linha |
+| 💾 **Persistência Local** | Rascunhos salvos automaticamente no navegador |
+| ✅ **Validação de Dados** | Verifica formato antes de aplicar |
+| 📊 **Auditoria Completa** | Histórico de todas as alterações no Git |
+
+---
+
+## 🏆 Heróis da Tradução
+
+<div align="center">
+
+*Agradecemos a todos que contribuíram com a tradução!*
+
+[![Contributors](https://contrib.rocks/image?repo=rodrigomiquilino/wwm_brasileiro)](https://github.com/rodrigomiquilino/wwm_brasileiro/graphs/contributors)
+
+### 🌟 Contribuidores Especiais
+
+| Contribuidor | Contribuição |
+|:------------:|:-------------|
+| [@rodrigomiquilino](https://github.com/rodrigomiquilino) | 🏗️ Criador do projeto, Launcher, Site |
+| [@DOG729](https://github.com/DOG729) | 📚 Base da tradução (wwm_russian) |
+
+---
+
+**✨ Seu nome pode estar aqui!**
+
+[![Contribuir Agora](https://img.shields.io/badge/🌍_Contribuir_Agora-Tradução_Colaborativa-c9a227?style=for-the-badge)](https://rodrigomiquilino.github.io/wwm_brasileiro/translate)
+
+</div>
 
 ---
 
 ## 🛠️ Para Desenvolvedores
 
-Quer contribuir ou criar sua própria versão? Temos ferramentas completas!
+<details>
+<summary>📖 Clique para expandir informações técnicas</summary>
 
-### Ferramentas Disponíveis
-
-#### 🔧 Tradutor GUI (v2.1.0)
-
-```bash
-# Instalar dependências
-py -m pip install -r requirements.txt
-
-# Executar
-py tools/wwm_tradutor_ptbr.py
-```
-
-**Funcionalidades:**
-- 📦 Extrair arquivos binários do jogo
-- 📝 Converter para TSV editável (Excel/Google Sheets)
-- 🔄 Reempacotar com suas traduções
-- 📊 Suporte completo a arquivos `_diff`
-
-#### 🚀 Launcher (v2.0.0)
-
-```bash
-# Executar código fonte
-py launcher/wwm_ptbr_launcher.py
-
-# Compilar executável
-py -m pip install pyinstaller
-py -m PyInstaller --onefile --windowed --icon "icon.ico" --name "WWM_Tradutor_PTBR" wwm_ptbr_launcher.py
-```
-
-### 📁 Estrutura do Projeto
+### 📂 Estrutura do Projeto
 
 ```
 wwm_brasileiro/
-├── 📂 docs/                     # Site GitHub Pages
-│   ├── index.html              # Página principal
-│   ├── 404.html                # Página de erro
-│   └── _config.yml             # Configuração
-├── 📂 launcher/                 # Instalador automático
-│   ├── wwm_ptbr_launcher.py    # Código fonte (v2.0.0)
-│   ├── icon.ico                # Ícone do executável
-│   └── build.bat               # Script de build
-├── 📂 tools/                    # Ferramentas de tradução
-│   └── wwm_tradutor_ptbr.py    # GUI de tradução (v2.1.0)
-├── translation_en.tsv          # Textos originais
-├── translation_ptbr.tsv        # Traduções PT-BR
-└── requirements.txt            # Dependências
+├── 📁 .github/
+│   ├── 📁 scripts/
+│   │   └── apply_translations.py    # Script que aplica traduções aprovadas
+│   └── 📁 workflows/
+│       └── apply-translations.yml   # GitHub Action automático
+│
+├── 📁 community/
+│   ├── 📁 original/                 # Arquivos originais em Inglês
+│   │   ├── translate_words_map_en.tsv
+│   │   └── translate_words_map_en_diff.tsv
+│   └── 📁 translate/                # Arquivos traduzidos em PT-BR
+│       ├── translate_words_map_en.tsv
+│       └── translate_words_map_en_diff.tsv
+│
+├── 📁 docs/                         # Site GitHub Pages
+│   ├── index.html                   # Página principal
+│   ├── translate.html               # Página de tradução colaborativa
+│   ├── comparisons.html             # Comparação de traduções
+│   └── status.html                  # Status do projeto
+│
+├── 📁 launcher/                     # Código fonte do launcher
+│   └── wwm_ptbr_launcher.py         # Launcher em Python
+│
+├── 📄 translation_en.tsv            # Tradução final para release
+├── 📄 translation_cn.tsv            # Tradução chinês (referência)
+├── 📄 translation_ru.tsv            # Tradução russo (referência)
+└── 📄 README.md                     # Este arquivo
 ```
 
----
+### 🔧 Sistema de Versões
 
-## 🤝 Como Contribuir
+| Tipo | Padrão de Tag | Exemplo | Asset |
+|:-----|:--------------|:--------|:------|
+| Tradução | `x.x.x` ou `vx.x.x` | `1.0.2` | `traducao_ptbr.zip` |
+| Launcher | `launcher-x.x.x` | `launcher-2.0.0` | `WWM_Tradutor_PTBR.exe` |
 
-Adoramos contribuições da comunidade!
+> ⚠️ Os releases são **independentes**! Pode atualizar tradução sem afetar launcher e vice-versa.
 
-### 📝 Melhorar a Tradução (Forma Fácil)
+### 🤖 GitHub Actions
 
-Use nossa **[Página de Tradução Colaborativa](https://rodrigomiquilino.github.io/wwm_brasileiro/translate.html)**:
+O projeto usa automação para aplicar traduções aprovadas:
 
-1. 🔍 **Pesquise** textos que precisam de tradução
-2. ✍️ **Sugira** traduções pelo botão "Sugerir Tradução"
-3. 🛒 **Adicione ao carrinho** várias sugestões de uma vez
-4. 📤 **Envie** - uma Issue será criada automaticamente
-5. ✅ **Aprovação** - quando aprovada, a tradução é aplicada automaticamente!
+**Trigger:** Label `approved` adicionada a uma Issue
 
-> 💡 Não é necessário saber programar! O sistema cuida de tudo.
+**Processo:**
+1. Extrai bloco JSON do corpo da Issue
+2. Valida estrutura e dados
+3. Localiza linhas nos arquivos TSV
+4. Aplica alterações
+5. Faz commit automático
+6. Fecha a Issue com comentário
 
-### 📝 Contribuir via Fork (Desenvolvedores)
+### 🔑 Configuração OAuth
 
-1. Fork este repositório
-2. Edite os arquivos em `community/translate/`
-3. Envie um Pull Request
+| Parâmetro | Valor |
+|:----------|:------|
+| Client ID | `Ov23liLPua7ghOOFV8WG` |
+| Callback URL | `https://rodrigomiquilino.github.io/wwm_brasileiro/translate` |
+| Proxy | Cloudflare Worker para exchange de token |
+| Scope | `public_repo` |
 
-### 🐛 Reportar Bugs
+### 📦 Compilar Launcher
 
-Encontrou um erro? [Abra uma issue](https://github.com/rodrigomiquilino/wwm_brasileiro/issues/new)
+```bash
+# Instalar dependências
+pip install pyinstaller requests
 
-### ⭐ Apoiar o Projeto
+# Compilar
+pyinstaller --onefile --windowed --icon=icon.ico launcher/wwm_ptbr_launcher.py
+```
 
-Gostou? Dê uma estrela no repositório! ⭐
-
-### 💰 Apoiar Financeiramente
-
-Quer apoiar o projeto? Acesse nossa [página principal](https://rodrigomiquilino.github.io/wwm_brasileiro/) e veja a seção de doações via PIX!
-
----
-
-## 📖 Documentação
-
-| Documento | Descrição |
-|-----------|-----------|
-| [🌐 Site Oficial](https://rodrigomiquilino.github.io/wwm_brasileiro/) | Downloads e instruções |
-| [📋 Releases](https://github.com/rodrigomiquilino/wwm_brasileiro/releases) | Histórico de versões |
-| [📝 localization_ptbr.md](docs/localization_ptbr.md) | Guia de tradução |
-| [🏷️ tags.md](docs/tags.md) | Referência de tags especiais |
-
-### 🏷️ Sistema de Versões
-
-O projeto usa **tags separadas** para tradução e launcher:
-
-| Tipo | Formato da Tag | Exemplo | Asset |
-|------|---------------|---------|-------|
-| **Tradução** | `x.x.x` ou `vx.x.x` | `1.0.0` | `traducao_ptbr.zip` |
-| **Launcher** | `launcher-x.x.x` | `launcher-2.0.0` | `WWM_Tradutor_PTBR.exe` |
-
-> 💡 Isso permite atualizar tradução e launcher de forma independente!
+</details>
 
 ---
 
-## 🔗 Links Úteis
+## ❓ FAQ
 
-| Link | Descrição |
-|------|-----------|
-| [🎮 Steam - Where Winds Meet](https://store.steampowered.com/app/3564740/Where_Winds_Meet/) | Página do jogo (Gratuito) |
-| [🇷🇺 Projeto Russo](https://github.com/DOG729/wwm_russian) | Projeto base |
-| [💬 Discord](https://discordapp.com/users/rodrigo.dev) | Contato direto |
+<details>
+<summary><b>🎮 O jogo vai banir por usar tradução?</b></summary>
+
+Não há relatos de banimentos. A tradução apenas modifica arquivos de texto local e não interfere com o servidor do jogo ou com o anti-cheat.
+
+</details>
+
+<details>
+<summary><b>🔄 Como atualizar a tradução?</b></summary>
+
+Use o **Launcher**! Ele detecta automaticamente novas versões e atualiza com um clique. 
+
+Se preferir manual, baixe o novo `traducao_ptbr.zip` da página de releases e extraia sobrescrevendo os arquivos.
+
+</details>
+
+<details>
+<summary><b>🌐 Posso usar junto com outros mods?</b></summary>
+
+Sim, desde que não modifiquem os mesmos arquivos de localização (`translate_words_map_en.tsv`).
+
+</details>
+
+<details>
+<summary><b>📱 Funciona na versão mobile?</b></summary>
+
+Não, esta tradução é apenas para a versão **PC (Steam)**.
+
+</details>
+
+<details>
+<summary><b>🔧 O jogo atualizou e a tradução parou de funcionar?</b></summary>
+
+Atualizações do jogo podem adicionar novos textos. Aguarde uma nova versão da tradução ou contribua traduzindo os novos textos!
+
+</details>
+
+<details>
+<summary><b>🤝 Como posso ajudar?</b></summary>
+
+- 🌍 [Sugira traduções](https://rodrigomiquilino.github.io/wwm_brasileiro/translate) na página colaborativa
+- ⭐ Dê uma **estrela** no repositório
+- 🐛 **Reporte bugs** nas Issues
+- 📢 **Compartilhe** com amigos que jogam WWM
+
+</details>
+
+<details>
+<summary><b>💰 O projeto aceita doações?</b></summary>
+
+Sim! Você pode apoiar o projeto via **PIX** na [página principal](https://rodrigomiquilino.github.io/wwm_brasileiro/). Toda contribuição ajuda a manter o projeto ativo!
+
+</details>
 
 ---
 
-## 👥 Créditos
+## 📜 Licença
 
-<table>
-<tr>
-<td align="center"><strong>WWM Brasileiro</strong></td>
-<td align="center"><strong>Projeto Base</strong></td>
-</tr>
-<tr>
-<td align="center">
-<a href="https://github.com/rodrigomiquilino">
-<img src="https://github.com/rodrigomiquilino.png" width="60" style="border-radius: 50%"><br>
-<strong>rodrigomiquilino</strong>
-</a><br>
-<sub>Criador & Mantenedor</sub>
-</td>
-<td align="center">
-<a href="https://github.com/DOG729">
-<img src="https://github.com/DOG729.png" width="60" style="border-radius: 50%"><br>
-<strong>DOG729</strong>
-</a><br>
-<sub>Projeto Russo Original</sub>
-</td>
-</tr>
-</table>
-
----
-
-## 📄 Licença
-
-Este projeto está licenciado sob a [Licença MIT](LICENSE).
-
-Você é livre para usar, modificar e distribuir este projeto.
+Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
 
 <div align="center">
 
-### ⚔️ Feito com ❤️ pela Comunidade WWM Brasil
+### 💖 Apoie o Projeto
 
-[![GitHub](https://img.shields.io/badge/GitHub-rodrigomiquilino-181717?style=for-the-badge&logo=github)](https://github.com/rodrigomiquilino)
-[![Discord](https://img.shields.io/badge/Discord-rodrigo.dev-5865F2?style=for-the-badge&logo=discord)](https://discordapp.com/users/rodrigo.dev)
+Se este projeto te ajudou, considere:
+
+[![Star](https://img.shields.io/badge/⭐_Dar_Estrela-GitHub-c9a227?style=for-the-badge&logo=github)](https://github.com/rodrigomiquilino/wwm_brasileiro)
+[![Contribuir](https://img.shields.io/badge/🌍_Contribuir-Tradução-2e7d32?style=for-the-badge)](https://rodrigomiquilino.github.io/wwm_brasileiro/translate)
+[![Share](https://img.shields.io/badge/📢_Compartilhar-Twitter-1da1f2?style=for-the-badge&logo=twitter)](https://twitter.com/intent/tweet?text=Tradução%20PT-BR%20para%20Where%20Winds%20Meet!%20🇧🇷⚔️&url=https://github.com/rodrigomiquilino/wwm_brasileiro)
 
 ---
 
-*Where Winds Meet © Everstone Games*  
-*Este é um projeto não-oficial da comunidade brasileira.*
+<sub>Feito com ❤️ pela comunidade brasileira de Where Winds Meet</sub>
 
-**🇧🇷 Jogue em Português! 🇧🇷**
+<sub>**Disclaimer:** Este é um projeto não-oficial da comunidade. Where Winds Meet é marca registrada da NetEase.</sub>
+
+---
+
+### 🔗 Links Úteis
+
+[🌐 Site Oficial](https://rodrigomiquilino.github.io/wwm_brasileiro/) • [🌍 Tradução Colaborativa](https://rodrigomiquilino.github.io/wwm_brasileiro/translate) • [📦 Releases](https://github.com/rodrigomiquilino/wwm_brasileiro/releases) • [🐛 Reportar Bug](https://github.com/rodrigomiquilino/wwm_brasileiro/issues/new)
 
 </div>
+
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:c9a227,50:1a1a24,100:0a0a0f&height=100&section=footer" width="100%"/>
+</p>
