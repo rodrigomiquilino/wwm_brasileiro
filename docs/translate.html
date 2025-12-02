@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ajude a traduzir Where Winds Meet para Português Brasileiro">
+    <meta name="keywords" content="Where Winds Meet, WWM, tradução, português, Brasil, PT-BR, colaborativo">
+    <meta name="author" content="rodrigomiquilino">
+    
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <title>Traduzir | WWM Brasileiro</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-medium: #12121a;
+            --bg-light: #1a1a24;
+            --bg-card: #1e1e2a;
+            --gold-primary: #c9a227;
+            --gold-light: #e6c355;
+            --gold-dark: #8b7019;
+            --red-primary: #8b2635;
+            --text-primary: #e8e6e3;
+            --text-secondary: #9d9d9d;
+            --text-muted: #5a5a5a;
+            --success: #2e7d32;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.95);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+            padding: 1rem 2rem;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .nav-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--gold-primary);
+        }
+        
+        /* Main Content */
+        main {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: var(--gold-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-header p {
+            color: var(--text-secondary);
+        }
+        
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-item {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            min-width: 150px;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Controls */
+        .controls {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .controls-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: var(--bg-dark);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .search-box input:focus {
+            border-color: var(--gold-primary);
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .filter-btn {
+            padding: 0.75rem 1rem;
+            background: var(--bg-dark);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover {
+            border-color: var(--gold-primary);
+            color: var(--text-primary);
+        }
+        
+        .filter-btn.active {
+            background: var(--gold-primary);
+            border-color: var(--gold-primary);
+            color: var(--bg-dark);
+        }
+        
+        /* Table */
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .table-scroll {
+            overflow-x: auto;
+            max-height: calc(100vh - 400px);
+            overflow-y: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        thead {
+            position: sticky;
+            top: 0;
+            background: var(--bg-medium);
+            z-index: 10;
+        }
+        
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gold-primary);
+            border-bottom: 2px solid rgba(201, 162, 39, 0.3);
+            white-space: nowrap;
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: top;
+        }
+        
+        tr:hover {
+            background: rgba(201, 162, 39, 0.05);
+        }
+        
+        .col-id {
+            width: 140px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .col-original {
+            min-width: 300px;
+            max-width: 400px;
+        }
+        
+        .col-translation {
+            min-width: 300px;
+            max-width: 400px;
+        }
+        
+        .col-actions {
+            width: 100px;
+            text-align: center;
+        }
+        
+        .text-cell {
+            word-break: break-word;
+            line-height: 1.5;
+        }
+        
+        .text-original {
+            color: var(--text-secondary);
+        }
+        
+        .text-translated {
+            color: var(--success);
+        }
+        
+        .text-empty {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+        
+        /* Action Buttons */
+        .btn-edit {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            border: none;
+            border-radius: 6px;
+            color: var(--bg-dark);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(201, 162, 39, 0.3);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-pending {
+            background: rgba(139, 38, 53, 0.3);
+            color: #ff6b6b;
+        }
+        
+        .status-done {
+            background: rgba(46, 125, 50, 0.3);
+            color: #69db7c;
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .pagination button {
+            padding: 0.5rem 1rem;
+            background: var(--bg-dark);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            border-color: var(--gold-primary);
+            color: var(--gold-primary);
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination button.active {
+            background: var(--gold-primary);
+            border-color: var(--gold-primary);
+            color: var(--bg-dark);
+        }
+        
+        .pagination-info {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin: 0 1rem;
+        }
+        
+        /* Loading */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+            color: var(--text-secondary);
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--bg-light);
+            border-top-color: var(--gold-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Contributors Section */
+        .contributors-section {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .contributors-section h2 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .contributors-orbit {
+            position: relative;
+            height: 200px;
+            margin: 2rem 0;
+        }
+        
+        .contributor {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .contributor img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--gold-primary);
+            background: var(--bg-dark);
+        }
+        
+        .contributor span {
+            margin-top: 0.3rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .contributor:nth-child(1) { left: 10%; top: 30%; animation-delay: 0s; }
+        .contributor:nth-child(2) { left: 30%; top: 10%; animation-delay: 0.5s; }
+        .contributor:nth-child(3) { left: 50%; top: 40%; animation-delay: 1s; }
+        .contributor:nth-child(4) { left: 70%; top: 15%; animation-delay: 1.5s; }
+        .contributor:nth-child(5) { left: 85%; top: 35%; animation-delay: 2s; }
+        
+        .no-contributors {
+            color: var(--text-muted);
+            padding: 2rem;
+        }
+        
+        /* How to Help */
+        .how-to-help {
+            background: rgba(201, 162, 39, 0.1);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .how-to-help h3 {
+            color: var(--gold-primary);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .how-to-help ol {
+            margin-left: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .how-to-help li {
+            margin-bottom: 0.3rem;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(201, 162, 39, 0.1);
+            margin-top: 2rem;
+        }
+        
+        footer a {
+            color: var(--gold-primary);
+            text-decoration: none;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .contributors-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .controls-row {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .filter-group {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stat-item {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .col-id {
+                display: none;
+            }
+            
+            td, th {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-torii-gate"></i>
+                WWM Brasileiro
+            </a>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i> Início</a>
+                <a href="index.html#download"><i class="fas fa-download"></i> Download</a>
+                <a href="https://github.com/rodrigomiquilino/wwm_brasileiro" target="_blank" rel="noopener">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-language"></i> Tradução Colaborativa</h1>
+                <p>Ajude a traduzir Where Winds Meet para Português Brasileiro</p>
+            </div>
+            
+            <div class="how-to-help">
+                <h3><i class="fas fa-question-circle"></i> Como ajudar?</h3>
+                <ol>
+                    <li>Encontre uma linha que deseja traduzir usando a busca</li>
+                    <li>Clique no botão <strong>"Editar"</strong> ao lado da linha</li>
+                    <li>Faça login no GitHub (se necessário)</li>
+                    <li>Edite a tradução e clique em "Propose changes"</li>
+                    <li>Pronto! Sua contribuição será revisada e incluída 🎉</li>
+                </ol>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-total">-</div>
+                    <div class="stat-label">Total de Linhas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-translated">-</div>
+                    <div class="stat-label">Traduzidas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-pending">-</div>
+                    <div class="stat-label">Pendentes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-progress">-</div>
+                    <div class="stat-label">Progresso</div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="controls-row">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-input" placeholder="Buscar por ID ou texto...">
+                    </div>
+                    <div class="filter-group">
+                        <button class="filter-btn active" data-filter="all">Todos</button>
+                        <button class="filter-btn" data-filter="pending">Pendentes</button>
+                        <button class="filter-btn" data-filter="translated">Traduzidos</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Carregando traduções...</p>
+                </div>
+                <div class="table-scroll hidden" id="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="col-id">ID</th>
+                                <th class="col-original">Texto Original (EN)</th>
+                                <th class="col-translation">Tradução (PT-BR)</th>
+                                <th class="col-actions">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="pagination">
+                </div>
+            </div>
+            
+            <div class="contributors-section">
+                <h2><i class="fas fa-medal"></i> Heróis da Tradução</h2>
+                <p class="contributors-subtitle">Agradecemos a todos que contribuíram com a tradução!</p>
+                <div class="contributors-orbit" id="contributors-orbit">
+                    <div class="no-contributors">Carregando contribuidores...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>
+            Feito com ❤️ pela comunidade brasileira de Where Winds Meet<br>
+            <a href="https://github.com/rodrigomiquilino/wwm_brasileiro" target="_blank" rel="noopener">GitHub</a> •
+            <a href="index.html">Voltar ao início</a>
+        </p>
+    </footer>
+
+    <script>
+        const CONFIG = {
+            GITHUB_REPO: 'rodrigomiquilino/wwm_brasileiro',
+            TSV_FILE: 'translation_ptbr.tsv',
+            TSV_EN_FILE: 'translation_en.tsv',
+            ITEMS_PER_PAGE: 50,
+            BRANCH: 'main'
+        };
+        
+        let allData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        let currentFilter = 'all';
+        
+        // Fetch TSV file from GitHub
+        async function fetchTSV(filename) {
+            const url = `https://raw.githubusercontent.com/${CONFIG.GITHUB_REPO}/${CONFIG.BRANCH}/${filename}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch');
+                return await response.text();
+            } catch (error) {
+                console.error(`Error fetching ${filename}:`, error);
+                return null;
+            }
+        }
+        
+        // Parse TSV content
+        function parseTSV(content) {
+            const lines = content.trim().split('\n');
+            const data = [];
+            
+            // Skip header
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i];
+                const tabIndex = line.indexOf('\t');
+                if (tabIndex > 0) {
+                    const id = line.substring(0, tabIndex).trim();
+                    const text = line.substring(tabIndex + 1).trim();
+                    if (id) {
+                        data.push({ id, text, lineNumber: i + 1 });
+                    }
+                }
+            }
+            
+            return data;
+        }
+        
+        // Load translations
+        async function loadTranslations() {
+            const [enContent, ptbrContent] = await Promise.all([
+                fetchTSV(CONFIG.TSV_EN_FILE),
+                fetchTSV(CONFIG.TSV_FILE)
+            ]);
+            
+            if (!enContent) {
+                document.getElementById('loading').innerHTML = `
+                    <p style="color: var(--red-primary);">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Erro ao carregar arquivo de tradução
+                    </p>
+                `;
+                return;
+            }
+            
+            const enData = parseTSV(enContent);
+            const ptbrData = ptbrContent ? parseTSV(ptbrContent) : [];
+            
+            // Create a map of PT-BR translations
+            const ptbrMap = new Map();
+            ptbrData.forEach(item => {
+                ptbrMap.set(item.id, item.text);
+            });
+            
+            // Merge data
+            allData = enData.map(item => ({
+                id: item.id,
+                original: item.text,
+                translation: ptbrMap.get(item.id) || '',
+                lineNumber: item.lineNumber
+            }));
+            
+            updateStats();
+            applyFilter();
+            
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('table-scroll').classList.remove('hidden');
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const total = allData.length;
+            const translated = allData.filter(item => item.translation && item.translation.trim()).length;
+            const pending = total - translated;
+            const progress = total > 0 ? ((translated / total) * 100).toFixed(1) : 0;
+            
+            document.getElementById('stat-total').textContent = total.toLocaleString('pt-BR');
+            document.getElementById('stat-translated').textContent = translated.toLocaleString('pt-BR');
+            document.getElementById('stat-pending').textContent = pending.toLocaleString('pt-BR');
+            document.getElementById('stat-progress').textContent = `${progress}%`;
+        }
+        
+        // Apply filter and search
+        function applyFilter() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            
+            filteredData = allData.filter(item => {
+                // Filter by status
+                if (currentFilter === 'pending' && item.translation && item.translation.trim()) {
+                    return false;
+                }
+                if (currentFilter === 'translated' && (!item.translation || !item.translation.trim())) {
+                    return false;
+                }
+                
+                // Filter by search
+                if (searchTerm) {
+                    return item.id.toLowerCase().includes(searchTerm) ||
+                           item.original.toLowerCase().includes(searchTerm) ||
+                           (item.translation && item.translation.toLowerCase().includes(searchTerm));
+                }
+                
+                return true;
+            });
+            
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        }
+        
+        // Render table
+        function renderTable() {
+            const tbody = document.getElementById('table-body');
+            const start = (currentPage - 1) * CONFIG.ITEMS_PER_PAGE;
+            const end = start + CONFIG.ITEMS_PER_PAGE;
+            const pageData = filteredData.slice(start, end);
+            
+            if (pageData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                            <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                            Nenhuma linha encontrada
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = pageData.map(item => {
+                const hasTranslation = item.translation && item.translation.trim();
+                const statusClass = hasTranslation ? 'status-done' : 'status-pending';
+                const statusText = hasTranslation ? 'Traduzido' : 'Pendente';
+                const translationClass = hasTranslation ? 'text-translated' : 'text-empty';
+                const translationText = hasTranslation ? escapeHtml(item.translation) : '(sem tradução)';
+                
+                // GitHub edit URL - opens the file at specific line
+                const editUrl = `https://github.com/${CONFIG.GITHUB_REPO}/edit/${CONFIG.BRANCH}/${CONFIG.TSV_FILE}#L${item.lineNumber}`;
+                
+                return `
+                    <tr>
+                        <td class="col-id">${item.id}</td>
+                        <td class="col-original">
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                            <div class="text-cell text-original">${escapeHtml(item.original)}</div>
+                        </td>
+                        <td class="col-translation">
+                            <div class="text-cell ${translationClass}">${translationText}</div>
+                        </td>
+                        <td class="col-actions">
+                            <a href="${editUrl}" target="_blank" rel="noopener" class="btn-edit" title="Editar no GitHub">
+                                <i class="fas fa-pen"></i> Editar
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML.replace(/\n/g, '<br>');
+        }
+        
+        // Render pagination
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredData.length / CONFIG.ITEMS_PER_PAGE);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let html = `
+                <button onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-angle-double-left"></i>
+                </button>
+                <button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-angle-left"></i>
+                </button>
+            `;
+            
+            // Page numbers
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                html += `
+                    <button onclick="goToPage(${i})" class="${i === currentPage ? 'active' : ''}">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            html += `
+                <button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    <i class="fas fa-angle-right"></i>
+                </button>
+                <button onclick="goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    <i class="fas fa-angle-double-right"></i>
+                </button>
+                <span class="pagination-info">
+                    Página ${currentPage} de ${totalPages} (${filteredData.length.toLocaleString('pt-BR')} itens)
+                </span>
+            `;
+            
+            pagination.innerHTML = html;
+        }
+        
+        // Go to page
+        function goToPage(page) {
+            const totalPages = Math.ceil(filteredData.length / CONFIG.ITEMS_PER_PAGE);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderTable();
+            renderPagination();
+            document.getElementById('table-scroll').scrollTop = 0;
+        }
+        
+        // Load contributors from GitHub
+        async function loadContributors() {
+            try {
+                // Get contributors who have PRs merged (simplified - using repo contributors)
+                const response = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_REPO}/contributors?per_page=10`);
+                if (!response.ok) throw new Error('Failed to fetch contributors');
+                
+                const contributors = await response.json();
+                const orbit = document.getElementById('contributors-orbit');
+                
+                if (contributors.length === 0) {
+                    orbit.innerHTML = '<div class="no-contributors">Seja o primeiro a contribuir!</div>';
+                    return;
+                }
+                
+                // Filter to show only non-bot contributors (except the owner which should show)
+                const displayContributors = contributors
+                    .filter(c => c.type === 'User')
+                    .slice(0, 8);
+                
+                if (displayContributors.length === 0) {
+                    orbit.innerHTML = '<div class="no-contributors">Seja o primeiro a contribuir!</div>';
+                    return;
+                }
+                
+                orbit.innerHTML = displayContributors.map((contributor, index) => `
+                    <div class="contributor" style="animation-delay: ${index * 0.3}s; left: ${10 + (index * 12)}%; top: ${15 + Math.sin(index) * 25}%;">
+                        <a href="${contributor.html_url}" target="_blank" rel="noopener" title="${contributor.login}">
+                            <img src="${contributor.avatar_url}" alt="${contributor.login}">
+                        </a>
+                        <span>@${contributor.login}</span>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error loading contributors:', error);
+                document.getElementById('contributors-orbit').innerHTML = 
+                    '<div class="no-contributors">Seja o primeiro a contribuir!</div>';
+            }
+        }
+        
+        // Event Listeners
+        document.getElementById('search-input').addEventListener('input', debounce(applyFilter, 300));
+        
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                applyFilter();
+            });
+        });
+        
+        // Debounce function
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTranslations();
+            loadContributors();
+        });
+    </script>
+</body>
+</html>
