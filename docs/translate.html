@@ -155,6 +155,56 @@
             color: var(--text-secondary);
         }
         
+        /* File Tabs */
+        .file-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .file-tab {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 2px solid rgba(201, 162, 39, 0.2);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-tab:hover {
+            border-color: var(--gold-primary);
+            color: var(--text-primary);
+        }
+        
+        .file-tab.active {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            border-color: var(--gold-primary);
+            color: var(--bg-dark);
+        }
+        
+        .file-tab i {
+            font-size: 1.1rem;
+        }
+        
+        .tab-count {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .file-tab.active .tab-count {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
         /* Controls */
         .controls {
             background: var(--bg-card);
@@ -275,20 +325,22 @@
         }
         
         .col-id {
-            width: 140px;
+            width: 180px;
             font-family: monospace;
             font-size: 0.8rem;
             color: var(--text-muted);
         }
         
-        .col-original {
-            min-width: 300px;
-            max-width: 400px;
+        .col-id code {
+            display: block;
+            margin-top: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            word-break: break-all;
         }
         
         .col-translation {
-            min-width: 300px;
-            max-width: 400px;
+            min-width: 400px;
         }
         
         .col-actions {
@@ -597,12 +649,24 @@
             <div class="how-to-help">
                 <h3><i class="fas fa-question-circle"></i> Como ajudar?</h3>
                 <ol>
+                    <li>Escolha o arquivo que deseja traduzir (Principal ou Diff)</li>
                     <li>Encontre uma linha que deseja traduzir usando a busca</li>
                     <li>Clique no botão <strong>"Editar"</strong> ao lado da linha</li>
                     <li>Faça login no GitHub (se necessário)</li>
                     <li>Edite a tradução e clique em "Propose changes"</li>
                     <li>Pronto! Sua contribuição será revisada e incluída 🎉</li>
                 </ol>
+            </div>
+            
+            <div class="file-tabs">
+                <button class="file-tab active" data-file="main">
+                    <i class="fas fa-file-alt"></i> Arquivo Principal
+                    <span class="tab-count" id="main-count">-</span>
+                </button>
+                <button class="file-tab" data-file="diff">
+                    <i class="fas fa-code-branch"></i> Arquivo Diff (Novos)
+                    <span class="tab-count" id="diff-count">-</span>
+                </button>
             </div>
             
             <div class="stats-bar">
@@ -648,8 +712,7 @@
                         <thead>
                             <tr>
                                 <th class="col-id">ID</th>
-                                <th class="col-original">Texto Original (EN)</th>
-                                <th class="col-translation">Tradução (PT-BR)</th>
+                                <th class="col-translation">Texto (PT-BR)</th>
                                 <th class="col-actions">Ação</th>
                             </tr>
                         </thead>
@@ -682,16 +745,19 @@
     <script>
         const CONFIG = {
             GITHUB_REPO: 'rodrigomiquilino/wwm_brasileiro',
-            TSV_FILE: 'translation_ptbr.tsv',
-            TSV_EN_FILE: 'translation_en.tsv',
+            MAIN_FILE: 'community/translate_words_map_en.tsv',
+            DIFF_FILE: 'community/translate_words_map_en_diff.tsv',
             ITEMS_PER_PAGE: 50,
             BRANCH: 'main'
         };
         
+        let mainData = [];
+        let diffData = [];
         let allData = [];
         let filteredData = [];
         let currentPage = 1;
         let currentFilter = 'all';
+        let currentFile = 'main'; // 'main' ou 'diff'
         
         // Fetch TSV file from GitHub
         async function fetchTSV(filename) {
@@ -706,7 +772,7 @@
             }
         }
         
-        // Parse TSV content
+        // Parse TSV content - formato: ID\tOriginalText
         function parseTSV(content) {
             const lines = content.trim().split('\n');
             const data = [];
@@ -718,8 +784,14 @@
                 if (tabIndex > 0) {
                     const id = line.substring(0, tabIndex).trim();
                     const text = line.substring(tabIndex + 1).trim();
-                    if (id) {
-                        data.push({ id, text, lineNumber: i + 1 });
+                    // Ignora linhas com ID zerado (vazias)
+                    if (id && id !== '0000000000000000') {
+                        data.push({ 
+                            id, 
+                            text, 
+                            lineNumber: i + 1,
+                            hasTranslation: text && text.trim().length > 0
+                        });
                     }
                 }
             }
@@ -729,12 +801,12 @@
         
         // Load translations
         async function loadTranslations() {
-            const [enContent, ptbrContent] = await Promise.all([
-                fetchTSV(CONFIG.TSV_EN_FILE),
-                fetchTSV(CONFIG.TSV_FILE)
+            const [mainContent, diffContent] = await Promise.all([
+                fetchTSV(CONFIG.MAIN_FILE),
+                fetchTSV(CONFIG.DIFF_FILE)
             ]);
             
-            if (!enContent) {
+            if (!mainContent) {
                 document.getElementById('loading').innerHTML = `
                     <p style="color: var(--red-primary);">
                         <i class="fas fa-exclamation-triangle"></i> 
@@ -744,34 +816,38 @@
                 return;
             }
             
-            const enData = parseTSV(enContent);
-            const ptbrData = ptbrContent ? parseTSV(ptbrContent) : [];
+            mainData = parseTSV(mainContent);
+            diffData = diffContent ? parseTSV(diffContent) : [];
             
-            // Create a map of PT-BR translations
-            const ptbrMap = new Map();
-            ptbrData.forEach(item => {
-                ptbrMap.set(item.id, item.text);
-            });
+            // Atualiza contadores nas tabs
+            document.getElementById('main-count').textContent = mainData.length.toLocaleString('pt-BR');
+            document.getElementById('diff-count').textContent = diffData.length.toLocaleString('pt-BR');
             
-            // Merge data
-            allData = enData.map(item => ({
-                id: item.id,
-                original: item.text,
-                translation: ptbrMap.get(item.id) || '',
-                lineNumber: item.lineNumber
-            }));
-            
-            updateStats();
-            applyFilter();
+            // Carrega dados do arquivo principal por padrão
+            switchFile('main');
             
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('table-scroll').classList.remove('hidden');
         }
         
+        // Switch between files
+        function switchFile(file) {
+            currentFile = file;
+            allData = file === 'main' ? mainData : diffData;
+            
+            // Atualiza tabs
+            document.querySelectorAll('.file-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.file === file);
+            });
+            
+            updateStats();
+            applyFilter();
+        }
+        
         // Update statistics
         function updateStats() {
             const total = allData.length;
-            const translated = allData.filter(item => item.translation && item.translation.trim()).length;
+            const translated = allData.filter(item => item.hasTranslation).length;
             const pending = total - translated;
             const progress = total > 0 ? ((translated / total) * 100).toFixed(1) : 0;
             
@@ -787,18 +863,17 @@
             
             filteredData = allData.filter(item => {
                 // Filter by status
-                if (currentFilter === 'pending' && item.translation && item.translation.trim()) {
+                if (currentFilter === 'pending' && item.hasTranslation) {
                     return false;
                 }
-                if (currentFilter === 'translated' && (!item.translation || !item.translation.trim())) {
+                if (currentFilter === 'translated' && !item.hasTranslation) {
                     return false;
                 }
                 
                 // Filter by search
                 if (searchTerm) {
                     return item.id.toLowerCase().includes(searchTerm) ||
-                           item.original.toLowerCase().includes(searchTerm) ||
-                           (item.translation && item.translation.toLowerCase().includes(searchTerm));
+                           item.text.toLowerCase().includes(searchTerm);
                 }
                 
                 return true;
@@ -819,7 +894,7 @@
             if (pageData.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="4" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        <td colspan="3" style="text-align: center; padding: 3rem; color: var(--text-muted);">
                             <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
                             Nenhuma linha encontrada
                         </td>
@@ -828,25 +903,25 @@
                 return;
             }
             
+            const currentTsvFile = currentFile === 'main' ? CONFIG.MAIN_FILE : CONFIG.DIFF_FILE;
+            
             tbody.innerHTML = pageData.map(item => {
-                const hasTranslation = item.translation && item.translation.trim();
-                const statusClass = hasTranslation ? 'status-done' : 'status-pending';
-                const statusText = hasTranslation ? 'Traduzido' : 'Pendente';
-                const translationClass = hasTranslation ? 'text-translated' : 'text-empty';
-                const translationText = hasTranslation ? escapeHtml(item.translation) : '(sem tradução)';
+                const statusClass = item.hasTranslation ? 'status-done' : 'status-pending';
+                const statusText = item.hasTranslation ? 'Traduzido' : 'Pendente';
+                const textClass = item.hasTranslation ? 'text-translated' : 'text-empty';
+                const displayText = item.text || '(vazio)';
                 
                 // GitHub edit URL - opens the file at specific line
-                const editUrl = `https://github.com/${CONFIG.GITHUB_REPO}/edit/${CONFIG.BRANCH}/${CONFIG.TSV_FILE}#L${item.lineNumber}`;
+                const editUrl = `https://github.com/${CONFIG.GITHUB_REPO}/edit/${CONFIG.BRANCH}/${currentTsvFile}#L${item.lineNumber}`;
                 
                 return `
                     <tr>
-                        <td class="col-id">${item.id}</td>
-                        <td class="col-original">
+                        <td class="col-id">
                             <span class="status-badge ${statusClass}">${statusText}</span>
-                            <div class="text-cell text-original">${escapeHtml(item.original)}</div>
+                            <code>${item.id}</code>
                         </td>
                         <td class="col-translation">
-                            <div class="text-cell ${translationClass}">${translationText}</div>
+                            <div class="text-cell ${textClass}">${escapeHtml(displayText)}</div>
                         </td>
                         <td class="col-actions">
                             <a href="${editUrl}" target="_blank" rel="noopener" class="btn-edit" title="Editar no GitHub">
@@ -971,6 +1046,13 @@
                 btn.classList.add('active');
                 currentFilter = btn.dataset.filter;
                 applyFilter();
+            });
+        });
+        
+        // File tab listeners
+        document.querySelectorAll('.file-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchFile(tab.dataset.file);
             });
         });
         
