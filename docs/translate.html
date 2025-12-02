@@ -1932,6 +1932,70 @@
         }
         
         // ========================================
+        // Verificação de Issues Duplicadas
+        // ========================================
+        
+        // Cache de IDs já com Issues abertas (evita múltiplas requisições)
+        let pendingIssuesCache = null;
+        let pendingIssuesCacheTime = 0;
+        const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+        
+        // Busca Issues abertas com label 'translation'
+        async function fetchPendingIssues() {
+            const now = Date.now();
+            
+            // Usar cache se ainda válido
+            if (pendingIssuesCache && (now - pendingIssuesCacheTime) < CACHE_DURATION) {
+                return pendingIssuesCache;
+            }
+            
+            try {
+                const response = await fetch(
+                    `https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues?state=open&labels=translation&per_page=100`,
+                    {
+                        headers: {
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    }
+                );
+                
+                if (!response.ok) return new Set();
+                
+                const issues = await response.json();
+                
+                // Extrai todos os IDs mencionados nas Issues
+                const pendingIds = new Set();
+                
+                issues.forEach(issue => {
+                    // Procura IDs no corpo da Issue (formato: `id`)
+                    const idMatches = issue.body.match(/`([a-f0-9]{16})`/g);
+                    if (idMatches) {
+                        idMatches.forEach(match => {
+                            const id = match.replace(/`/g, '');
+                            pendingIds.add(id);
+                        });
+                    }
+                });
+                
+                // Atualiza cache
+                pendingIssuesCache = pendingIds;
+                pendingIssuesCacheTime = now;
+                
+                return pendingIds;
+                
+            } catch (error) {
+                console.error('Erro ao buscar Issues pendentes:', error);
+                return new Set();
+            }
+        }
+        
+        // Verifica quais IDs do carrinho já têm Issues abertas
+        async function checkDuplicates(cartIds) {
+            const pendingIds = await fetchPendingIssues();
+            return cartIds.filter(id => pendingIds.has(id));
+        }
+        
+        // ========================================
         // Enviar Sugestões via API
         // ========================================
         
@@ -1949,7 +2013,40 @@
             const submitBtn = document.getElementById('cart-submit');
             const originalText = submitBtn.innerHTML;
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+            
+            try {
+                // Verificar duplicatas
+                const cartIds = suggestionCart.map(item => item.id);
+                const duplicates = await checkDuplicates(cartIds);
+                
+                if (duplicates.length > 0) {
+                    // Tem duplicatas - perguntar ao usuário
+                    const duplicateItems = suggestionCart.filter(item => duplicates.includes(item.id));
+                    const uniqueItems = suggestionCart.filter(item => !duplicates.includes(item.id));
+                    
+                    const message = `⚠️ ${duplicates.length} sugestão(ões) já têm Issues abertas:\n\n` +
+                        duplicateItems.map(item => `• ${item.id.substring(0, 8)}...`).join('\n') +
+                        `\n\n` +
+                        (uniqueItems.length > 0 
+                            ? `Deseja enviar apenas as ${uniqueItems.length} sugestão(ões) restantes?`
+                            : `Todas as sugestões já têm Issues abertas. Deseja enviar mesmo assim?`);
+                    
+                    if (!confirm(message)) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                        updateCartUI();
+                        return;
+                    }
+                    
+                    // Se houver itens únicos, enviar apenas eles
+                    if (uniqueItems.length > 0 && uniqueItems.length < suggestionCart.length) {
+                        suggestionCart = uniqueItems;
+                        updateCartUI();
+                    }
+                }
+                
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
             
             try {
                 // Monta o JSON estruturado para o GitHub Action processar
