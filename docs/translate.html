@@ -687,7 +687,34 @@
             display: flex;
         }
         
+        /* Modal que é criado dinamicamente (token, sucesso, etc) */
         .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 1rem;
+        }
+        
+        .modal .modal-content {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 16px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        /* Modal overlay (suggestion-modal existente) */
+        .modal-overlay .modal-content {
             background: var(--bg-card);
             border: 1px solid rgba(201, 162, 39, 0.3);
             border-radius: 16px;
