@@ -687,7 +687,19 @@
             display: flex;
         }
         
-        /* Modal que é criado dinamicamente (token, sucesso, etc) */
+        /* Box do modal de sugestão */
+        .suggestion-box {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 16px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        /* Modal dinâmico (token, sucesso, loading, etc) */
         .modal {
             position: fixed;
             top: 0;
@@ -703,18 +715,6 @@
         }
         
         .modal .modal-content {
-            background: var(--bg-card);
-            border: 1px solid rgba(201, 162, 39, 0.3);
-            border-radius: 16px;
-            max-width: 700px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: modalSlideIn 0.3s ease;
-        }
-        
-        /* Modal overlay (suggestion-modal existente) */
-        .modal-overlay .modal-content {
             background: var(--bg-card);
             border: 1px solid rgba(201, 162, 39, 0.3);
             border-radius: 16px;
@@ -1199,7 +1199,7 @@
     
     <!-- Modal de Sugestão de Tradução -->
     <div class="modal-overlay" id="suggestion-modal">
-        <div class="modal">
+        <div class="suggestion-box">
             <div class="modal-header">
                 <h3><i class="fas fa-lightbulb"></i> Sugerir Tradução</h3>
                 <button class="modal-close" onclick="closeModal()">&times;</button>
