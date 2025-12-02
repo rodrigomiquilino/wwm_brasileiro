@@ -1,12 +1,12 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 WWM Tradutor PT-BR - Launcher
-Instalador automÃ¡tico da traduÃ§Ã£o brasileira para Where Winds Meet
+Instalador automático da tradução brasileira para Where Winds Meet
 
 Autor: rodrigomiquilino
 Projeto: https://github.com/rodrigomiquilino/wwm_brasileiro
-LicenÃ§a: MIT
+Licença: MIT
 """
 
 import os
@@ -22,26 +22,26 @@ import re
 from pathlib import Path
 from datetime import datetime
 
-# ConfiguraÃ§Ã£o de DPI para Windows ANTES de importar Qt
+# Configuração de DPI para Windows ANTES de importar Qt
 if sys.platform == 'win32':
     try:
         # Torna o processo DPI-aware (Per-Monitor DPI Aware V2)
         ctypes.windll.shcore.SetProcessDpiAwareness(2)
     except:
         try:
-            # Fallback para versÃµes mais antigas do Windows
+            # Fallback para versões mais antigas do Windows
             ctypes.windll.user32.SetProcessDPIAware()
         except:
             pass
 
-# VariÃ¡veis de ambiente para Qt
+# Variáveis de ambiente para Qt
 os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '1'
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = '1'
 os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'] = 'PassThrough'
 
 
 def is_admin() -> bool:
-    """Verifica se o programa estÃ¡ rodando como administrador"""
+    """Verifica se o programa está rodando como administrador"""
     try:
         return ctypes.windll.shell32.IsUserAnAdmin() != 0
     except:
@@ -95,9 +95,9 @@ except ImportError:
     from PyQt5.QtCore import *
 
 
-
-# CONFIGURAÃ‡ÃƒO
-
+# ============================================================================
+# CONFIGURAÇÃO
+# ============================================================================
 
 APP_NAME = "WWM Tradutor PT-BR"
 APP_VERSION = "2.2.0"
@@ -105,13 +105,13 @@ GITHUB_REPO = "rodrigomiquilino/wwm_brasileiro"
 GITHUB_API_RELEASES = f"https://api.github.com/repos/{GITHUB_REPO}/releases"
 GITHUB_RELEASES_PAGE = f"https://github.com/{GITHUB_REPO}/releases"
 
-# Arquivo de configuraÃ§Ã£o local (na pasta do launcher)
+# Arquivo de configuração local (na pasta do launcher)
 LOCAL_CONFIG_FILE = "wwm_ptbr_launcher.json"
 
-# Arquivo de configuraÃ§Ã£o da traduÃ§Ã£o (na pasta de traduÃ§Ã£o do jogo)
+# Arquivo de configuração da tradução (na pasta de tradução do jogo)
 TRANSLATION_CONFIG_FILE = ".wwm_ptbr_config"
 
-# Arquivos de traduÃ§Ã£o
+# Arquivos de tradução
 TRANSLATION_FILES = [
     "translate_words_map_en",
     "translate_words_map_en_diff"
@@ -132,30 +132,30 @@ PLATFORM_CONFIG = {
         "translation_path": r"Package\HD\oversea\locale",
         "exe_pattern": r"Engine\Binaries\Win64r\wwm.exe",
         "launch_command": "steam://rungameid/3564740",
-        "icon": "ðŸŽ®"
+        "icon": "🎮"
     },
     Platform.EPIC: {
         "name": "Epic Games",
         "translation_path": r"Package\HD\oversea\locale",
         "exe_pattern": r"Engine\Binaries\Win64r\wwm.exe",
         "launch_command": "com.epicgames.launcher://apps/4806012311744989a5f96d97a42f7829%3Ad53f8dc5825748849ca0890279c3dad7%3Aa7d28f0e0935490b9d6f92dda1a7a75b?action=launch&silent=true",
-        "icon": "ðŸŽ¯"
+        "icon": "🎯"
     },
     Platform.STANDALONE: {
         "name": "Standalone",
         "translation_path": r"LocalData\Patch\HD\oversea\locale",
         "exe_pattern": r"wwm_(standard|lite)\Engine\Binaries\Win64r\wwm.exe",
         "variants": ["wwm_standard", "wwm_lite"],  # Variantes suportadas
-        "launcher_exe": "launcher.exe",  # ExecutÃ¡vel para iniciar o jogo
+        "launcher_exe": "launcher.exe",  # Executável para iniciar o jogo
         "launch_command": None,
-        "icon": "ðŸ’»"
+        "icon": "💻"
     }
 }
 
 
-
-
-
+# ============================================================================
+# TEMA
+# ============================================================================
 
 class Theme:
     BACKGROUND_DARK = "#0a0a0f"
@@ -180,9 +180,9 @@ class Theme:
     INFO = "#1565c0"
 
 
-
-# UTILITÃRIOS
-
+# ============================================================================
+# UTILITÁRIOS
+# ============================================================================
 
 def get_file_hash(filepath: str) -> str:
     """Calcula o hash MD5 de um arquivo"""
@@ -194,7 +194,7 @@ def get_file_hash(filepath: str) -> str:
 
 
 def get_file_modified_time(filepath: str) -> str:
-    """Retorna a data de modificaÃ§Ã£o do arquivo no formato ISO"""
+    """Retorna a data de modificação do arquivo no formato ISO"""
     try:
         mtime = os.path.getmtime(filepath)
         return datetime.fromtimestamp(mtime).strftime("%Y-%m-%d %H:%M:%S")
@@ -202,19 +202,19 @@ def get_file_modified_time(filepath: str) -> str:
         return ""
 
 
-
-# GERENCIADOR DE CONFIGURAÃ‡ÃƒO DA TRADUÃ‡ÃƒO
-
+# ============================================================================
+# GERENCIADOR DE CONFIGURAÇÃO DA TRADUÇÃO
+# ============================================================================
 
 class TranslationConfig:
-    """Gerencia o arquivo de configuraÃ§Ã£o na pasta de traduÃ§Ã£o"""
+    """Gerencia o arquivo de configuração na pasta de tradução"""
     
     def __init__(self, translation_path: str):
         self.config_path = Path(translation_path) / TRANSLATION_CONFIG_FILE
         self.data = self._load()
     
     def _load(self) -> dict:
-        """Carrega a configuraÃ§Ã£o"""
+        """Carrega a configuração"""
         if self.config_path.exists():
             try:
                 with open(self.config_path, 'r', encoding='utf-8') as f:
@@ -224,7 +224,7 @@ class TranslationConfig:
         return {}
     
     def save(self):
-        """Salva a configuraÃ§Ã£o"""
+        """Salva a configuração"""
         try:
             with open(self.config_path, 'w', encoding='utf-8') as f:
                 json.dump(self.data, f, indent=2, ensure_ascii=False)
@@ -232,15 +232,15 @@ class TranslationConfig:
             pass
     
     def is_translation_installed(self) -> bool:
-        """Verifica se a traduÃ§Ã£o foi instalada por nÃ³s"""
+        """Verifica se a tradução foi instalada por nós"""
         return self.data.get('installed', False)
     
     def get_installed_version(self) -> str:
-        """Retorna a versÃ£o instalada"""
+        """Retorna a versão instalada"""
         return self.data.get('version', '')
     
     def get_installed_timestamp(self) -> str:
-        """Retorna o timestamp da instalaÃ§Ã£o"""
+        """Retorna o timestamp da instalação"""
         return self.data.get('timestamp', '')
     
     def get_file_hashes(self) -> dict:
@@ -248,7 +248,7 @@ class TranslationConfig:
         return self.data.get('file_hashes', {})
     
     def set_installed(self, version: str, timestamp: str, file_hashes: dict):
-        """Marca a traduÃ§Ã£o como instalada"""
+        """Marca a tradução como instalada"""
         self.data['installed'] = True
         self.data['version'] = version
         self.data['timestamp'] = timestamp
@@ -256,7 +256,7 @@ class TranslationConfig:
         self.save()
     
     def clear(self):
-        """Limpa a configuraÃ§Ã£o (traduÃ§Ã£o removida)"""
+        """Limpa a configuração (tradução removida)"""
         self.data = {}
         if self.config_path.exists():
             try:
@@ -265,12 +265,12 @@ class TranslationConfig:
                 pass
 
 
-
-
-
+# ============================================================================
+# DETECTOR DE PLATAFORMA
+# ============================================================================
 
 class PlatformDetector:
-    """Detecta a plataforma baseado no executÃ¡vel selecionado"""
+    """Detecta a plataforma baseado no executável selecionado"""
     
     @staticmethod
     def detect(exe_path: str) -> tuple:
@@ -286,16 +286,16 @@ class PlatformDetector:
             # Standalone: wwm_standard/Engine/Binaries/Win64r/wwm.exe
             #         ou wwm_lite/Engine/Binaries/Win64r/wwm.exe
             if "wwm_standard" in exe_str or "wwm_lite" in exe_str:
-                # wwm/wwm_standard/Engine/Binaries/Win64r/wwm.exe â†’ wwm/wwm_standard/
-                # wwm/wwm_lite/Engine/Binaries/Win64r/wwm.exe â†’ wwm/wwm_lite/
+                # wwm/wwm_standard/Engine/Binaries/Win64r/wwm.exe → wwm/wwm_standard/
+                # wwm/wwm_lite/Engine/Binaries/Win64r/wwm.exe → wwm/wwm_lite/
                 game_root = exe_path.parent.parent.parent.parent  # wwm_standard ou wwm_lite
                 translation_path = game_root / PLATFORM_CONFIG[Platform.STANDALONE]["translation_path"]
                 return Platform.STANDALONE, game_root, translation_path
             
-            # Steam ou Epic: Engine/Binaries/Win64r/wwm.exe â†’ raiz do jogo
+            # Steam ou Epic: Engine/Binaries/Win64r/wwm.exe → raiz do jogo
             game_root = exe_path.parent.parent.parent.parent
             
-            # Detecta se Ã© Epic ou Steam pelo caminho
+            # Detecta se é Epic ou Steam pelo caminho
             if "epic games" in exe_str:
                 platform = Platform.EPIC
             elif "steam" in exe_str:
@@ -327,21 +327,21 @@ class PlatformDetector:
         return None
 
 
-
-# VERIFICADOR DE STATUS DA TRADUÃ‡ÃƒO
-
+# ============================================================================
+# VERIFICADOR DE STATUS DA TRADUÇÃO
+# ============================================================================
 
 class TranslationStatus:
-    """Status possÃ­veis da traduÃ§Ã£o"""
-    NOT_INSTALLED = "not_installed"      # Nunca instalou (versÃ£o original)
-    INSTALLED = "installed"              # TraduÃ§Ã£o instalada e ativa
-    OUTDATED = "outdated"                # TraduÃ§Ã£o desatualizada (tem update)
-    OVERWRITTEN = "overwritten"          # Jogo atualizou e sobrescreveu nossa traduÃ§Ã£o
-    BACKUP_AVAILABLE = "backup_available" # Backup disponÃ­vel para restaurar
+    """Status possíveis da tradução"""
+    NOT_INSTALLED = "not_installed"      # Nunca instalou (versão original)
+    INSTALLED = "installed"              # Tradução instalada e ativa
+    OUTDATED = "outdated"                # Tradução desatualizada (tem update)
+    OVERWRITTEN = "overwritten"          # Jogo atualizou e sobrescreveu nossa tradução
+    BACKUP_AVAILABLE = "backup_available" # Backup disponível para restaurar
 
 
 class TranslationChecker:
-    """Verifica o status da traduÃ§Ã£o instalada"""
+    """Verifica o status da tradução instalada"""
     
     def __init__(self, translation_path: str):
         self.translation_path = Path(translation_path)
@@ -349,7 +349,7 @@ class TranslationChecker:
     
     def get_status(self) -> dict:
         """
-        Retorna o status completo da traduÃ§Ã£o
+        Retorna o status completo da tradução
         """
         result = {
             'status': TranslationStatus.NOT_INSTALLED,
@@ -367,17 +367,17 @@ class TranslationChecker:
                 result['has_backup'] = True
                 break
         
-        # Verifica se a traduÃ§Ã£o foi instalada por nÃ³s
+        # Verifica se a tradução foi instalada por nós
         if not self.config.is_translation_installed():
             result['status'] = TranslationStatus.NOT_INSTALLED
-            result['message'] = "VersÃ£o original do jogo"
+            result['message'] = "Versão original do jogo"
             return result
         
-        # TraduÃ§Ã£o foi instalada - verifica integridade
+        # Tradução foi instalada - verifica integridade
         result['installed_version'] = self.config.get_installed_version()
         result['installed_timestamp'] = self.config.get_installed_timestamp()
         
-        # Verifica se os arquivos ainda sÃ£o os mesmos (nÃ£o foram sobrescritos)
+        # Verifica se os arquivos ainda são os mesmos (não foram sobrescritos)
         saved_hashes = self.config.get_file_hashes()
         for tf in TRANSLATION_FILES:
             file_path = self.translation_path / tf
@@ -391,20 +391,20 @@ class TranslationChecker:
         
         if not result['files_intact']:
             result['status'] = TranslationStatus.OVERWRITTEN
-            result['message'] = "TraduÃ§Ã£o foi sobrescrita (possÃ­vel atualizaÃ§Ã£o do jogo)"
+            result['message'] = "Tradução foi sobrescrita (possível atualização do jogo)"
         else:
             result['status'] = TranslationStatus.INSTALLED
-            result['message'] = "TraduÃ§Ã£o PT-BR ativa"
+            result['message'] = "Tradução PT-BR ativa"
         
         return result
 
 
-
-
-
+# ============================================================================
+# THREAD DE DOWNLOAD
+# ============================================================================
 
 class DownloadThread(QThread):
-    """Thread para download de arquivos com retry automÃ¡tico"""
+    """Thread para download de arquivos com retry automático"""
     
     progress_signal = pyqtSignal(int)
     status_signal = pyqtSignal(str)
@@ -434,7 +434,7 @@ class DownloadThread(QThread):
                 total_size = int(response.headers.get('content-length', 0))
                 downloaded = 0
                 
-                self.status_signal.emit("Baixando traduÃ§Ã£o...")
+                self.status_signal.emit("Baixando tradução...")
                 
                 with open(self.dest_path, 'wb') as f:
                     for chunk in response.iter_content(chunk_size=8192):
@@ -449,9 +449,9 @@ class DownloadThread(QThread):
                 return
                 
             except requests.exceptions.Timeout:
-                last_error = "Tempo limite excedido. Verifique sua conexÃ£o."
+                last_error = "Tempo limite excedido. Verifique sua conexão."
             except requests.exceptions.ConnectionError:
-                last_error = "Erro de conexÃ£o. Verifique sua internet."
+                last_error = "Erro de conexão. Verifique sua internet."
             except Exception as e:
                 last_error = str(e)
             
@@ -460,11 +460,11 @@ class DownloadThread(QThread):
                 import time
                 time.sleep(2)
         
-        self.finished_signal.emit(False, f"Falha apÃ³s {self.MAX_RETRIES} tentativas: {last_error}")
+        self.finished_signal.emit(False, f"Falha após {self.MAX_RETRIES} tentativas: {last_error}")
 
 
 class CheckUpdateThread(QThread):
-    """Thread para verificar atualizaÃ§Ãµes da traduÃ§Ã£o
+    """Thread para verificar atualizações da tradução
     
     Busca releases com tag no formato "x.x.x" ou "vx.x.x" (sem prefixo "launcher-")
     """
@@ -476,7 +476,7 @@ class CheckUpdateThread(QThread):
         super().__init__()
     
     def _compare_versions(self, v1: str, v2: str) -> int:
-        """Compara duas versÃµes. Retorna 1 se v1 > v2, -1 se v1 < v2, 0 se iguais"""
+        """Compara duas versões. Retorna 1 se v1 > v2, -1 se v1 < v2, 0 se iguais"""
         try:
             parts1 = [int(x) for x in v1.split('.')]
             parts2 = [int(x) for x in v2.split('.')]
@@ -499,8 +499,8 @@ class CheckUpdateThread(QThread):
             
             releases = response.json()
             
-            # Procura o release de traduÃ§Ã£o mais recente
-            # Tags de traduÃ§Ã£o: "x.x.x" ou "vx.x.x" (NÃƒO comeÃ§am com "launcher-")
+            # Procura o release de tradução mais recente
+            # Tags de tradução: "x.x.x" ou "vx.x.x" (NÃO começam com "launcher-")
             best_version = None
             best_release = None
             
@@ -511,12 +511,12 @@ class CheckUpdateThread(QThread):
                 if tag.lower().startswith('launcher'):
                     continue
                 
-                # Extrai versÃ£o da tag
+                # Extrai versão da tag
                 version_match = re.search(r'v?(\d+\.\d+\.\d+)', tag)
                 if version_match:
                     version = version_match.group(1)
                     
-                    # Verifica se Ã© a versÃ£o mais recente
+                    # Verifica se é a versão mais recente
                     if best_version is None or self._compare_versions(version, best_version) > 0:
                         best_version = version
                         best_release = release
@@ -524,7 +524,7 @@ class CheckUpdateThread(QThread):
             if best_release:
                 published_at = best_release.get('published_at', '')
                 
-                # Procura o ZIP de traduÃ§Ã£o nos assets
+                # Procura o ZIP de tradução nos assets
                 download_url = None
                 for asset in best_release.get('assets', []):
                     if asset['name'].lower().endswith('.zip'):
@@ -535,16 +535,16 @@ class CheckUpdateThread(QThread):
                 if not download_url:
                     download_url = best_release.get('zipball_url', '')
                 
-                self.finished_signal.emit(True, best_version, published_at, download_url, "VerificaÃ§Ã£o concluÃ­da!")
+                self.finished_signal.emit(True, best_version, published_at, download_url, "Verificação concluída!")
             else:
-                self.finished_signal.emit(False, "", "", "", "Nenhuma traduÃ§Ã£o encontrada")
+                self.finished_signal.emit(False, "", "", "", "Nenhuma tradução encontrada")
             
         except Exception as e:
             self.finished_signal.emit(False, "", "", "", f"Erro: {str(e)}")
 
 
 class CheckLauncherUpdateThread(QThread):
-    """Thread para verificar atualizaÃ§Ãµes do launcher
+    """Thread para verificar atualizações do launcher
     
     Busca releases com tag no formato "launcher-x.x.x"
     """
@@ -556,7 +556,7 @@ class CheckLauncherUpdateThread(QThread):
         self.current_version = current_version
     
     def _compare_versions(self, v1: str, v2: str) -> int:
-        """Compara duas versÃµes. Retorna 1 se v1 > v2, -1 se v1 < v2, 0 se iguais"""
+        """Compara duas versões. Retorna 1 se v1 > v2, -1 se v1 < v2, 0 se iguais"""
         try:
             parts1 = [int(x) for x in v1.split('.')]
             parts2 = [int(x) for x in v2.split('.')]
@@ -587,16 +587,16 @@ class CheckLauncherUpdateThread(QThread):
             for release in releases:
                 tag = release.get('tag_name', '')
                 
-                # SÃ³ considera releases do launcher
+                # Só considera releases do launcher
                 if not tag.lower().startswith('launcher'):
                     continue
                 
-                # Extrai versÃ£o da tag (launcher-x.x.x -> x.x.x)
+                # Extrai versão da tag (launcher-x.x.x -> x.x.x)
                 version_match = re.search(r'launcher-v?(\d+\.\d+\.\d+)', tag, re.IGNORECASE)
                 if version_match:
                     version = version_match.group(1)
                     
-                    # Verifica se Ã© a versÃ£o mais recente
+                    # Verifica se é a versão mais recente
                     if best_version is None or self._compare_versions(version, best_version) > 0:
                         best_version = version
                         best_release = release
@@ -610,23 +610,23 @@ class CheckLauncherUpdateThread(QThread):
                         break
                 
                 if self._compare_versions(best_version, self.current_version) > 0:
-                    self.finished_signal.emit(True, best_version, download_url, "Nova versÃ£o do launcher disponÃ­vel!")
+                    self.finished_signal.emit(True, best_version, download_url, "Nova versão do launcher disponível!")
                 else:
                     self.finished_signal.emit(True, best_version, "", "Launcher atualizado!")
             else:
-                # NÃ£o encontrou release do launcher, estÃ¡ atualizado
+                # Não encontrou release do launcher, está atualizado
                 self.finished_signal.emit(True, self.current_version, "", "Launcher atualizado!")
                 
         except Exception as e:
             self.finished_signal.emit(False, "", "", f"Erro: {str(e)}")
 
 
-
-
-
+# ============================================================================
+# WIDGETS CUSTOMIZADOS
+# ============================================================================
 
 class StyledButton(QPushButton):
-    """BotÃ£o estilizado com tema oriental"""
+    """Botão estilizado com tema oriental"""
     
     def __init__(self, text: str, primary: bool = False, parent=None):
         super().__init__(text, parent)
@@ -711,7 +711,7 @@ class StatusCard(QFrame):
         self.title_label.setWordWrap(False)
         layout.addWidget(self.title_label)
         
-        self.value_label = QLabel("â€”")
+        self.value_label = QLabel("—")
         self.value_label.setFont(QFont("Segoe UI", 10, QFont.Bold))
         self.value_label.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; border: none;")
         self.value_label.setFixedHeight(20)
@@ -726,9 +726,9 @@ class StatusCard(QFrame):
             self.value_label.setStyleSheet(f"color: {color}; border: none;")
 
 
-
-
-
+# ============================================================================
+# JANELA PRINCIPAL
+# ============================================================================
 
 class LauncherWindow(QMainWindow):
     """Janela principal do Launcher"""
@@ -743,23 +743,23 @@ class LauncherWindow(QMainWindow):
         self.game_root = None
         self.translation_path = None
         
-        # VersÃµes
+        # Versões
         self.latest_version = None
         self.latest_timestamp = None
         self.download_url = None
         
         self.init_ui()
         
-        # Se jÃ¡ tem executÃ¡vel salvo, tenta detectar
+        # Se já tem executável salvo, tenta detectar
         if self.exe_path and Path(self.exe_path).exists():
             self._detect_platform(self.exe_path)
         
-        # Verifica atualizaÃ§Ãµes automaticamente
+        # Verifica atualizações automaticamente
         QTimer.singleShot(500, self.check_for_updates)
         QTimer.singleShot(1000, self.check_launcher_update)
     
     def _get_app_dir(self) -> Path:
-        """Retorna o diretÃ³rio do aplicativo (funciona tanto como .py quanto como .exe)"""
+        """Retorna o diretório do aplicativo (funciona tanto como .py quanto como .exe)"""
         if getattr(sys, 'frozen', False):
             # Executando como .exe compilado
             return Path(sys.executable).parent
@@ -768,7 +768,7 @@ class LauncherWindow(QMainWindow):
             return Path(__file__).parent
     
     def _load_local_config(self) -> dict:
-        """Carrega configuraÃ§Ã£o local do launcher"""
+        """Carrega configuração local do launcher"""
         config_path = self._get_app_dir() / LOCAL_CONFIG_FILE
         if config_path.exists():
             try:
@@ -779,7 +779,7 @@ class LauncherWindow(QMainWindow):
         return {}
     
     def _save_local_config(self):
-        """Salva configuraÃ§Ã£o local"""
+        """Salva configuração local"""
         config_path = self._get_app_dir() / LOCAL_CONFIG_FILE
         self.config['exe_path'] = self.exe_path
         try:
@@ -791,7 +791,7 @@ class LauncherWindow(QMainWindow):
     def init_ui(self):
         """Inicializa a interface"""
         self.setWindowTitle(f"{APP_NAME}")
-        self.setMinimumSize(550, 700)  # Tamanho mÃ­nimo que cabe tudo
+        self.setMinimumSize(550, 700)  # Tamanho mínimo que cabe tudo
         self.resize(600, 750)  # Tamanho inicial
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -820,7 +820,7 @@ class LauncherWindow(QMainWindow):
         container_layout.setContentsMargins(20, 20, 20, 20)
         container_layout.setSpacing(12)
         
-        # SeÃ§Ãµes da UI
+        # Seções da UI
         self._create_header(container_layout)
         self._create_status_cards(container_layout)
         self._create_game_selector(container_layout)
@@ -836,17 +836,17 @@ class LauncherWindow(QMainWindow):
         self.container.setGraphicsEffect(shadow)
     
     def _create_header(self, layout):
-        """Cria o cabeÃ§alho"""
+        """Cria o cabeçalho"""
         header = QFrame()
         header.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         header_layout = QVBoxLayout(header)
         header_layout.setSpacing(4)
         header_layout.setContentsMargins(0, 0, 0, 8)
         
-        # Barra de tÃ­tulo
+        # Barra de título
         title_bar = QHBoxLayout()
         
-        logo = QLabel("âš”")
+        logo = QLabel("⚔")
         logo.setFont(QFont("Segoe UI", 20))
         logo.setFixedSize(30, 30)
         logo.setStyleSheet(f"color: {Theme.GOLD_PRIMARY};")
@@ -855,7 +855,7 @@ class LauncherWindow(QMainWindow):
         title_bar.addStretch()
         
         # Minimizar
-        min_btn = QPushButton("â”€")
+        min_btn = QPushButton("─")
         min_btn.setFixedSize(28, 28)
         min_btn.setCursor(Qt.PointingHandCursor)
         min_btn.setStyleSheet(f"""
@@ -875,7 +875,7 @@ class LauncherWindow(QMainWindow):
         title_bar.addWidget(min_btn)
         
         # Fechar
-        close_btn = QPushButton("âœ•")
+        close_btn = QPushButton("✕")
         close_btn.setFixedSize(28, 28)
         close_btn.setCursor(Qt.PointingHandCursor)
         close_btn.setStyleSheet(f"""
@@ -896,7 +896,7 @@ class LauncherWindow(QMainWindow):
         
         header_layout.addLayout(title_bar)
         
-        # TÃ­tulo
+        # Título
         title = QLabel("Where Winds Meet")
         title.setFont(QFont("Segoe UI Light", 24))
         title.setFixedHeight(32)
@@ -904,8 +904,8 @@ class LauncherWindow(QMainWindow):
         title.setAlignment(Qt.AlignCenter)
         header_layout.addWidget(title)
         
-        # SubtÃ­tulo
-        subtitle = QLabel("TraduÃ§Ã£o PortuguÃªs Brasil")
+        # Subtítulo
+        subtitle = QLabel("Tradução Português Brasil")
         subtitle.setFont(QFont("Segoe UI", 10))
         subtitle.setFixedHeight(18)
         subtitle.setStyleSheet(f"color: {Theme.GOLD_PRIMARY};")
@@ -943,12 +943,12 @@ class LauncherWindow(QMainWindow):
         
         # Card plataforma
         self.card_platform = StatusCard("Plataforma")
-        self.card_platform.set_value("NÃ£o detectada", Theme.TEXT_MUTED)
+        self.card_platform.set_value("Não detectada", Theme.TEXT_MUTED)
         cards_layout.addWidget(self.card_platform)
         
-        # Card status traduÃ§Ã£o
+        # Card status tradução
         self.card_status = StatusCard("Status")
-        self.card_status.set_value("â€”", Theme.TEXT_MUTED)
+        self.card_status.set_value("—", Theme.TEXT_MUTED)
         cards_layout.addWidget(self.card_status)
         
         cards_container_layout.addLayout(cards_layout)
@@ -957,13 +957,13 @@ class LauncherWindow(QMainWindow):
         cards_layout2 = QHBoxLayout()
         cards_layout2.setSpacing(12)
         
-        # Card versÃ£o instalada
-        self.card_installed = StatusCard("VersÃ£o Instalada")
-        self.card_installed.set_value("â€”")
+        # Card versão instalada
+        self.card_installed = StatusCard("Versão Instalada")
+        self.card_installed.set_value("—")
         cards_layout2.addWidget(self.card_installed)
         
-        # Card versÃ£o disponÃ­vel
-        self.card_available = StatusCard("VersÃ£o DisponÃ­vel")
+        # Card versão disponível
+        self.card_available = StatusCard("Versão Disponível")
         self.card_available.set_value("Verificando...", Theme.TEXT_SECONDARY)
         cards_layout2.addWidget(self.card_available)
         
@@ -972,7 +972,7 @@ class LauncherWindow(QMainWindow):
         layout.addWidget(cards_container)
     
     def _create_game_selector(self, layout):
-        """Cria a seÃ§Ã£o de seleÃ§Ã£o do jogo"""
+        """Cria a seção de seleção do jogo"""
         selector = QFrame()
         selector.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         selector.setMinimumHeight(140)
@@ -988,14 +988,14 @@ class LauncherWindow(QMainWindow):
         selector_layout.setSpacing(8)
         selector_layout.setContentsMargins(14, 12, 14, 12)
         
-        # TÃ­tulo
-        label = QLabel("ðŸ“‚ LocalizaÃ§Ã£o do Jogo")
+        # Título
+        label = QLabel("📂 Localização do Jogo")
         label.setFont(QFont("Segoe UI", 10, QFont.Bold))
         label.setFixedHeight(20)
         label.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; border: none;")
         selector_layout.addWidget(label)
         
-        # Caminho do executÃ¡vel
+        # Caminho do executável
         self.path_label = QLabel("Localize o arquivo wwm.exe do jogo")
         self.path_label.setFont(QFont("Segoe UI", 8))
         self.path_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; border: none;")
@@ -1011,8 +1011,8 @@ class LauncherWindow(QMainWindow):
         self.game_status.setMinimumHeight(16)
         selector_layout.addWidget(self.game_status)
         
-        # BotÃ£o embaixo (largura total)
-        browse_btn = StyledButton("ðŸ“ Procurar wwm.exe")
+        # Botão embaixo (largura total)
+        browse_btn = StyledButton("📁 Procurar wwm.exe")
         browse_btn.setFixedHeight(36)
         browse_btn.clicked.connect(self.browse_game)
         selector_layout.addWidget(browse_btn)
@@ -1020,7 +1020,7 @@ class LauncherWindow(QMainWindow):
         layout.addWidget(selector)
     
     def _create_progress_section(self, layout):
-        """Cria a seÃ§Ã£o de progresso"""
+        """Cria a seção de progresso"""
         progress_frame = QFrame()
         progress_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         progress_frame.setFixedHeight(50)
@@ -1028,7 +1028,7 @@ class LauncherWindow(QMainWindow):
         progress_layout.setSpacing(6)
         progress_layout.setContentsMargins(0, 0, 0, 0)
         
-        self.status_label = QLabel("Localize o wwm.exe para comeÃ§ar")
+        self.status_label = QLabel("Localize o wwm.exe para começar")
         self.status_label.setFont(QFont("Segoe UI", 9))
         self.status_label.setFixedHeight(20)
         self.status_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY};")
@@ -1056,40 +1056,40 @@ class LauncherWindow(QMainWindow):
         layout.addWidget(progress_frame)
     
     def _create_action_buttons(self, layout):
-        """Cria os botÃµes de aÃ§Ã£o"""
+        """Cria os botões de ação"""
         buttons_layout = QVBoxLayout()
         buttons_layout.setSpacing(8)
         
-        # BotÃ£o principal - Instalar/Atualizar
-        self.install_btn = StyledButton("â¬‡ INSTALAR TRADUÃ‡ÃƒO", primary=True)
+        # Botão principal - Instalar/Atualizar
+        self.install_btn = StyledButton("⬇ INSTALAR TRADUÇÃO", primary=True)
         self.install_btn.setFixedHeight(48)
         self.install_btn.setFont(QFont("Segoe UI", 11, QFont.Bold))
         self.install_btn.clicked.connect(self.install_translation)
         self.install_btn.setEnabled(False)
-        self.install_btn.setToolTip("Baixa e instala a traduÃ§Ã£o PT-BR do GitHub")
+        self.install_btn.setToolTip("Baixa e instala a tradução PT-BR do GitHub")
         buttons_layout.addWidget(self.install_btn)
         
-        # BotÃ£o de restaurar original (inicialmente oculto)
-        self.restore_btn = StyledButton("ðŸ”™ RESTAURAR ORIGINAL (Remover TraduÃ§Ã£o)")
+        # Botão de restaurar original (inicialmente oculto)
+        self.restore_btn = StyledButton("🔙 RESTAURAR ORIGINAL (Remover Tradução)")
         self.restore_btn.setFixedHeight(40)
         self.restore_btn.clicked.connect(self.restore_backup)
         self.restore_btn.setVisible(False)
-        self.restore_btn.setToolTip("Restaura os arquivos originais do jogo (remove a traduÃ§Ã£o)")
+        self.restore_btn.setToolTip("Restaura os arquivos originais do jogo (remove a tradução)")
         buttons_layout.addWidget(self.restore_btn)
         
-        # BotÃµes secundÃ¡rios
+        # Botões secundários
         secondary_layout = QHBoxLayout()
         secondary_layout.setSpacing(10)
         
-        # Verificar atualizaÃ§Ãµes
-        self.check_btn = StyledButton("ðŸ”„ Verificar")
+        # Verificar atualizações
+        self.check_btn = StyledButton("🔄 Verificar")
         self.check_btn.setFixedHeight(38)
         self.check_btn.clicked.connect(self.check_for_updates)
-        self.check_btn.setToolTip("Verifica se hÃ¡ nova versÃ£o da traduÃ§Ã£o disponÃ­vel")
+        self.check_btn.setToolTip("Verifica se há nova versão da tradução disponível")
         secondary_layout.addWidget(self.check_btn)
         
         # Iniciar jogo
-        self.play_btn = StyledButton("â–¶ Iniciar Jogo")
+        self.play_btn = StyledButton("▶ Iniciar Jogo")
         self.play_btn.setFixedHeight(38)
         self.play_btn.clicked.connect(self.launch_game)
         self.play_btn.setEnabled(False)
@@ -1101,7 +1101,7 @@ class LauncherWindow(QMainWindow):
         layout.addLayout(buttons_layout)
     
     def _create_footer(self, layout):
-        """Cria o rodapÃ©"""
+        """Cria o rodapé"""
         layout.addStretch()
         
         footer = QFrame()
@@ -1133,7 +1133,7 @@ class LauncherWindow(QMainWindow):
         github_btn.clicked.connect(lambda: webbrowser.open(f"https://github.com/{GITHUB_REPO}"))
         links_layout.addWidget(github_btn)
         
-        sep = QLabel("â€¢")
+        sep = QLabel("•")
         sep.setFixedHeight(20)
         sep.setStyleSheet(f"color: {Theme.TEXT_MUTED};")
         links_layout.addWidget(sep)
@@ -1158,8 +1158,8 @@ class LauncherWindow(QMainWindow):
         
         footer_layout.addLayout(links_layout)
         
-        # BotÃ£o de nova versÃ£o do launcher
-        self.launcher_update_btn = QPushButton("â¬† Nova versÃ£o disponÃ­vel - Clique para baixar")
+        # Botão de nova versão do launcher
+        self.launcher_update_btn = QPushButton("⬆ Nova versão disponível - Clique para baixar")
         self.launcher_update_btn.setFixedHeight(22)
         self.launcher_update_btn.setCursor(Qt.PointingHandCursor)
         self.launcher_update_btn.setStyleSheet(f"""
@@ -1180,8 +1180,8 @@ class LauncherWindow(QMainWindow):
         self.launcher_update_btn.setVisible(False)
         footer_layout.addWidget(self.launcher_update_btn, alignment=Qt.AlignCenter)
         
-        # CrÃ©ditos
-        credits = QLabel(f"Comunidade WWM Brasil â€¢ v{APP_VERSION}")
+        # Créditos
+        credits = QLabel(f"Comunidade WWM Brasil • v{APP_VERSION}")
         credits.setFont(QFont("Segoe UI", 8))
         credits.setFixedHeight(16)
         credits.setStyleSheet(f"color: {Theme.TEXT_MUTED};")
@@ -1190,17 +1190,17 @@ class LauncherWindow(QMainWindow):
         
         layout.addWidget(footer)
     
-    
-    # LÃ“GICA DO APLICATIVO
-    
+    # ========================================================================
+    # LÓGICA DO APLICATIVO
+    # ========================================================================
     
     def browse_game(self):
-        """Abre diÃ¡logo para selecionar o executÃ¡vel do jogo"""
+        """Abre diálogo para selecionar o executável do jogo"""
         file_path, _ = QFileDialog.getOpenFileName(
             self,
-            "Selecionar executÃ¡vel do jogo (wwm.exe)",
+            "Selecionar executável do jogo (wwm.exe)",
             "",
-            "ExecutÃ¡vel do jogo (wwm.exe)"
+            "Executável do jogo (wwm.exe)"
         )
         
         if file_path:
@@ -1213,27 +1213,27 @@ class LauncherWindow(QMainWindow):
         if platform == Platform.UNKNOWN:
             QMessageBox.warning(
                 self,
-                "ExecutÃ¡vel InvÃ¡lido",
-                "NÃ£o foi possÃ­vel identificar a plataforma.\n\n"
-                "Selecione o executÃ¡vel wwm.exe do jogo:\n"
-                "â€¢ Steam: [Steam]\\steamapps\\common\\...\\Engine\\Binaries\\Win64r\\wwm.exe\n"
-                "â€¢ Epic: [Epic Games]\\...\\Engine\\Binaries\\Win64r\\wwm.exe\n"
-                "â€¢ Standalone: [wwm]\\wwm_standard\\Engine\\Binaries\\Win64r\\wwm.exe\n"
-                "â€¢ Standalone Lite: [wwm]\\wwm_lite\\Engine\\Binaries\\Win64r\\wwm.exe"
+                "Executável Inválido",
+                "Não foi possível identificar a plataforma.\n\n"
+                "Selecione o executável wwm.exe do jogo:\n"
+                "• Steam: [Steam]\\steamapps\\common\\...\\Engine\\Binaries\\Win64r\\wwm.exe\n"
+                "• Epic: [Epic Games]\\...\\Engine\\Binaries\\Win64r\\wwm.exe\n"
+                "• Standalone: [wwm]\\wwm_standard\\Engine\\Binaries\\Win64r\\wwm.exe\n"
+                "• Standalone Lite: [wwm]\\wwm_lite\\Engine\\Binaries\\Win64r\\wwm.exe"
             )
             return
         
-        # Verifica se a pasta de traduÃ§Ã£o existe
+        # Verifica se a pasta de tradução existe
         if not translation_path.exists():
             QMessageBox.warning(
                 self,
-                "Pasta nÃ£o encontrada",
-                f"A pasta de traduÃ§Ã£o nÃ£o foi encontrada:\n{translation_path}\n\n"
-                "Verifique se o jogo estÃ¡ instalado corretamente."
+                "Pasta não encontrada",
+                f"A pasta de tradução não foi encontrada:\n{translation_path}\n\n"
+                "Verifique se o jogo está instalado corretamente."
             )
             return
         
-        # Salva configuraÃ§Ã£o
+        # Salva configuração
         self.exe_path = exe_path
         self.platform = platform
         self.game_root = game_root
@@ -1255,20 +1255,20 @@ class LauncherWindow(QMainWindow):
         self.card_platform.set_value(f"{platform_config['icon']} {platform_name}", Theme.GOLD_PRIMARY)
         self.path_label.setText(str(exe_path))
         self.path_label.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; border: none;")
-        self.game_status.setText(f"âœ“ Pasta de traduÃ§Ã£o: {translation_path}")
+        self.game_status.setText(f"✓ Pasta de tradução: {translation_path}")
         self.game_status.setStyleSheet(f"color: {Theme.SUCCESS}; border: none;")
         
         self.play_btn.setEnabled(True)
         self.install_btn.setEnabled(True)
         
-        # Verifica status da traduÃ§Ã£o local
+        # Verifica status da tradução local
         self._update_translation_status()
         
-        # Verifica automaticamente se hÃ¡ atualizaÃ§Ãµes online
+        # Verifica automaticamente se há atualizações online
         self.check_for_updates()
     
     def _update_translation_status(self):
-        """Atualiza o status da traduÃ§Ã£o instalada"""
+        """Atualiza o status da tradução instalada"""
         if not self.translation_path:
             return
         
@@ -1278,36 +1278,36 @@ class LauncherWindow(QMainWindow):
         # Atualiza cards
         if status['status'] == TranslationStatus.NOT_INSTALLED:
             self.card_status.set_value("Original", Theme.TEXT_SECONDARY)
-            self.card_installed.set_value("NÃ£o instalada")
-            self.install_btn.setText("â¬‡ INSTALAR TRADUÃ‡ÃƒO")
+            self.card_installed.set_value("Não instalada")
+            self.install_btn.setText("⬇ INSTALAR TRADUÇÃO")
             self.install_btn.setVisible(True)
             self.restore_btn.setVisible(False)
-            self.status_label.setText("Pronto para instalar a traduÃ§Ã£o PT-BR")
+            self.status_label.setText("Pronto para instalar a tradução PT-BR")
             self.status_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY};")
             
         elif status['status'] == TranslationStatus.INSTALLED:
-            self.card_status.set_value("âœ“ PT-BR Ativo", Theme.SUCCESS)
+            self.card_status.set_value("✓ PT-BR Ativo", Theme.SUCCESS)
             self.card_installed.set_value(status['installed_version'] or "Instalada", Theme.SUCCESS)
-            # BotÃ£o de instalar fica oculto atÃ© verificar se hÃ¡ atualizaÃ§Ã£o
+            # Botão de instalar fica oculto até verificar se há atualização
             self.install_btn.setVisible(False)
             self.restore_btn.setVisible(status['has_backup'])
             self.status_label.setText(status['message'])
             self.status_label.setStyleSheet(f"color: {Theme.SUCCESS};")
             
         elif status['status'] == TranslationStatus.OVERWRITTEN:
-            self.card_status.set_value("âš  Sobrescrita", Theme.WARNING)
+            self.card_status.set_value("⚠ Sobrescrita", Theme.WARNING)
             self.card_installed.set_value("Necessita reinstalar", Theme.WARNING)
-            self.install_btn.setText("ðŸ”„ REINSTALAR TRADUÃ‡ÃƒO")
+            self.install_btn.setText("🔄 REINSTALAR TRADUÇÃO")
             self.install_btn.setVisible(True)
             self.restore_btn.setVisible(status['has_backup'])
-            self.status_label.setText("âš  " + status['message'])
+            self.status_label.setText("⚠ " + status['message'])
             self.status_label.setStyleSheet(f"color: {Theme.WARNING};")
     
     def check_for_updates(self):
-        """Verifica atualizaÃ§Ãµes da traduÃ§Ã£o"""
+        """Verifica atualizações da tradução"""
         self.check_btn.setEnabled(False)
-        self.check_btn.setText("â³ Verificando...")
-        self.card_available.set_value("ðŸ” Buscando...", Theme.TEXT_SECONDARY)
+        self.check_btn.setText("⏳ Verificando...")
+        self.card_available.set_value("🔍 Buscando...", Theme.TEXT_SECONDARY)
         self.status_label.setText("Conectando ao GitHub...")
         self.status_label.setStyleSheet(f"color: {Theme.INFO};")
         
@@ -1316,9 +1316,9 @@ class LauncherWindow(QMainWindow):
         self.update_thread.start()
     
     def on_update_check_finished(self, success: bool, version: str, timestamp: str, url: str, message: str):
-        """Callback da verificaÃ§Ã£o de atualizaÃ§Ã£o"""
+        """Callback da verificação de atualização"""
         self.check_btn.setEnabled(True)
-        self.check_btn.setText("ðŸ”„ Verificar")
+        self.check_btn.setText("🔄 Verificar")
         
         if success:
             self.latest_version = version
@@ -1328,45 +1328,45 @@ class LauncherWindow(QMainWindow):
             
             # Atualiza status se tiver plataforma detectada
             if self.translation_path:
-                # Verifica se precisa atualizar baseado na versÃ£o
+                # Verifica se precisa atualizar baseado na versão
                 checker = TranslationChecker(str(self.translation_path))
                 config = checker.config
                 installed_version = config.get_installed_version()
                 
                 if not config.is_translation_installed():
-                    # TraduÃ§Ã£o nÃ£o instalada - mostra botÃ£o de instalar
-                    self.install_btn.setText("â¬‡ INSTALAR TRADUÃ‡ÃƒO")
+                    # Tradução não instalada - mostra botão de instalar
+                    self.install_btn.setText("⬇ INSTALAR TRADUÇÃO")
                     self.install_btn.setVisible(True)
-                    self.status_label.setText("Pronto para instalar a traduÃ§Ã£o PT-BR")
+                    self.status_label.setText("Pronto para instalar a tradução PT-BR")
                     self.status_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY};")
                 elif installed_version and version:
                     comparison = self._compare_versions(version, installed_version)
                     if comparison > 0:
-                        # HÃ¡ atualizaÃ§Ã£o disponÃ­vel - mostra botÃ£o
-                        self.status_label.setText(f"ðŸŽ‰ Nova versÃ£o disponÃ­vel: v{version}")
+                        # Há atualização disponível - mostra botão
+                        self.status_label.setText(f"🎉 Nova versão disponível: v{version}")
                         self.status_label.setStyleSheet(f"color: {Theme.GOLD_PRIMARY};")
-                        self.install_btn.setText("â¬† ATUALIZAR TRADUÃ‡ÃƒO")
+                        self.install_btn.setText("⬆ ATUALIZAR TRADUÇÃO")
                         self.install_btn.setVisible(True)
                     elif comparison < 0:
-                        # VersÃ£o instalada Ã© MAIOR que a disponÃ­vel (release apagada)
-                        # Oferece reinstalar para a versÃ£o estÃ¡vel
-                        self.status_label.setText(f"âš  VersÃ£o instalada ({installed_version}) nÃ£o encontrada online")
+                        # Versão instalada é MAIOR que a disponível (release apagada)
+                        # Oferece reinstalar para a versão estável
+                        self.status_label.setText(f"⚠ Versão instalada ({installed_version}) não encontrada online")
                         self.status_label.setStyleSheet(f"color: {Theme.WARNING};")
-                        self.install_btn.setText("ðŸ”„ REINSTALAR v" + version)
+                        self.install_btn.setText("🔄 REINSTALAR v" + version)
                         self.install_btn.setVisible(True)
                         self.card_installed.set_value(installed_version, Theme.WARNING)
                     else:
-                        # TraduÃ§Ã£o estÃ¡ atualizada - oculta botÃ£o
-                        self.status_label.setText("âœ“ TraduÃ§Ã£o estÃ¡ atualizada")
+                        # Tradução está atualizada - oculta botão
+                        self.status_label.setText("✓ Tradução está atualizada")
                         self.status_label.setStyleSheet(f"color: {Theme.SUCCESS};")
                         self.install_btn.setVisible(False)
         else:
             self.card_available.set_value("Erro", Theme.ERROR)
-            self.status_label.setText(f"âŒ {message}")
+            self.status_label.setText(f"❌ {message}")
             self.status_label.setStyleSheet(f"color: {Theme.ERROR};")
     
     def _compare_versions(self, v1: str, v2: str) -> int:
-        """Compara duas versÃµes"""
+        """Compara duas versões"""
         try:
             parts1 = [int(x) for x in v1.split('.')]
             parts2 = [int(x) for x in v2.split('.')]
@@ -1383,26 +1383,26 @@ class LauncherWindow(QMainWindow):
             return 0
     
     def install_translation(self):
-        """Instala ou atualiza a traduÃ§Ã£o"""
+        """Instala ou atualiza a tradução"""
         if not self.translation_path:
-            QMessageBox.warning(self, "Erro", "Selecione o executÃ¡vel do jogo primeiro!")
+            QMessageBox.warning(self, "Erro", "Selecione o executável do jogo primeiro!")
             return
         
         if not self.download_url:
-            QMessageBox.warning(self, "Erro", "Verifique as atualizaÃ§Ãµes primeiro!")
+            QMessageBox.warning(self, "Erro", "Verifique as atualizações primeiro!")
             return
         
-        # Verifica permissÃ£o de escrita
+        # Verifica permissão de escrita
         if not self._check_write_permission():
             return
         
-        # ConfirmaÃ§Ã£o
+        # Confirmação
         reply = QMessageBox.question(
             self,
-            "Confirmar InstalaÃ§Ã£o",
-            f"Deseja instalar a traduÃ§Ã£o PT-BR v{self.latest_version}?\n\n"
-            "ðŸ“ O backup dos arquivos originais serÃ¡ preservado.\n"
-            "(AtualizaÃ§Ãµes nÃ£o sobrescrevem o backup original)",
+            "Confirmar Instalação",
+            f"Deseja instalar a tradução PT-BR v{self.latest_version}?\n\n"
+            "📁 O backup dos arquivos originais será preservado.\n"
+            "(Atualizações não sobrescrevem o backup original)",
             QMessageBox.Yes | QMessageBox.No
         )
         
@@ -1450,7 +1450,7 @@ class LauncherWindow(QMainWindow):
                             # Backup do arquivo original
                             if dest_file.exists():
                                 backup_file = dest_file.with_suffix('.backup')
-                                # SÃ³ faz backup se nÃ£o existir (preserva o original real)
+                                # Só faz backup se não existir (preserva o original real)
                                 if not backup_file.exists():
                                     shutil.copy2(dest_file, backup_file)
                                     files_backed_up.append(translation_file)
@@ -1466,41 +1466,41 @@ class LauncherWindow(QMainWindow):
                     
                 except zipfile.BadZipFile:
                     shutil.rmtree(temp_extract_dir, ignore_errors=True)
-                    raise Exception("Arquivo ZIP invÃ¡lido")
+                    raise Exception("Arquivo ZIP inválido")
                 
                 os.unlink(result)
                 
                 if files_installed:
-                    # Salva configuraÃ§Ã£o da traduÃ§Ã£o
+                    # Salva configuração da tradução
                     config = TranslationConfig(str(locale_path))
                     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     config.set_installed(self.latest_version, timestamp, file_hashes)
                     
                     self._update_translation_status()
                     
-                    self.status_label.setText("âœ“ TraduÃ§Ã£o instalada com sucesso!")
+                    self.status_label.setText("✓ Tradução instalada com sucesso!")
                     self.status_label.setStyleSheet(f"color: {Theme.SUCCESS};")
                     
-                    msg = f"TraduÃ§Ã£o v{self.latest_version} instalada com sucesso!\n\n"
-                    msg += f"ðŸ“¦ Arquivos instalados:\n"
+                    msg = f"Tradução v{self.latest_version} instalada com sucesso!\n\n"
+                    msg += f"📦 Arquivos instalados:\n"
                     for f in files_installed:
-                        msg += f"   â€¢ {f}\n"
+                        msg += f"   • {f}\n"
                     
                     if files_backed_up:
-                        msg += f"\nðŸ’¾ Backups criados:\n"
+                        msg += f"\n💾 Backups criados:\n"
                         for f in files_backed_up:
-                            msg += f"   â€¢ {f}.backup\n"
+                            msg += f"   • {f}.backup\n"
                     
                     QMessageBox.information(self, "Sucesso!", msg)
                 else:
-                    raise Exception("Nenhum arquivo de traduÃ§Ã£o encontrado no pacote.")
+                    raise Exception("Nenhum arquivo de tradução encontrado no pacote.")
                 
             except Exception as e:
-                self.status_label.setText(f"âŒ Erro: {str(e)}")
+                self.status_label.setText(f"❌ Erro: {str(e)}")
                 self.status_label.setStyleSheet(f"color: {Theme.ERROR};")
                 QMessageBox.critical(self, "Erro", f"Erro ao instalar:\n{str(e)}")
         else:
-            self.status_label.setText(f"âŒ Erro no download: {result}")
+            self.status_label.setText(f"❌ Erro no download: {result}")
             self.status_label.setStyleSheet(f"color: {Theme.ERROR};")
         
         self.install_btn.setEnabled(True)
@@ -1509,9 +1509,9 @@ class LauncherWindow(QMainWindow):
         self.progress_bar.setVisible(False)
     
     def _check_write_permission(self) -> bool:
-        """Verifica se tem permissÃ£o de escrita na pasta de traduÃ§Ã£o"""
+        """Verifica se tem permissão de escrita na pasta de tradução"""
         try:
-            # Tenta criar um arquivo temporÃ¡rio na pasta
+            # Tenta criar um arquivo temporário na pasta
             test_file = self.translation_path / ".write_test"
             test_file.touch()
             test_file.unlink()
@@ -1519,8 +1519,8 @@ class LauncherWindow(QMainWindow):
         except PermissionError:
             reply = QMessageBox.question(
                 self,
-                "PermissÃ£o NecessÃ¡ria",
-                "A pasta do jogo requer permissÃ£o de administrador para modificar.\n\n"
+                "Permissão Necessária",
+                "A pasta do jogo requer permissão de administrador para modificar.\n\n"
                 f"Pasta: {self.translation_path}\n\n"
                 "Deseja reiniciar o launcher como Administrador?",
                 QMessageBox.Yes | QMessageBox.No
@@ -1532,8 +1532,8 @@ class LauncherWindow(QMainWindow):
         except Exception as e:
             QMessageBox.warning(
                 self,
-                "Erro de PermissÃ£o",
-                f"NÃ£o foi possÃ­vel acessar a pasta:\n{self.translation_path}\n\n"
+                "Erro de Permissão",
+                f"Não foi possível acessar a pasta:\n{self.translation_path}\n\n"
                 f"Erro: {str(e)}"
             )
             return False
@@ -1550,7 +1550,7 @@ class LauncherWindow(QMainWindow):
         if not self.translation_path:
             return
         
-        # Verifica permissÃ£o de escrita
+        # Verifica permissão de escrita
         if not self._check_write_permission():
             return
         
@@ -1558,7 +1558,7 @@ class LauncherWindow(QMainWindow):
             self,
             "Restaurar Original",
             "Deseja restaurar os arquivos originais do jogo?\n\n"
-            "Isso irÃ¡ REMOVER a traduÃ§Ã£o PT-BR.",
+            "Isso irá REMOVER a tradução PT-BR.",
             QMessageBox.Yes | QMessageBox.No
         )
         
@@ -1581,19 +1581,19 @@ class LauncherWindow(QMainWindow):
                     files_restored.append(translation_file)
             
             if files_restored:
-                # Remove configuraÃ§Ã£o
+                # Remove configuração
                 config = TranslationConfig(str(locale_path))
                 config.clear()
                 
                 self._update_translation_status()
                 
-                self.status_label.setText("âœ“ Arquivos originais restaurados!")
+                self.status_label.setText("✓ Arquivos originais restaurados!")
                 self.status_label.setStyleSheet(f"color: {Theme.SUCCESS};")
                 
                 msg = "Arquivos originais restaurados!\n\n"
-                msg += "ðŸ“¦ Arquivos restaurados:\n"
+                msg += "📦 Arquivos restaurados:\n"
                 for f in files_restored:
-                    msg += f"   â€¢ {f}\n"
+                    msg += f"   • {f}\n"
                 
                 QMessageBox.information(self, "Sucesso!", msg)
             else:
@@ -1601,7 +1601,7 @@ class LauncherWindow(QMainWindow):
                 self.restore_btn.setVisible(False)
                 
         except Exception as e:
-            self.status_label.setText(f"âŒ Erro: {str(e)}")
+            self.status_label.setText(f"❌ Erro: {str(e)}")
             QMessageBox.critical(self, "Erro", f"Erro ao restaurar:\n{str(e)}")
     
     def launch_game(self):
@@ -1613,7 +1613,7 @@ class LauncherWindow(QMainWindow):
             # Standalone: executa o launcher.exe relativo ao game_root
             # game_root: [pasta]/wwm_standard/
             # launcher: [pasta]/Win32/deploy/launcher.exe
-            # EntÃ£o: game_root.parent / Win32 / deploy / launcher.exe
+            # Então: game_root.parent / Win32 / deploy / launcher.exe
             launcher_exe = self.game_root.parent / "Win32" / "deploy" / "launcher.exe"
             
             if launcher_exe.exists():
@@ -1621,9 +1621,9 @@ class LauncherWindow(QMainWindow):
             else:
                 QMessageBox.warning(
                     self,
-                    "Launcher nÃ£o encontrado",
-                    f"O launcher.exe nÃ£o foi encontrado em:\n{launcher_exe}\n\n"
-                    "Verifique se o jogo estÃ¡ instalado corretamente."
+                    "Launcher não encontrado",
+                    f"O launcher.exe não foi encontrado em:\n{launcher_exe}\n\n"
+                    "Verifique se o jogo está instalado corretamente."
                 )
                 return
         elif self.platform == Platform.STEAM:
@@ -1634,25 +1634,25 @@ class LauncherWindow(QMainWindow):
         self.showMinimized()
     
     def check_launcher_update(self):
-        """Verifica nova versÃ£o do launcher"""
+        """Verifica nova versão do launcher"""
         self.launcher_check_thread = CheckLauncherUpdateThread(APP_VERSION)
         self.launcher_check_thread.finished_signal.connect(self.on_launcher_update_check)
         self.launcher_check_thread.start()
     
     def on_launcher_update_check(self, success: bool, version: str, download_url: str, message: str):
-        """Callback da verificaÃ§Ã£o do launcher"""
+        """Callback da verificação do launcher"""
         if success and version:
             if self._compare_versions(version, APP_VERSION) > 0:
-                self.launcher_update_btn.setText(f"â¬† Nova versÃ£o v{version} disponÃ­vel - Clique para baixar")
+                self.launcher_update_btn.setText(f"⬆ Nova versão v{version} disponível - Clique para baixar")
                 self.launcher_update_btn.setVisible(True)
     
-    
+    # ========================================================================
     # EVENTOS DE JANELA
-    
+    # ========================================================================
     
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            # Verifica se estÃ¡ no canto inferior direito para redimensionar
+            # Verifica se está no canto inferior direito para redimensionar
             margin = 20
             rect = self.rect()
             if (event.pos().x() >= rect.width() - margin and 
@@ -1693,12 +1693,12 @@ class LauncherWindow(QMainWindow):
         event.accept()
 
 
-
-
-
+# ============================================================================
+# PONTO DE ENTRADA
+# ============================================================================
 
 def main():
-    # ConfiguraÃ§Ãµes de High DPI - devem vir ANTES de criar QApplication
+    # Configurações de High DPI - devem vir ANTES de criar QApplication
     if hasattr(Qt, 'AA_EnableHighDpiScaling'):
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
     if hasattr(Qt, 'AA_UseHighDpiPixmaps'):

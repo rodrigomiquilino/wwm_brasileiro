@@ -1,12 +1,12 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 WWM Tradutor PT-BR
-Ferramenta de extraÃ§Ã£o e empacotamento para traduÃ§Ã£o de Where Winds Meet
+Ferramenta de extração e empacotamento para tradução de Where Winds Meet
 
 Autor: rodrigomiquilino
 Projeto: https://github.com/rodrigomiquilino/wwm_brasileiro
-LicenÃ§a: MIT
+Licença: MIT
 """
 
 import re
@@ -21,7 +21,7 @@ from pathlib import Path
 try:
     import pyzstd
 except ImportError:
-    print("Erro: pyzstd nÃ£o encontrado. Instale com: pip install pyzstd")
+    print("Erro: pyzstd não encontrado. Instale com: pip install pyzstd")
     sys.exit(1)
 
 try:
@@ -34,13 +34,13 @@ try:
     from PyQt5.QtGui import QFont, QPalette, QColor
     from PyQt5.QtCore import Qt, QThread, pyqtSignal
 except ImportError:
-    print("Erro: PyQt5 nÃ£o encontrado. Instale com: pip install PyQt5")
+    print("Erro: PyQt5 não encontrado. Instale com: pip install PyQt5")
     sys.exit(1)
 
 
-
-# CONFIGURAÃ‡ÃƒO
-
+# ============================================================================
+# CONFIGURAÇÃO
+# ============================================================================
 
 APP_NAME = "WWM Tradutor PT-BR"
 APP_VERSION = "2.1.0"
@@ -51,12 +51,12 @@ TEXT_BLOCK_SIGNATURE = b'\xDC\x96\x58\x59'
 OUTPUT_FOLDER = "output"
 
 
-
-# FUNÃ‡Ã•ES DE EXTRAÃ‡ÃƒO E EMPACOTAMENTO
-
+# ============================================================================
+# FUNÇÕES DE EXTRAÇÃO E EMPACOTAMENTO
+# ============================================================================
 
 def get_project_root() -> Path:
-    """Retorna o diretÃ³rio raiz do projeto"""
+    """Retorna o diretório raiz do projeto"""
     return Path(__file__).parent.parent
 
 
@@ -66,7 +66,7 @@ def get_output_folder() -> Path:
 
 
 def create_session_folder() -> Path:
-    """Cria uma pasta de sessÃ£o com timestamp"""
+    """Cria uma pasta de sessão com timestamp"""
     timestamp = datetime.now().strftime("%d%m%Y%H%M%S")
     session_path = get_output_folder() / timestamp
     
@@ -79,7 +79,7 @@ def create_session_folder() -> Path:
 
 
 def list_existing_sessions() -> list:
-    """Lista sessÃµes existentes na pasta output"""
+    """Lista sessões existentes na pasta output"""
     output_folder = get_output_folder()
     sessions = []
     
@@ -93,7 +93,7 @@ def list_existing_sessions() -> list:
 
 def extract_game_file(input_file: str, output_dir: str, log_callback=None) -> bool:
     """
-    Extrai um arquivo binÃ¡rio do jogo para mÃºltiplos arquivos .dat
+    Extrai um arquivo binário do jogo para múltiplos arquivos .dat
     Suporta arquivos normais e arquivos _diff
     """
     try:
@@ -103,14 +103,14 @@ def extract_game_file(input_file: str, output_dir: str, log_callback=None) -> bo
             # Verifica assinatura do arquivo
             if f.read(4) != GAME_FILE_SIGNATURE:
                 if log_callback:
-                    log_callback(f"âŒ Arquivo invÃ¡lido: assinatura nÃ£o reconhecida")
+                    log_callback(f"❌ Arquivo inválido: assinatura não reconhecida")
                 return False
             
             f.read(4)  # Pula 4 bytes
             offset_count = struct.unpack('<I', f.read(4))[0] + 1
             
             if offset_count == 1:
-                # Arquivo com bloco Ãºnico
+                # Arquivo com bloco único
                 comp_block_len = struct.unpack('<I', f.read(4))[0]
                 comp_block = f.read(comp_block_len)
                 
@@ -128,17 +128,17 @@ def extract_game_file(input_file: str, output_dir: str, log_callback=None) -> bo
                         with open(output_path, 'wb') as out_f:
                             out_f.write(decomp_data)
                         if log_callback:
-                            log_callback(f"âœ… {base_name}_0.dat ({decomp_size} bytes)")
+                            log_callback(f"✅ {base_name}_0.dat ({decomp_size} bytes)")
                     except Exception as e:
                         if log_callback:
-                            log_callback(f"âŒ Erro ao descompactar: {e}")
+                            log_callback(f"❌ Erro ao descompactar: {e}")
                         return False
             else:
-                # Arquivo com mÃºltiplos blocos
+                # Arquivo com múltiplos blocos
                 offsets = [struct.unpack('<I', f.read(4))[0] for _ in range(offset_count)]
                 data_start = f.tell()
                 
-                # Calcula o tamanho total dos dados disponÃ­veis
+                # Calcula o tamanho total dos dados disponíveis
                 file_size = os.path.getsize(input_file)
                 data_available = file_size - data_start
                 
@@ -148,7 +148,7 @@ def extract_game_file(input_file: str, output_dir: str, log_callback=None) -> bo
                     next_offset = offsets[i + 1]
                     block_len = next_offset - current_offset
                     
-                    # Verifica se block_len Ã© vÃ¡lido (proteÃ§Ã£o para arquivos _diff)
+                    # Verifica se block_len é válido (proteção para arquivos _diff)
                     if block_len <= 0:
                         # Tenta calcular o tamanho restante
                         block_len = data_available - current_offset
@@ -173,18 +173,18 @@ def extract_game_file(input_file: str, output_dir: str, log_callback=None) -> bo
                                 out_f.write(decomp_data)
                             extracted_count += 1
                             if log_callback and extracted_count % 100 == 0:
-                                log_callback(f"ðŸ“¦ ExtraÃ­dos {extracted_count} arquivos...")
+                                log_callback(f"📦 Extraídos {extracted_count} arquivos...")
                         except Exception:
                             pass
                 
                 if log_callback:
-                    log_callback(f"âœ… ExtraÃ§Ã£o completa: {extracted_count} arquivos .dat")
+                    log_callback(f"✅ Extração completa: {extracted_count} arquivos .dat")
             
             return True
     
     except Exception as e:
         if log_callback:
-            log_callback(f"âŒ Erro na extraÃ§Ã£o: {str(e)}")
+            log_callback(f"❌ Erro na extração: {str(e)}")
         return False
 
 
@@ -192,7 +192,7 @@ def extract_texts_to_tsv(input_dir: str, output_file: str, log_callback=None) ->
     """
     Extrai textos dos arquivos .dat para um arquivo TSV
     Formato: ID + OriginalText (igual ao translation_en.tsv)
-    O mapeamento interno completo Ã© salvo em arquivo separado (.map) com todos os dados necessÃ¡rios
+    O mapeamento interno completo é salvo em arquivo separado (.map) com todos os dados necessários
     """
     try:
         text_files_count = 0
@@ -230,7 +230,7 @@ def extract_texts_to_tsv(input_dir: str, output_file: str, log_callback=None) ->
                     f.read(4)
                     count_text = struct.unpack('<I', f.read(4))[0]
                     f.read(12)
-                    # LÃª os bytes "unknown" (cÃ³digos) - importante para reconstruir!
+                    # Lê os bytes "unknown" (códigos) - importante para reconstruir!
                     unknown_codes = f.read(count_full).hex()
                     f.read(17)
                     data_start = f.tell()
@@ -246,7 +246,7 @@ def extract_texts_to_tsv(input_dir: str, output_file: str, log_callback=None) ->
                         text = f.read(length).decode('utf-8', errors='ignore')
                         text = text.replace('\n', '\\n').replace('\r', '\\r')
                         
-                        # CÃ³digo unknown deste bloco (2 caracteres hex por bloco)
+                        # Código unknown deste bloco (2 caracteres hex por bloco)
                         unknown_byte = unknown_codes[i*2:(i+1)*2]
                         
                         # Escreve no TSV simples
@@ -256,17 +256,17 @@ def extract_texts_to_tsv(input_dir: str, output_file: str, log_callback=None) ->
                         total_strings += 1
                 
                 if log_callback and text_files_count % 10 == 0:
-                    log_callback(f"ðŸ“ Processados {text_files_count} arquivos de texto...")
+                    log_callback(f"📝 Processados {text_files_count} arquivos de texto...")
         
         if log_callback:
-            log_callback(f"âœ… ExtraÃ§Ã£o completa: {total_strings} strings de {text_files_count} arquivos")
-            log_callback(f"ðŸ“„ TSV para traduÃ§Ã£o: {os.path.basename(output_file)}")
-            log_callback(f"ðŸ“„ Mapeamento interno: {os.path.basename(map_file)}")
+            log_callback(f"✅ Extração completa: {total_strings} strings de {text_files_count} arquivos")
+            log_callback(f"📄 TSV para tradução: {os.path.basename(output_file)}")
+            log_callback(f"📄 Mapeamento interno: {os.path.basename(map_file)}")
         return True
     
     except Exception as e:
         if log_callback:
-            log_callback(f"âŒ Erro na extraÃ§Ã£o de textos: {str(e)}")
+            log_callback(f"❌ Erro na extração de textos: {str(e)}")
         return False
 
 
@@ -285,11 +285,11 @@ def pack_game_file(input_dir: str, output_file: str, log_callback=None) -> bool:
         
         if not files:
             if log_callback:
-                log_callback("âŒ Nenhum arquivo .dat encontrado na pasta")
+                log_callback("❌ Nenhum arquivo .dat encontrado na pasta")
             return False
         
         with open(output_file, 'wb') as outfile:
-            # Escreve cabeÃ§alho
+            # Escreve cabeçalho
             outfile.write(GAME_FILE_SIGNATURE + b'\x01\x00\x00\x00')
             outfile.write(struct.pack('<I', len(files)))
             
@@ -305,25 +305,25 @@ def pack_game_file(input_dir: str, output_file: str, log_callback=None) -> bool:
                     archive += header + comp_data
                 
                 if log_callback and (i + 1) % 100 == 0:
-                    log_callback(f"ðŸ“¦ Empacotados {i + 1}/{len(files)} arquivos...")
+                    log_callback(f"📦 Empacotados {i + 1}/{len(files)} arquivos...")
             
             outfile.write(struct.pack('<I', len(archive)))
             outfile.write(archive)
         
         if log_callback:
-            log_callback(f"âœ… Empacotamento completo: {output_file}")
+            log_callback(f"✅ Empacotamento completo: {output_file}")
         return True
     
     except Exception as e:
         if log_callback:
-            log_callback(f"âŒ Erro no empacotamento: {str(e)}")
+            log_callback(f"❌ Erro no empacotamento: {str(e)}")
         return False
 
 
 def pack_texts_to_dat(tsv_file: str, dat_dir: str, log_callback=None) -> bool:
     """
     Empacota textos traduzidos de volta nos arquivos .dat
-    ReconstrÃ³i os arquivos .dat do zero usando o mapeamento completo
+    Reconstrói os arquivos .dat do zero usando o mapeamento completo
     """
     try:
         # Arquivo de mapeamento
@@ -331,10 +331,10 @@ def pack_texts_to_dat(tsv_file: str, dat_dir: str, log_callback=None) -> bool:
         
         if not os.path.exists(map_file):
             if log_callback:
-                log_callback(f"âŒ Arquivo de mapeamento nÃ£o encontrado: {map_file}")
+                log_callback(f"❌ Arquivo de mapeamento não encontrado: {map_file}")
             return False
         
-        # Carrega traduÃ§Ãµes do TSV (ID -> texto)
+        # Carrega traduções do TSV (ID -> texto)
         translations = {}
         with open(tsv_file, 'r', encoding='utf-8') as f:
             reader = csv.reader(f, delimiter='\t')
@@ -346,7 +346,7 @@ def pack_texts_to_dat(tsv_file: str, dat_dir: str, log_callback=None) -> bool:
                     translations[text_id] = text
         
         if log_callback:
-            log_callback(f"ðŸ“š Carregadas {len(translations)} traduÃ§Ãµes")
+            log_callback(f"📚 Carregadas {len(translations)} traduções")
         
         # Carrega mapeamento e agrupa por arquivo
         # Formato: File, AllBlocks, WorkBlocks, Block, Unknown, ID
@@ -381,9 +381,9 @@ def pack_texts_to_dat(tsv_file: str, dat_dir: str, log_callback=None) -> bool:
                     })
         
         if log_callback:
-            log_callback(f"ðŸ“š Carregado mapeamento para {len(file_data)} arquivos")
+            log_callback(f"📚 Carregado mapeamento para {len(file_data)} arquivos")
         
-        # ReconstrÃ³i cada arquivo .dat
+        # Reconstrói cada arquivo .dat
         processed = 0
         for filename, data in file_data.items():
             output_path = os.path.join(dat_dir, filename)
@@ -392,20 +392,20 @@ def pack_texts_to_dat(tsv_file: str, dat_dir: str, log_callback=None) -> bool:
             work_blocks = data['work_blocks']
             entries = sorted(data['entries'], key=lambda x: x['block'])
             
-            # ConstrÃ³i o arquivo .dat do zero (igual ao script russo pak_text)
+            # Constrói o arquivo .dat do zero (igual ao script russo pak_text)
             # Header: all_blocks(4) + 0(4) + work_blocks(4) + 0(4) + signature(4) + 0(4)
             all_blocks_bytes = struct.pack('<II', all_blocks, 0)
             work_blocks_bytes = struct.pack('<II', work_blocks, 0)
             file_bytes = TEXT_BLOCK_SIGNATURE + b'\x00\x00\x00\x00'
             
-            # Bytes unknown (cÃ³digos)
+            # Bytes unknown (códigos)
             filled_bytes_unk = b''
             # Bytes ID + offset + length
             filled_bytes_id = b''
             # Bytes texto
             filled_bytes_text = b''
             
-            # Calcula posiÃ§Ãµes iniciais
+            # Calcula posições iniciais
             start_unk = len(all_blocks_bytes) + len(work_blocks_bytes) + len(file_bytes)
             start_id = start_unk + all_blocks + 17
             curr_text = start_id + all_blocks * 16
@@ -423,7 +423,7 @@ def pack_texts_to_dat(tsv_file: str, dat_dir: str, log_callback=None) -> bool:
                 filled_bytes_id += id_bytes
                 
                 # Offset e length (cada um 4 bytes)
-                # Offset Ã© relativo Ã  posiÃ§Ã£o atual do ID (apÃ³s os 8 bytes do ID)
+                # Offset é relativo à posição atual do ID (após os 8 bytes do ID)
                 current_id_pos = start_id + (i * 16) + 8
                 offset = curr_text - current_id_pos
                 filled_bytes_id += struct.pack('<II', offset, len(text))
@@ -432,7 +432,7 @@ def pack_texts_to_dat(tsv_file: str, dat_dir: str, log_callback=None) -> bool:
                 filled_bytes_text += text
                 curr_text += len(text)
             
-            # Adiciona padding apÃ³s os unknown bytes (17 bytes extras)
+            # Adiciona padding após os unknown bytes (17 bytes extras)
             # O formato original tem: unknown_codes + \xFF + primeiros 16 bytes dos unknown_codes (ou padding)
             if len(filled_bytes_unk) >= 16:
                 padding = b'\xFF' + filled_bytes_unk[:16]
@@ -451,26 +451,26 @@ def pack_texts_to_dat(tsv_file: str, dat_dir: str, log_callback=None) -> bool:
             
             processed += 1
             if log_callback and processed % 50 == 0:
-                log_callback(f"ðŸ“¦ Processados {processed} arquivos...")
+                log_callback(f"📦 Processados {processed} arquivos...")
         
         if log_callback:
-            log_callback(f"âœ… Empacotamento de textos completo: {processed} arquivos reconstruÃ­dos")
+            log_callback(f"✅ Empacotamento de textos completo: {processed} arquivos reconstruídos")
         return True
     
     except Exception as e:
         if log_callback:
-            log_callback(f"âŒ Erro ao empacotar textos: {str(e)}")
+            log_callback(f"❌ Erro ao empacotar textos: {str(e)}")
         import traceback
         traceback.print_exc()
         return False
 
 
-
-
-
+# ============================================================================
+# THREAD DE PROCESSAMENTO
+# ============================================================================
 
 class WorkerThread(QThread):
-    """Thread para executar operaÃ§Ãµes em background"""
+    """Thread para executar operações em background"""
     
     log_signal = pyqtSignal(str)
     progress_signal = pyqtSignal(int)
@@ -488,16 +488,16 @@ class WorkerThread(QThread):
             result = self.task_func(*self.args, log_callback=self.log, **self.kwargs)
             self.finished_signal.emit(result, "")
         except Exception as e:
-            self.log(f"âŒ Erro: {str(e)}")
+            self.log(f"❌ Erro: {str(e)}")
             self.finished_signal.emit(False, str(e))
     
     def log(self, message):
         self.log_signal.emit(message)
 
 
-
-# INTERFACE GRÃFICA
-
+# ============================================================================
+# INTERFACE GRÁFICA
+# ============================================================================
 
 class WWMTradutorGUI(QMainWindow):
     """Janela principal do WWM Tradutor PT-BR"""
@@ -510,7 +510,7 @@ class WWMTradutorGUI(QMainWindow):
         self.init_ui()
     
     def init_ui(self):
-        """Inicializa a interface grÃ¡fica"""
+        """Inicializa a interface gráfica"""
         self.setWindowTitle(f"{APP_NAME} v{APP_VERSION}")
         self.setMinimumSize(800, 600)
         
@@ -523,13 +523,13 @@ class WWMTradutorGUI(QMainWindow):
         main_layout.setSpacing(10)
         main_layout.setContentsMargins(15, 15, 15, 15)
         
-        # TÃ­tulo
-        title_label = QLabel(f"ðŸŽ® {APP_NAME}")
+        # Título
+        title_label = QLabel(f"🎮 {APP_NAME}")
         title_label.setFont(QFont("Segoe UI", 18, QFont.Bold))
         title_label.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(title_label)
         
-        subtitle_label = QLabel("Ferramenta de traduÃ§Ã£o EN â†’ PT-BR para Where Winds Meet")
+        subtitle_label = QLabel("Ferramenta de tradução EN → PT-BR para Where Winds Meet")
         subtitle_label.setFont(QFont("Segoe UI", 10))
         subtitle_label.setAlignment(Qt.AlignCenter)
         subtitle_label.setStyleSheet("color: #666; margin-bottom: 10px;")
@@ -540,14 +540,14 @@ class WWMTradutorGUI(QMainWindow):
         self.tabs.setFont(QFont("Segoe UI", 10))
         main_layout.addWidget(self.tabs)
         
-        # Aba 1: Extrair (bin â†’ dat â†’ tsv)
-        self.tabs.addTab(self.create_extract_tab(), "ðŸ“¦ 1. Extrair do Jogo")
+        # Aba 1: Extrair (bin → dat → tsv)
+        self.tabs.addTab(self.create_extract_tab(), "📦 1. Extrair do Jogo")
         
-        # Aba 2: Empacotar (tsv â†’ dat â†’ bin)
-        self.tabs.addTab(self.create_pack_tab(), "ðŸ“¦ 2. Empacotar para o Jogo")
+        # Aba 2: Empacotar (tsv → dat → bin)
+        self.tabs.addTab(self.create_pack_tab(), "📦 2. Empacotar para o Jogo")
         
         # Log
-        log_group = QGroupBox("ðŸ“‹ Log de OperaÃ§Ãµes")
+        log_group = QGroupBox("📋 Log de Operações")
         log_layout = QVBoxLayout(log_group)
         
         self.log_text = QTextEdit()
@@ -557,13 +557,13 @@ class WWMTradutorGUI(QMainWindow):
         self.log_text.setMaximumHeight(200)
         log_layout.addWidget(self.log_text)
         
-        # BotÃµes do log
+        # Botões do log
         log_btn_layout = QHBoxLayout()
-        clear_btn = QPushButton("ðŸ—‘ï¸ Limpar Log")
+        clear_btn = QPushButton("🗑️ Limpar Log")
         clear_btn.clicked.connect(lambda: self.log_text.clear())
         log_btn_layout.addWidget(clear_btn)
         
-        open_output_btn = QPushButton("ðŸ“‚ Abrir Pasta Output")
+        open_output_btn = QPushButton("📂 Abrir Pasta Output")
         open_output_btn.clicked.connect(self.open_output_folder)
         log_btn_layout.addWidget(open_output_btn)
         
@@ -574,31 +574,31 @@ class WWMTradutorGUI(QMainWindow):
         self.statusBar().showMessage("Pronto")
         
         # Log inicial
-        self.log(f"ðŸš€ {APP_NAME} v{APP_VERSION} iniciado")
-        self.log(f"ðŸ“ Pasta do projeto: {get_project_root()}")
-        self.log(f"ðŸ“ Pasta output: {get_output_folder()}")
+        self.log(f"🚀 {APP_NAME} v{APP_VERSION} iniciado")
+        self.log(f"📁 Pasta do projeto: {get_project_root()}")
+        self.log(f"📁 Pasta output: {get_output_folder()}")
     
     def create_extract_tab(self) -> QWidget:
-        """Cria aba de extraÃ§Ã£o (bin â†’ dat â†’ tsv)"""
+        """Cria aba de extração (bin → dat → tsv)"""
         widget = QWidget()
         layout = QVBoxLayout(widget)
         layout.setSpacing(15)
         
-        # InformaÃ§Ãµes
+        # Informações
         info_label = QLabel("""
-        <h3>ðŸ“¦ Extrair Arquivos do Jogo</h3>
-        <p>Este processo irÃ¡:</p>
+        <h3>📦 Extrair Arquivos do Jogo</h3>
+        <p>Este processo irá:</p>
         <ol>
             <li>Extrair o arquivo <b>.bin</b> do jogo para arquivos <b>.dat</b></li>
-            <li>Extrair os textos dos <b>.dat</b> para um arquivo <b>.tsv</b> editÃ¡vel</li>
+            <li>Extrair os textos dos <b>.dat</b> para um arquivo <b>.tsv</b> editável</li>
         </ol>
-        <p>Uma nova pasta serÃ¡ criada em <code>output/</code> com a data e hora atual.</p>
+        <p>Uma nova pasta será criada em <code>output/</code> com a data e hora atual.</p>
         """)
         info_label.setWordWrap(True)
         layout.addWidget(info_label)
         
         # Grupo: Selecionar arquivo do jogo
-        file_group = QGroupBox("ðŸ“„ Arquivo do Jogo (.bin)")
+        file_group = QGroupBox("📄 Arquivo do Jogo (.bin)")
         file_layout = QVBoxLayout(file_group)
         
         file_row = QHBoxLayout()
@@ -607,7 +607,7 @@ class WWMTradutorGUI(QMainWindow):
         self.extract_file_edit.setMinimumHeight(35)
         file_row.addWidget(self.extract_file_edit)
         
-        browse_btn = QPushButton("ðŸ“‚ Procurar")
+        browse_btn = QPushButton("📂 Procurar")
         browse_btn.setMinimumHeight(35)
         browse_btn.clicked.connect(self.browse_game_file)
         file_row.addWidget(browse_btn)
@@ -615,8 +615,8 @@ class WWMTradutorGUI(QMainWindow):
         file_layout.addLayout(file_row)
         layout.addWidget(file_group)
         
-        # BotÃ£o de execuÃ§Ã£o
-        extract_btn = QPushButton("ðŸš€ EXTRAIR TUDO")
+        # Botão de execução
+        extract_btn = QPushButton("🚀 EXTRAIR TUDO")
         extract_btn.setMinimumHeight(50)
         extract_btn.setFont(QFont("Segoe UI", 12, QFont.Bold))
         extract_btn.setStyleSheet("""
@@ -640,49 +640,49 @@ class WWMTradutorGUI(QMainWindow):
         return widget
     
     def create_pack_tab(self) -> QWidget:
-        """Cria aba de empacotamento (tsv â†’ dat â†’ bin)"""
+        """Cria aba de empacotamento (tsv → dat → bin)"""
         widget = QWidget()
         layout = QVBoxLayout(widget)
         layout.setSpacing(15)
         
-        # InformaÃ§Ãµes
+        # Informações
         info_label = QLabel("""
-        <h3>ðŸ“¦ Empacotar de Volta para o Jogo</h3>
-        <p>Este processo irÃ¡:</p>
+        <h3>📦 Empacotar de Volta para o Jogo</h3>
+        <p>Este processo irá:</p>
         <ol>
-            <li>Ler o arquivo <b>.tsv</b> com suas traduÃ§Ãµes</li>
+            <li>Ler o arquivo <b>.tsv</b> com suas traduções</li>
             <li>Atualizar os arquivos <b>.dat</b> com os textos traduzidos</li>
             <li>Criar o arquivo <b>.bin</b> final para substituir no jogo</li>
         </ol>
-        <p>Selecione uma sessÃ£o existente da lista abaixo.</p>
+        <p>Selecione uma sessão existente da lista abaixo.</p>
         """)
         info_label.setWordWrap(True)
         layout.addWidget(info_label)
         
-        # Grupo: Selecionar sessÃ£o
-        session_group = QGroupBox("ðŸ“‚ Selecionar SessÃ£o de TraduÃ§Ã£o")
+        # Grupo: Selecionar sessão
+        session_group = QGroupBox("📂 Selecionar Sessão de Tradução")
         session_layout = QVBoxLayout(session_group)
         
-        # Lista de sessÃµes
+        # Lista de sessões
         self.session_list = QListWidget()
         self.session_list.setMinimumHeight(150)
         self.session_list.itemClicked.connect(self.on_session_selected)
         session_layout.addWidget(self.session_list)
         
-        # BotÃ£o atualizar lista
-        refresh_btn = QPushButton("ðŸ”„ Atualizar Lista")
+        # Botão atualizar lista
+        refresh_btn = QPushButton("🔄 Atualizar Lista")
         refresh_btn.clicked.connect(self.refresh_session_list)
         session_layout.addWidget(refresh_btn)
         
         layout.addWidget(session_group)
         
-        # Info da sessÃ£o selecionada
-        self.session_info_label = QLabel("Nenhuma sessÃ£o selecionada")
+        # Info da sessão selecionada
+        self.session_info_label = QLabel("Nenhuma sessão selecionada")
         self.session_info_label.setStyleSheet("color: #666; padding: 10px;")
         layout.addWidget(self.session_info_label)
         
-        # BotÃ£o de execuÃ§Ã£o
-        pack_btn = QPushButton("ðŸ“¦ EMPACOTAR TUDO")
+        # Botão de execução
+        pack_btn = QPushButton("📦 EMPACOTAR TUDO")
         pack_btn.setMinimumHeight(50)
         pack_btn.setFont(QFont("Segoe UI", 12, QFont.Bold))
         pack_btn.setStyleSheet("""
@@ -704,14 +704,14 @@ class WWMTradutorGUI(QMainWindow):
         
         layout.addStretch()
         
-        # Carregar lista de sessÃµes
+        # Carregar lista de sessões
         self.refresh_session_list()
         
         return widget
     
-    
-    # MÃ‰TODOS AUXILIARES
-    
+    # ========================================================================
+    # MÉTODOS AUXILIARES
+    # ========================================================================
     
     def log(self, message: str):
         """Adiciona mensagem ao log"""
@@ -723,7 +723,7 @@ class WWMTradutorGUI(QMainWindow):
         QApplication.processEvents()
     
     def browse_game_file(self):
-        """Abre diÃ¡logo para selecionar arquivo do jogo"""
+        """Abre diálogo para selecionar arquivo do jogo"""
         path, _ = QFileDialog.getOpenFileName(
             self, 
             "Selecionar Arquivo do Jogo", 
@@ -740,7 +740,7 @@ class WWMTradutorGUI(QMainWindow):
         os.startfile(str(output_path))
     
     def refresh_session_list(self):
-        """Atualiza a lista de sessÃµes"""
+        """Atualiza a lista de sessões"""
         self.session_list.clear()
         sessions = list_existing_sessions()
         
@@ -750,7 +750,7 @@ class WWMTradutorGUI(QMainWindow):
             # Contar arquivos
             dat_count = len(list((session_path / "dat").glob("*.dat"))) if (session_path / "dat").exists() else 0
             tsv_count = len(list((session_path / "tsv").glob("*.tsv"))) if (session_path / "tsv").exists() else 0
-            # Conta arquivos na pasta bin (sem extensÃ£o)
+            # Conta arquivos na pasta bin (sem extensão)
             bin_count = len([f for f in (session_path / "bin").iterdir() if f.is_file()]) if (session_path / "bin").exists() else 0
             
             # Formatar data
@@ -760,16 +760,16 @@ class WWMTradutorGUI(QMainWindow):
             except:
                 date_str = session
             
-            item_text = f"ðŸ“ {session} ({date_str})"
+            item_text = f"📁 {session} ({date_str})"
             item = QListWidgetItem(item_text)
             item.setData(Qt.UserRole, session)
             self.session_list.addItem(item)
         
         if not sessions:
-            self.session_list.addItem("Nenhuma sessÃ£o encontrada")
+            self.session_list.addItem("Nenhuma sessão encontrada")
     
     def on_session_selected(self, item):
-        """Callback quando uma sessÃ£o Ã© selecionada"""
+        """Callback quando uma sessão é selecionada"""
         session = item.data(Qt.UserRole)
         if not session:
             return
@@ -780,11 +780,11 @@ class WWMTradutorGUI(QMainWindow):
         # Contar arquivos
         dat_count = len(list((session_path / "dat").glob("*.dat"))) if (session_path / "dat").exists() else 0
         tsv_files = list((session_path / "tsv").glob("*.tsv")) if (session_path / "tsv").exists() else []
-        # Conta arquivos na pasta bin (sem extensÃ£o)
+        # Conta arquivos na pasta bin (sem extensão)
         bin_count = len([f for f in (session_path / "bin").iterdir() if f.is_file()]) if (session_path / "bin").exists() else 0
         
         info = f"""
-        <b>SessÃ£o:</b> {session}<br>
+        <b>Sessão:</b> {session}<br>
         <b>Arquivos .dat:</b> {dat_count}<br>
         <b>Arquivos .tsv:</b> {len(tsv_files)}<br>
         <b>Arquivos .bin:</b> {bin_count}<br>
@@ -793,23 +793,23 @@ class WWMTradutorGUI(QMainWindow):
         self.session_info_label.setText(info)
     
     def load_config(self):
-        """Carrega configuraÃ§Ãµes do arquivo"""
+        """Carrega configurações do arquivo"""
         config_path = Path(__file__).parent / CONFIG_FILE
         if config_path.exists():
             self.config.read(config_path, encoding='utf-8')
     
     def save_config(self):
-        """Salva configuraÃ§Ãµes no arquivo"""
+        """Salva configurações no arquivo"""
         config_path = Path(__file__).parent / CONFIG_FILE
         with open(config_path, 'w', encoding='utf-8') as f:
             self.config.write(f)
     
-    
-    # MÃ‰TODOS DE EXECUÃ‡ÃƒO
-    
+    # ========================================================================
+    # MÉTODOS DE EXECUÇÃO
+    # ========================================================================
     
     def run_full_extract(self):
-        """Executa extraÃ§Ã£o completa: bin â†’ dat â†’ tsv"""
+        """Executa extração completa: bin → dat → tsv"""
         input_file = self.extract_file_edit.text()
         
         if not input_file:
@@ -817,10 +817,10 @@ class WWMTradutorGUI(QMainWindow):
             return
         
         if not os.path.exists(input_file):
-            QMessageBox.warning(self, "Aviso", "Arquivo nÃ£o encontrado!")
+            QMessageBox.warning(self, "Aviso", "Arquivo não encontrado!")
             return
         
-        # Criar pasta de sessÃ£o
+        # Criar pasta de sessão
         session_path = create_session_folder()
         dat_folder = session_path / "dat"
         tsv_folder = session_path / "tsv"
@@ -828,58 +828,58 @@ class WWMTradutorGUI(QMainWindow):
         base_name = os.path.splitext(os.path.basename(input_file))[0]
         tsv_file = tsv_folder / f"{base_name}.tsv"
         
-        self.log(f"ðŸš€ Iniciando extraÃ§Ã£o completa...")
-        self.log(f"ðŸ“ SessÃ£o criada: {session_path.name}")
-        self.log(f"ðŸ“„ Arquivo: {input_file}")
+        self.log(f"🚀 Iniciando extração completa...")
+        self.log(f"📁 Sessão criada: {session_path.name}")
+        self.log(f"📄 Arquivo: {input_file}")
         self.statusBar().showMessage("Extraindo...")
         
-        # Desabilitar botÃµes
+        # Desabilitar botões
         self.setEnabled(False)
         
-        # Etapa 1: Extrair bin â†’ dat
-        self.log(f"ðŸ“¦ Etapa 1: Extraindo .bin para .dat...")
+        # Etapa 1: Extrair bin → dat
+        self.log(f"📦 Etapa 1: Extraindo .bin para .dat...")
         result1 = extract_game_file(input_file, str(dat_folder), log_callback=self.log)
         
         if not result1:
-            self.log("âŒ Falha na extraÃ§Ã£o dos arquivos .dat")
+            self.log("❌ Falha na extração dos arquivos .dat")
             self.setEnabled(True)
             self.statusBar().showMessage("Falhou!")
             return
         
-        # Etapa 2: Extrair dat â†’ tsv
-        self.log(f"ðŸ“ Etapa 2: Extraindo textos para .tsv...")
+        # Etapa 2: Extrair dat → tsv
+        self.log(f"📝 Etapa 2: Extraindo textos para .tsv...")
         result2 = extract_texts_to_tsv(str(dat_folder), str(tsv_file), log_callback=self.log)
         
         if not result2:
-            self.log("âŒ Falha na extraÃ§Ã£o dos textos")
+            self.log("❌ Falha na extração dos textos")
             self.setEnabled(True)
             self.statusBar().showMessage("Falhou!")
             return
         
-        self.log(f"âœ… ExtraÃ§Ã£o completa!")
-        self.log(f"ðŸ“ Pasta: {session_path}")
-        self.log(f"ðŸ“„ TSV para traduÃ§Ã£o: {tsv_file}")
+        self.log(f"✅ Extração completa!")
+        self.log(f"📁 Pasta: {session_path}")
+        self.log(f"📄 TSV para tradução: {tsv_file}")
         
         self.setEnabled(True)
-        self.statusBar().showMessage("ExtraÃ§Ã£o concluÃ­da!")
+        self.statusBar().showMessage("Extração concluída!")
         
-        # Atualizar lista de sessÃµes
+        # Atualizar lista de sessões
         self.refresh_session_list()
         
         # Perguntar se quer abrir pasta
         reply = QMessageBox.question(
             self, 
-            "ExtraÃ§Ã£o ConcluÃ­da", 
-            f"ExtraÃ§Ã£o concluÃ­da com sucesso!\n\nDeseja abrir a pasta {session_path.name}?",
+            "Extração Concluída", 
+            f"Extração concluída com sucesso!\n\nDeseja abrir a pasta {session_path.name}?",
             QMessageBox.Yes | QMessageBox.No
         )
         if reply == QMessageBox.Yes:
             os.startfile(str(session_path))
     
     def run_full_pack(self):
-        """Executa empacotamento completo: tsv â†’ dat â†’ bin"""
+        """Executa empacotamento completo: tsv → dat → bin"""
         if not self.current_session:
-            QMessageBox.warning(self, "Aviso", "Selecione uma sessÃ£o da lista!")
+            QMessageBox.warning(self, "Aviso", "Selecione uma sessão da lista!")
             return
         
         session_path = get_output_folder() / self.current_session
@@ -890,69 +890,69 @@ class WWMTradutorGUI(QMainWindow):
         # Encontrar arquivo TSV
         tsv_files = list(tsv_folder.glob("*.tsv"))
         if not tsv_files:
-            QMessageBox.warning(self, "Aviso", "Nenhum arquivo .tsv encontrado na sessÃ£o!")
+            QMessageBox.warning(self, "Aviso", "Nenhum arquivo .tsv encontrado na sessão!")
             return
         
         tsv_file = tsv_files[0]  # Usar o primeiro TSV encontrado
         
-        # Nome do arquivo de saÃ­da (sem extensÃ£o, igual ao jogo original)
+        # Nome do arquivo de saída (sem extensão, igual ao jogo original)
         base_name = tsv_file.stem
-        output_bin = bin_folder / base_name  # Sem extensÃ£o .bin
+        output_bin = bin_folder / base_name  # Sem extensão .bin
         
-        self.log(f"ðŸš€ Iniciando empacotamento completo...")
-        self.log(f"ðŸ“ SessÃ£o: {self.current_session}")
-        self.log(f"ðŸ“„ TSV: {tsv_file.name}")
+        self.log(f"🚀 Iniciando empacotamento completo...")
+        self.log(f"📁 Sessão: {self.current_session}")
+        self.log(f"📄 TSV: {tsv_file.name}")
         self.statusBar().showMessage("Empacotando...")
         
-        # Desabilitar botÃµes
+        # Desabilitar botões
         self.setEnabled(False)
         
-        # Etapa 1: Aplicar traduÃ§Ãµes do TSV nos DAT
-        self.log(f"ðŸ“ Etapa 1: Aplicando traduÃ§Ãµes nos .dat...")
+        # Etapa 1: Aplicar traduções do TSV nos DAT
+        self.log(f"📝 Etapa 1: Aplicando traduções nos .dat...")
         result1 = pack_texts_to_dat(str(tsv_file), str(dat_folder), log_callback=self.log)
         
         if not result1:
-            self.log("âŒ Falha ao aplicar traduÃ§Ãµes")
+            self.log("❌ Falha ao aplicar traduções")
             self.setEnabled(True)
             self.statusBar().showMessage("Falhou!")
             return
         
-        # Etapa 2: Empacotar dat â†’ bin
-        self.log(f"ðŸ“¦ Etapa 2: Empacotando .dat para .bin...")
+        # Etapa 2: Empacotar dat → bin
+        self.log(f"📦 Etapa 2: Empacotando .dat para .bin...")
         result2 = pack_game_file(str(dat_folder), str(output_bin), log_callback=self.log)
         
         if not result2:
-            self.log("âŒ Falha no empacotamento")
+            self.log("❌ Falha no empacotamento")
             self.setEnabled(True)
             self.statusBar().showMessage("Falhou!")
             return
         
-        self.log(f"âœ… Empacotamento completo!")
-        self.log(f"ðŸ“¦ Arquivo para o jogo: {output_bin}")
+        self.log(f"✅ Empacotamento completo!")
+        self.log(f"📦 Arquivo para o jogo: {output_bin}")
         
         self.setEnabled(True)
-        self.statusBar().showMessage("Empacotamento concluÃ­do!")
+        self.statusBar().showMessage("Empacotamento concluído!")
         
-        # Atualizar lista de sessÃµes
+        # Atualizar lista de sessões
         self.refresh_session_list()
         
         # Perguntar se quer abrir pasta
         reply = QMessageBox.question(
             self, 
-            "Empacotamento ConcluÃ­do", 
-            f"Empacotamento concluÃ­do com sucesso!\n\nArquivo criado: {output_bin.name}\n\nDeseja abrir a pasta bin?",
+            "Empacotamento Concluído", 
+            f"Empacotamento concluído com sucesso!\n\nArquivo criado: {output_bin.name}\n\nDeseja abrir a pasta bin?",
             QMessageBox.Yes | QMessageBox.No
         )
         if reply == QMessageBox.Yes:
             os.startfile(str(bin_folder))
 
 
-
-
-
+# ============================================================================
+# PONTO DE ENTRADA
+# ============================================================================
 
 def main():
-    """FunÃ§Ã£o principal"""
+    """Função principal"""
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
     
