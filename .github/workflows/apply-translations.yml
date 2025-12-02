@@ -1,0 +1,111 @@
+name: Apply Translation Suggestions
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  apply-translations:
+    # Só executa quando a label "approved" é adicionada
+    if: github.event.label.name == 'approved'
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      issues: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Extract and Apply Translations
+        id: apply
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+        run: |
+          python .github/scripts/apply_translations.py
+      
+      - name: Commit Changes
+        if: steps.apply.outputs.changes_made == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add community/translate/*.tsv
+          git commit -m "feat(translation): aplicar sugestões da Issue #${{ github.event.issue.number }}
+
+          Contribuição de @${{ github.event.issue.user.login }}
+          
+          Co-authored-by: ${{ github.event.issue.user.login }} <${{ github.event.issue.user.id }}+${{ github.event.issue.user.login }}@users.noreply.github.com>"
+          git push
+      
+      - name: Close Issue with Success
+        if: steps.apply.outputs.changes_made == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const applied = process.env.APPLIED_COUNT || '0';
+            const skipped = process.env.SKIPPED_COUNT || '0';
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## ✅ Traduções Aplicadas com Sucesso!
+              
+              **Resultado:**
+              - ✅ Aplicadas: ${applied} tradução(ões)
+              - ⏭️ Ignoradas: ${skipped} (já existentes ou inválidas)
+              
+              Obrigado pela contribuição, @${context.payload.issue.user.login}! 🎉
+              
+              As alterações já estão disponíveis no repositório.`
+            });
+            
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: 'closed',
+              labels: ['translation', 'applied']
+            });
+        env:
+          APPLIED_COUNT: ${{ steps.apply.outputs.applied_count }}
+          SKIPPED_COUNT: ${{ steps.apply.outputs.skipped_count }}
+      
+      - name: Comment on Failure
+        if: failure() || steps.apply.outputs.changes_made == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const errorMsg = process.env.ERROR_MESSAGE || 'Erro desconhecido';
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## ⚠️ Não foi possível aplicar as traduções
+              
+              **Motivo:** ${errorMsg}
+              
+              Por favor, verifique se o formato da Issue está correto e tente novamente.
+              
+              Se o problema persistir, aplique as traduções manualmente.`
+            });
+            
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              name: 'approved'
+            });
+        env:
+          ERROR_MESSAGE: ${{ steps.apply.outputs.error_message }}

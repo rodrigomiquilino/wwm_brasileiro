@@ -626,6 +626,383 @@
                 padding: 0.75rem 0.5rem;
             }
         }
+        
+        /* Modal de Sugestão */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 16px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            color: var(--gold-primary);
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+            padding: 0.5rem;
+        }
+        
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-group label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group label i {
+            margin-right: 0.4rem;
+            color: var(--gold-primary);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-dark);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--gold-primary);
+        }
+        
+        .form-control:disabled {
+            background: var(--bg-medium);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+        
+        .form-control.readonly-text {
+            background: var(--bg-medium);
+            color: var(--text-secondary);
+            min-height: 80px;
+            line-height: 1.5;
+        }
+        
+        .form-control.suggestion-input {
+            min-height: 100px;
+            border-color: var(--gold-primary);
+        }
+        
+        .form-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.4rem;
+        }
+        
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(201, 162, 39, 0.2);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        .btn-cancel {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-dark);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-cancel:hover {
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+        }
+        
+        .btn-submit {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            border: none;
+            border-radius: 8px;
+            color: var(--bg-dark);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(201, 162, 39, 0.3);
+        }
+        
+        .id-display {
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--gold-primary);
+            background: var(--bg-dark);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        
+        .cart-empty-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        /* Carrinho de Sugestões */
+        .suggestion-cart {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1500;
+        }
+        
+        .cart-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            border: none;
+            color: var(--bg-dark);
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(201, 162, 39, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+        
+        .cart-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(201, 162, 39, 0.5);
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--red-primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cart-badge.hidden {
+            display: none;
+        }
+        
+        .cart-panel {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 400px;
+            max-height: 500px;
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            display: none;
+            flex-direction: column;
+        }
+        
+        .cart-panel.active {
+            display: flex;
+        }
+        
+        .cart-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-header h4 {
+            color: var(--gold-primary);
+            font-size: 1rem;
+            margin: 0;
+        }
+        
+        .cart-clear {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .cart-clear:hover {
+            color: var(--red-primary);
+        }
+        
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+            max-height: 300px;
+        }
+        
+        .cart-item {
+            background: var(--bg-dark);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        .cart-item-id {
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: var(--gold-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .cart-item-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .cart-item-remove {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0.25rem;
+        }
+        
+        .cart-item-remove:hover {
+            color: var(--red-primary);
+        }
+        
+        .cart-empty {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .cart-footer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid rgba(201, 162, 39, 0.2);
+        }
+        
+        .cart-submit {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            border: none;
+            border-radius: 8px;
+            color: var(--bg-dark);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: transform 0.2s;
+        }
+        
+        .cart-submit:hover {
+            transform: translateY(-2px);
+        }
+        
+        .cart-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        @media (max-width: 500px) {
+            .cart-panel {
+                width: calc(100vw - 2rem);
+                right: -1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -656,11 +1033,11 @@
                 <h3><i class="fas fa-question-circle"></i> Como ajudar?</h3>
                 <ol>
                     <li>Escolha o arquivo que deseja traduzir (Principal ou Diff)</li>
-                    <li>Encontre uma linha que deseja traduzir usando a busca</li>
-                    <li>Clique no botão <strong>"Editar"</strong> ao lado da linha</li>
-                    <li>Faça login no GitHub (se necessário)</li>
-                    <li>Edite a tradução e clique em "Propose changes"</li>
-                    <li>Pronto! Sua contribuição será revisada e incluída 🎉</li>
+                    <li>Encontre uma linha pendente usando a busca ou filtros</li>
+                    <li>Clique no botão <strong>"Sugerir"</strong> ao lado da linha</li>
+                    <li>Digite sua sugestão e clique em <strong>"Adicionar ao Lote"</strong></li>
+                    <li>Repita para quantas linhas quiser</li>
+                    <li>Clique no <strong>botão dourado</strong> no canto inferior direito para enviar todas!</li>
                 </ol>
             </div>
             
@@ -748,6 +1125,71 @@
             <a href="index.html">Voltar ao início</a>
         </p>
     </footer>
+    
+    <!-- Modal de Sugestão de Tradução -->
+    <div class="modal-overlay" id="suggestion-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-lightbulb"></i> Sugerir Tradução</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label><i class="fas fa-fingerprint"></i> ID da Linha</label>
+                    <div class="id-display" id="modal-id">-</div>
+                    <input type="hidden" id="modal-file">
+                    <input type="hidden" id="modal-line">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-globe"></i> Texto Original (Inglês)</label>
+                    <textarea class="form-control readonly-text" id="modal-original" readonly></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-language"></i> Tradução Atual (PT-BR)</label>
+                    <textarea class="form-control readonly-text" id="modal-current" readonly></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-edit"></i> Sua Sugestão de Tradução</label>
+                    <textarea class="form-control suggestion-input" id="modal-suggestion" placeholder="Digite aqui sua sugestão de tradução..."></textarea>
+                    <p class="form-hint">💡 Mantenha a mesma formatação e símbolos especiais do original (ex: #Y, #E, \n)</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                <button class="btn-submit" onclick="addToCart()">
+                    <i class="fas fa-plus"></i> Adicionar ao Lote
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Carrinho de Sugestões -->
+    <div class="suggestion-cart">
+        <div class="cart-panel" id="cart-panel">
+            <div class="cart-header">
+                <h4><i class="fas fa-clipboard-list"></i> Sugestões (<span id="cart-count">0</span>)</h4>
+                <button class="cart-clear" onclick="clearCart()">Limpar tudo</button>
+            </div>
+            <div class="cart-items" id="cart-items">
+                <div class="cart-empty">
+                    <i class="fas fa-inbox cart-empty-icon"></i>
+                    Nenhuma sugestão adicionada
+                </div>
+            </div>
+            <div class="cart-footer">
+                <button class="cart-submit" id="cart-submit" onclick="submitAllSuggestions()" disabled>
+                    <i class="fab fa-github"></i> Enviar Todas as Sugestões
+                </button>
+            </div>
+        </div>
+        <button class="cart-toggle" onclick="toggleCart()" title="Ver sugestões pendentes">
+            <i class="fas fa-clipboard-list"></i>
+            <span class="cart-badge hidden" id="cart-badge">0</span>
+        </button>
+    </div>
 
     <script>
         const CONFIG = {
@@ -952,14 +1394,15 @@
             // Arquivo de tradução (PT-BR) para edição
             const translateFile = currentFile === 'main' ? CONFIG.TRANSLATE_MAIN : CONFIG.TRANSLATE_DIFF;
             
-            tbody.innerHTML = pageData.map(item => {
+            tbody.innerHTML = pageData.map((item, index) => {
                 const statusClass = item.isTranslated ? 'status-done' : 'status-pending';
                 const statusText = item.isTranslated ? 'Traduzido' : 'Pendente';
                 const translationClass = item.isTranslated ? 'text-translated' : 'text-empty';
                 const displayTranslation = item.translatedText || '(vazio)';
                 
-                // GitHub edit URL - abre o arquivo de tradução na linha específica
-                const editUrl = `https://github.com/${CONFIG.GITHUB_REPO}/edit/${CONFIG.BRANCH}/${translateFile}#L${item.lineNumber}`;
+                // Dados para o modal (escapados para atributo data-)
+                const dataOriginal = encodeURIComponent(item.originalText || '');
+                const dataCurrent = encodeURIComponent(item.translatedText || '');
                 
                 return `
                     <tr>
@@ -974,9 +1417,9 @@
                             <div class="text-cell ${translationClass}">${escapeHtml(displayTranslation)}</div>
                         </td>
                         <td class="col-actions">
-                            <a href="${editUrl}" target="_blank" rel="noopener" class="btn-edit" title="Editar no GitHub">
-                                <i class="fas fa-pen"></i> Editar
-                            </a>
+                            <button class="btn-edit" onclick="openSuggestionModal('${item.id}', '${dataOriginal}', '${dataCurrent}', ${item.lineNumber})" title="Sugerir tradução">
+                                <i class="fas fa-lightbulb"></i> Sugerir
+                            </button>
                         </td>
                     </tr>
                 `;
@@ -1114,6 +1557,246 @@
                 timeout = setTimeout(() => func.apply(this, args), wait);
             };
         }
+        
+        // ========== MODAL & CART FUNCTIONS ==========
+        let currentSuggestionId = '';
+        let suggestionCart = []; // Carrinho de sugestões
+        
+        function openSuggestionModal(id, originalEncoded, currentEncoded, lineNumber) {
+            currentSuggestionId = id;
+            
+            const original = decodeURIComponent(originalEncoded);
+            const current = decodeURIComponent(currentEncoded);
+            
+            document.getElementById('modal-id').textContent = id;
+            document.getElementById('modal-original').value = original;
+            document.getElementById('modal-current').value = current || '(sem tradução atual)';
+            document.getElementById('modal-suggestion').value = current; // Pré-preenche com a tradução atual
+            document.getElementById('modal-file').value = currentFile;
+            document.getElementById('modal-line').value = lineNumber;
+            
+            document.getElementById('suggestion-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Foca no campo de sugestão
+            setTimeout(() => {
+                document.getElementById('modal-suggestion').focus();
+            }, 100);
+        }
+        
+        function closeModal() {
+            document.getElementById('suggestion-modal').classList.remove('active');
+            document.body.style.overflow = '';
+            currentSuggestionId = '';
+        }
+        
+        // Adiciona ao carrinho
+        function addToCart() {
+            const id = currentSuggestionId;
+            const original = document.getElementById('modal-original').value;
+            const current = document.getElementById('modal-current').value;
+            const suggestion = document.getElementById('modal-suggestion').value.trim();
+            const file = document.getElementById('modal-file').value;
+            const lineNumber = parseInt(document.getElementById('modal-line').value);
+            
+            if (!suggestion) {
+                alert('Por favor, digite sua sugestão de tradução.');
+                return;
+            }
+            
+            const currentClean = current === '(sem tradução atual)' ? '' : current;
+            if (suggestion === currentClean) {
+                alert('Sua sugestão é igual à tradução atual. Por favor, faça alguma alteração.');
+                return;
+            }
+            
+            // Verifica se já existe no carrinho
+            const existingIndex = suggestionCart.findIndex(item => item.id === id);
+            if (existingIndex >= 0) {
+                suggestionCart[existingIndex].suggestion = suggestion;
+            } else {
+                suggestionCart.push({
+                    id,
+                    original,
+                    current: currentClean,
+                    suggestion,
+                    file,
+                    lineNumber
+                });
+            }
+            
+            updateCartUI();
+            closeModal();
+            
+            // Mostra feedback
+            showToast(`Sugestão adicionada! (${suggestionCart.length} no lote)`);
+        }
+        
+        // Toggle carrinho
+        function toggleCart() {
+            document.getElementById('cart-panel').classList.toggle('active');
+        }
+        
+        // Limpa carrinho
+        function clearCart() {
+            if (suggestionCart.length === 0) return;
+            if (confirm('Tem certeza que deseja limpar todas as sugestões?')) {
+                suggestionCart = [];
+                updateCartUI();
+            }
+        }
+        
+        // Remove item do carrinho
+        function removeFromCart(index) {
+            suggestionCart.splice(index, 1);
+            updateCartUI();
+        }
+        
+        // Atualiza UI do carrinho
+        function updateCartUI() {
+            const badge = document.getElementById('cart-badge');
+            const count = document.getElementById('cart-count');
+            const items = document.getElementById('cart-items');
+            const submit = document.getElementById('cart-submit');
+            
+            // Atualiza contador
+            badge.textContent = suggestionCart.length;
+            count.textContent = suggestionCart.length;
+            badge.classList.toggle('hidden', suggestionCart.length === 0);
+            submit.disabled = suggestionCart.length === 0;
+            
+            // Renderiza itens
+            if (suggestionCart.length === 0) {
+                items.innerHTML = `
+                    <div class="cart-empty">
+                        <i class="fas fa-inbox cart-empty-icon"></i>
+                        Nenhuma sugestão adicionada
+                    </div>
+                `;
+            } else {
+                items.innerHTML = suggestionCart.map((item, index) => `
+                    <div class="cart-item">
+                        <button class="cart-item-remove" onclick="removeFromCart(${index})" title="Remover">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <div class="cart-item-id">${item.id}</div>
+                        <div class="cart-item-text">${escapeHtml(item.suggestion)}</div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        // Envia todas as sugestões
+        function submitAllSuggestions() {
+            if (suggestionCart.length === 0) return;
+            
+            // Agrupa por arquivo
+            const mainItems = suggestionCart.filter(item => item.file === 'main');
+            const diffItems = suggestionCart.filter(item => item.file === 'diff');
+            
+            // Monta o JSON estruturado para o GitHub Action processar
+            const jsonData = {
+                version: "1.0",
+                timestamp: new Date().toISOString(),
+                total: suggestionCart.length,
+                suggestions: suggestionCart.map(item => ({
+                    id: item.id,
+                    file: item.file === 'main' ? 'translate_words_map_en.tsv' : 'translate_words_map_en_diff.tsv',
+                    line: item.lineNumber,
+                    suggestion: item.suggestion
+                }))
+            };
+            
+            // Monta o título
+            const issueTitle = `[Tradução] Lote com ${suggestionCart.length} sugestão(ões)`;
+            
+            // Monta o corpo da Issue com JSON estruturado
+            let issueBody = `## 📝 Lote de Sugestões de Tradução
+
+**Total:** ${suggestionCart.length} sugestão(ões)
+**Data:** ${new Date().toLocaleString('pt-BR')}
+
+---
+
+### 📋 Dados para Processamento Automático
+
+\`\`\`json
+${JSON.stringify(jsonData, null, 2)}
+\`\`\`
+
+---
+
+### 👁️ Visualização das Sugestões
+
+`;
+            
+            // Adiciona visualização legível
+            suggestionCart.forEach((item, index) => {
+                issueBody += `#### ${index + 1}. ID: \`${item.id}\`
+**Arquivo:** \`${item.file === 'main' ? 'translate_words_map_en.tsv' : 'translate_words_map_en_diff.tsv'}\` (linha ${item.lineNumber})
+
+| Original (EN) | Sugestão (PT-BR) |
+|---------------|------------------|
+| ${item.original.substring(0, 100)}${item.original.length > 100 ? '...' : ''} | ${item.suggestion.substring(0, 100)}${item.suggestion.length > 100 ? '...' : ''} |
+
+`;
+            });
+            
+            issueBody += `---
+*Sugestões enviadas via [página de tradução colaborativa](https://rodrigomiquilino.github.io/wwm_brasileiro/translate.html)*
+
+> ⚠️ **Para o mantenedor:** Adicione a label \`approved\` para aplicar automaticamente estas traduções.`;
+
+            // Cria URL para nova Issue no GitHub
+            const issueUrl = `https://github.com/${CONFIG.GITHUB_REPO}/issues/new?` + 
+                `title=${encodeURIComponent(issueTitle)}` +
+                `&body=${encodeURIComponent(issueBody)}` +
+                `&labels=translation,batch-suggestion`;
+            
+            // Abre a Issue em nova aba
+            window.open(issueUrl, '_blank');
+            
+            // Limpa o carrinho após enviar
+            suggestionCart = [];
+            updateCartUI();
+            toggleCart(); // Fecha o painel
+        }
+        
+        // Toast notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                right: 2rem;
+                background: var(--success);
+                color: white;
+                padding: 0.75rem 1.5rem;
+                border-radius: 8px;
+                font-size: 0.9rem;
+                z-index: 2000;
+                animation: slideIn 0.3s ease;
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        // Fecha modal ao clicar fora
+        document.getElementById('suggestion-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+        
+        // Fecha modal com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                document.getElementById('cart-panel').classList.remove('active');
+            }
+        });
         
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {

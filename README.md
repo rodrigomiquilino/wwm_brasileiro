@@ -235,10 +235,22 @@ wwm_brasileiro/
 
 Adoramos contribuições da comunidade!
 
-### 📝 Melhorar a Tradução
+### 📝 Melhorar a Tradução (Forma Fácil)
+
+Use nossa **[Página de Tradução Colaborativa](https://rodrigomiquilino.github.io/wwm_brasileiro/translate.html)**:
+
+1. 🔍 **Pesquise** textos que precisam de tradução
+2. ✍️ **Sugira** traduções pelo botão "Sugerir Tradução"
+3. 🛒 **Adicione ao carrinho** várias sugestões de uma vez
+4. 📤 **Envie** - uma Issue será criada automaticamente
+5. ✅ **Aprovação** - quando aprovada, a tradução é aplicada automaticamente!
+
+> 💡 Não é necessário saber programar! O sistema cuida de tudo.
+
+### 📝 Contribuir via Fork (Desenvolvedores)
 
 1. Fork este repositório
-2. Edite o arquivo `translation_ptbr.tsv`
+2. Edite os arquivos em `community/translate/`
 3. Envie um Pull Request
 
 ### 🐛 Reportar Bugs
@@ -248,6 +260,10 @@ Encontrou um erro? [Abra uma issue](https://github.com/rodrigomiquilino/wwm_bras
 ### ⭐ Apoiar o Projeto
 
 Gostou? Dê uma estrela no repositório! ⭐
+
+### 💰 Apoiar Financeiramente
+
+Quer apoiar o projeto? Acesse nossa [página principal](https://rodrigomiquilino.github.io/wwm_brasileiro/) e veja a seção de doações via PIX!
 
 ---
 
