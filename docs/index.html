@@ -341,7 +341,7 @@
         .download-card.featured::before {
             content: 'RECOMENDADO';
             position: absolute;
-            top: 1rem;
+            top: 2rem;
             right: -2rem;
             background: var(--gradient-gold);
             color: var(--bg-dark);
@@ -869,12 +869,12 @@
                     <p>Instalador automático com interface gráfica moderna. Instala e atualiza a tradução com um clique. <strong>~40MB</strong></p>
                     
                     <ul class="download-features">
-                        <li><i class="fas fa-check"></i> Detecção automática do jogo</li>
+                        <li><i class="fas fa-check"></i> Suporte a Steam, Epic e Standalone</li>
+                        <li><i class="fas fa-check"></i> Detecção automática da plataforma</li>
                         <li><i class="fas fa-check"></i> Instalação com 1 clique</li>
-                        <li><i class="fas fa-check"></i> Backup automático (.backup)</li>
-                        <li><i class="fas fa-check"></i> Verificação de atualizações</li>
-                        <li><i class="fas fa-check"></i> Iniciar jogo via Steam</li>
-                        <li><i class="fas fa-check"></i> Interface moderna wuxia</li>
+                        <li><i class="fas fa-check"></i> Backup e restauração de originais</li>
+                        <li><i class="fas fa-check"></i> Solicita admin quando necessário</li>
+                        <li><i class="fas fa-check"></i> Suporte a escalas de DPI</li>
                     </ul>
                     
                     <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases/latest/download/WWM_Tradutor_PTBR.exe" class="btn btn-primary" style="width: 100%;">
@@ -992,13 +992,13 @@
                 </div>
                 <div class="install-step">
                     <div class="step-number">3</div>
-                    <h3>Instale</h3>
-                    <p>O launcher detecta o jogo automaticamente. Clique em Instalar.</p>
+                    <h3>Selecione o Jogo</h3>
+                    <p>Clique em "Selecionar" e escolha o wwm.exe do seu jogo (Steam, Epic ou Standalone)</p>
                 </div>
                 <div class="install-step">
                     <div class="step-number">4</div>
-                    <h3>Jogue!</h3>
-                    <p>Inicie o jogo direto pelo launcher ou pela Steam</p>
+                    <h3>Instale e Jogue!</h3>
+                    <p>Clique em Instalar e depois inicie o jogo pelo launcher</p>
                 </div>
             </div>
             
@@ -1006,10 +1006,11 @@
             <div class="opensource-banner" style="margin-top: 3rem;">
                 <h3><i class="fas fa-wrench"></i> Instalação Manual</h3>
                 <p>
-                    Se preferir instalar manualmente, baixe o arquivo ZIP e extraia os arquivos para:
+                    Se preferir instalar manualmente, baixe o arquivo ZIP e extraia os arquivos para a pasta de locale do seu jogo:
                 </p>
-                <code style="display: block; background: var(--bg-dark); padding: 1rem; border-radius: 8px; margin: 1rem 0; color: var(--gold-primary); font-size: 0.9rem;">
-                    Steam\steamapps\common\Where Winds Meet\Package\HD\oversea\locale\
+                <code style="display: block; background: var(--bg-dark); padding: 1rem; border-radius: 8px; margin: 0.5rem 0; color: var(--gold-primary); font-size: 0.85rem; text-align: left;">
+                    <strong>Steam/Epic:</strong> ...\Where Winds Meet\Package\HD\oversea\locale\<br>
+                    <strong>Standalone:</strong> ...\wwm_standard\LocalData\Patch\HD\oversea\locale\
                 </code>
                 <p style="font-size: 0.875rem;">
                     Substitua os arquivos <strong>translate_words_map_en</strong> e <strong>translate_words_map_en_diff</strong>

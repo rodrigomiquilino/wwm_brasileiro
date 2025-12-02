@@ -63,19 +63,29 @@ A forma mais fácil de instalar a tradução! O launcher faz tudo por você.
 
 | Recurso | Descrição |
 |---------|-----------|
-| 🔍 **Detecção Automática** | Encontra sua instalação do jogo automaticamente |
+| 🎮 **Multi-Plataforma** | Suporta Steam, Epic Games e Standalone |
+| 🔍 **Detecção Automática** | Identifica a plataforma pelo executável selecionado |
 | 📦 **Instalação com 1 Clique** | Baixa e instala a tradução instantaneamente |
 | 💾 **Backup Automático** | Cria backup dos arquivos originais (.backup) |
 | 🔄 **Verificação de Atualizações** | Verifica se há novas versões disponíveis |
-| 🎮 **Iniciar via Steam** | Inicia o jogo diretamente pelo launcher |
+| 🔒 **Permissão de Admin** | Solicita elevação quando necessário |
+| 🔙 **Restaurar Original** | Remove a tradução e restaura arquivos originais |
+| 🎮 **Iniciar Jogo** | Inicia o jogo pela Steam, Epic ou Standalone |
 | 🎨 **Interface Moderna** | Design escuro com tema oriental/wuxia |
+| 🖥️ **Suporte a DPI** | Funciona em qualquer escala de tela |
 
 ### Como Usar
 
 1. **Baixe** o `WWM_Tradutor_PTBR.exe`
 2. **Execute** o arquivo (não precisa instalar)
-3. **Clique** em "Instalar Tradução"
-4. **Pronto!** Jogue em português 🎮
+3. **Selecione** o executável `wwm.exe` do seu jogo:
+   - **Steam:** `Steam\steamapps\common\...\Engine\Binaries\Win64r\wwm.exe`
+   - **Epic:** `Epic Games\...\Engine\Binaries\Win64r\wwm.exe`
+   - **Standalone:** `wwm\wwm_standard\Engine\Binaries\Win64r\wwm.exe`
+4. **Clique** em "Instalar Tradução"
+5. **Pronto!** Jogue em português 🎮
+
+> 💡 Se a pasta do jogo exigir permissão de administrador, o launcher perguntará se deseja reiniciar como admin.
 
 <details>
 <summary>📸 Screenshots do Launcher</summary>
@@ -150,7 +160,7 @@ py tools/wwm_tradutor_ptbr.py
 - 🔄 Reempacotar com suas traduções
 - 📊 Suporte completo a arquivos `_diff`
 
-#### 🚀 Launcher (v1.1.0)
+#### 🚀 Launcher (v2.0.0)
 
 ```bash
 # Executar código fonte
@@ -170,7 +180,7 @@ wwm_brasileiro/
 │   ├── 404.html                # Página de erro
 │   └── _config.yml             # Configuração
 ├── 📂 launcher/                 # Instalador automático
-│   ├── wwm_ptbr_launcher.py    # Código fonte (v1.1.0)
+│   ├── wwm_ptbr_launcher.py    # Código fonte (v2.0.0)
 │   ├── icon.ico                # Ícone do executável
 │   └── build.bat               # Script de build
 ├── 📂 tools/                    # Ferramentas de tradução
