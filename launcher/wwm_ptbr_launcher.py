@@ -103,7 +103,7 @@ except ImportError:
 # ============================================================================
 
 APP_NAME = "WWM Tradutor PT-BR"
-APP_VERSION = "2.0.0"
+APP_VERSION = "2.1.0"
 GITHUB_REPO = "rodrigomiquilino/wwm_brasileiro"
 GITHUB_API_RELEASES = f"https://api.github.com/repos/{GITHUB_REPO}/releases"
 GITHUB_RELEASES_PAGE = f"https://github.com/{GITHUB_REPO}/releases"
@@ -147,7 +147,8 @@ PLATFORM_CONFIG = {
     Platform.STANDALONE: {
         "name": "Standalone",
         "translation_path": r"LocalData\Patch\HD\oversea\locale",
-        "exe_pattern": r"wwm_standard\Engine\Binaries\Win64r\wwm.exe",
+        "exe_pattern": r"wwm_(standard|lite)\Engine\Binaries\Win64r\wwm.exe",
+        "variants": ["wwm_standard", "wwm_lite"],  # Variantes suportadas
         "launcher_exe": "launcher.exe",  # Executável para iniciar o jogo
         "launch_command": None,
         "icon": "💻"
@@ -286,9 +287,11 @@ class PlatformDetector:
         # wwm.exe - detecta qual plataforma
         if exe_name == "wwm.exe":
             # Standalone: wwm_standard/Engine/Binaries/Win64r/wwm.exe
-            if "wwm_standard" in exe_str:
+            #         ou wwm_lite/Engine/Binaries/Win64r/wwm.exe
+            if "wwm_standard" in exe_str or "wwm_lite" in exe_str:
                 # wwm/wwm_standard/Engine/Binaries/Win64r/wwm.exe → wwm/wwm_standard/
-                game_root = exe_path.parent.parent.parent.parent  # wwm_standard
+                # wwm/wwm_lite/Engine/Binaries/Win64r/wwm.exe → wwm/wwm_lite/
+                game_root = exe_path.parent.parent.parent.parent  # wwm_standard ou wwm_lite
                 translation_path = game_root / PLATFORM_CONFIG[Platform.STANDALONE]["translation_path"]
                 return Platform.STANDALONE, game_root, translation_path
             
@@ -1183,7 +1186,8 @@ class LauncherWindow(QMainWindow):
                 "Selecione o executável wwm.exe do jogo:\n"
                 "• Steam: [Steam]\\steamapps\\common\\...\\Engine\\Binaries\\Win64r\\wwm.exe\n"
                 "• Epic: [Epic Games]\\...\\Engine\\Binaries\\Win64r\\wwm.exe\n"
-                "• Standalone: [wwm]\\wwm_standard\\Engine\\Binaries\\Win64r\\wwm.exe"
+                "• Standalone: [wwm]\\wwm_standard\\Engine\\Binaries\\Win64r\\wwm.exe\n"
+                "• Standalone Lite: [wwm]\\wwm_lite\\Engine\\Binaries\\Win64r\\wwm.exe"
             )
             return
         
@@ -1206,7 +1210,17 @@ class LauncherWindow(QMainWindow):
         
         # Atualiza UI
         platform_config = PLATFORM_CONFIG[platform]
-        self.card_platform.set_value(f"{platform_config['icon']} {platform_config['name']}", Theme.GOLD_PRIMARY)
+        platform_name = platform_config['name']
+        
+        # Para Standalone, mostra a variante (Standard ou Lite)
+        if platform == Platform.STANDALONE:
+            exe_str = str(exe_path).lower()
+            if "wwm_lite" in exe_str:
+                platform_name = "Standalone (Lite)"
+            elif "wwm_standard" in exe_str:
+                platform_name = "Standalone (Standard)"
+        
+        self.card_platform.set_value(f"{platform_config['icon']} {platform_name}", Theme.GOLD_PRIMARY)
         self.path_label.setText(str(exe_path))
         self.path_label.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; border: none;")
         self.game_status.setText(f"✓ Pasta de tradução: {translation_path}")
