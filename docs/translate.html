@@ -2081,7 +2081,9 @@
                 showUserMenu();
             } else {
                 // Redirecionar para GitHub OAuth
-                const redirectUri = encodeURIComponent(window.location.origin + window.location.pathname);
+                // Remove .html do pathname para corresponder ao redirect_uri configurado no GitHub OAuth App
+                const pathname = window.location.pathname.replace(/\.html$/, '');
+                const redirectUri = encodeURIComponent(window.location.origin + pathname);
                 const scope = encodeURIComponent('public_repo');
                 const authUrl = `https://github.com/login/oauth/authorize?client_id=${CONFIG.GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${scope}`;
                 
