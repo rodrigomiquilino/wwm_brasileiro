@@ -1267,9 +1267,9 @@
             GITHUB_REPO: 'rodrigomiquilino/wwm_brasileiro',
             GITHUB_OWNER: 'rodrigomiquilino',
             GITHUB_REPO_NAME: 'wwm_brasileiro',
-            // OAuth App - Você precisa criar em https://github.com/settings/developers
-            // Callback URL deve ser: https://rodrigomiquilino.github.io/wwm_brasileiro/translate.html
-            GITHUB_CLIENT_ID: 'SUBSTITUA_PELO_SEU_CLIENT_ID',
+            // OAuth
+            GITHUB_CLIENT_ID: 'Ov23liLPua7ghOOFV8WG',
+            OAUTH_PROXY_URL: 'https://wwm-github-oauth.rodrigomiquilino.workers.dev',
             // Arquivos originais em inglês (referência)
             ORIGINAL_MAIN: 'community/original/translate_words_map_en.tsv',
             ORIGINAL_DIFF: 'community/original/translate_words_map_en_diff.tsv',
@@ -1775,12 +1775,20 @@
         function checkOAuthCallback() {
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
+            const error = urlParams.get('error');
+            
+            if (error) {
+                // Usuário cancelou ou erro
+                window.history.replaceState({}, document.title, window.location.pathname);
+                showToast('Login cancelado');
+                return;
+            }
             
             if (code) {
                 // Limpar URL
                 window.history.replaceState({}, document.title, window.location.pathname);
                 
-                // Trocar código por token (precisa de um backend/worker)
+                // Trocar código por token via Worker
                 exchangeCodeForToken(code);
             } else if (githubToken) {
                 // Já tem token, verificar se ainda é válido
@@ -1790,19 +1798,64 @@
         
         // Trocar código OAuth por token via Cloudflare Worker
         async function exchangeCodeForToken(code) {
-            showToast('Autenticando com GitHub...');
+            // Mostrar loading
+            showLoadingModal('Autenticando com GitHub...');
             
             try {
-                // Usar um proxy/worker para trocar o código (client_secret não pode ficar exposto)
-                // Por enquanto, usar o fluxo Device Flow ou pedir pro usuário gerar um token
+                const response = await fetch(CONFIG.OAUTH_PROXY_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code }),
+                });
                 
-                // SOLUÇÃO SIMPLES: Pedir para o usuário usar um Personal Access Token
-                showTokenInputModal();
+                const data = await response.json();
+                
+                closeLoadingModal();
+                
+                if (data.error) {
+                    showToast('Erro: ' + data.error);
+                    return;
+                }
+                
+                if (data.access_token) {
+                    githubToken = data.access_token;
+                    localStorage.setItem('github_token', githubToken);
+                    
+                    // Buscar dados do usuário
+                    await validateToken();
+                    
+                    if (githubUser) {
+                        showToast(`Bem-vindo, ${githubUser.login}!`);
+                    }
+                }
                 
             } catch (error) {
+                closeLoadingModal();
                 console.error('Erro na autenticação:', error);
                 showToast('Erro na autenticação. Tente novamente.');
             }
+        }
+        
+        // Modal de loading
+        function showLoadingModal(message) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.id = 'loading-modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 350px; text-align: center; padding: 2rem;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--gold-primary); margin-bottom: 1rem;"></i>
+                    <p style="color: var(--text-secondary);">${message}</p>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+        }
+        
+        function closeLoadingModal() {
+            const modal = document.getElementById('loading-modal');
+            if (modal) modal.remove();
         }
         
         // Validar token existente
@@ -1829,18 +1882,22 @@
             }
         }
         
-        // Handler do botão de auth
+        // Handler do botão de auth - AGORA USA OAUTH!
         function handleGitHubAuth() {
             if (githubToken && githubUser) {
                 // Já logado - mostrar opções
                 showUserMenu();
             } else {
-                // Não logado - mostrar modal para token
-                showTokenInputModal();
+                // Redirecionar para GitHub OAuth
+                const redirectUri = encodeURIComponent(window.location.origin + window.location.pathname);
+                const scope = encodeURIComponent('public_repo');
+                const authUrl = `https://github.com/login/oauth/authorize?client_id=${CONFIG.GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${scope}`;
+                
+                window.location.href = authUrl;
             }
         }
         
-        // Modal para inserir Personal Access Token
+        // Modal para inserir Personal Access Token (fallback)
         function showTokenInputModal() {
             const modal = document.createElement('div');
             modal.className = 'modal';
