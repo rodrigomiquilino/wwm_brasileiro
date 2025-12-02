@@ -787,6 +787,209 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--gold-primary);
         }
+        
+        /* ========== MODAL ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 16px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-header h2 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-primary);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: color 0.3s;
+        }
+        
+        .modal-close:hover {
+            color: var(--gold-primary);
+        }
+        
+        .modal-body {
+            padding: 2rem;
+        }
+        
+        .modal-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .modal-section h3 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .modal-section h3 i {
+            color: var(--gold-primary);
+        }
+        
+        .path-box {
+            background: var(--bg-dark);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .path-box .platform-name {
+            color: var(--gold-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .path-box code {
+            display: block;
+            color: var(--text-secondary);
+            font-family: 'Consolas', monospace;
+            font-size: 0.8rem;
+            word-break: break-all;
+            line-height: 1.5;
+        }
+        
+        .path-box code strong {
+            color: var(--gold-light);
+        }
+        
+        .modal-tip {
+            background: rgba(201, 162, 39, 0.1);
+            border-left: 3px solid var(--gold-primary);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin-top: 1rem;
+        }
+        
+        .modal-tip p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .modal-tip strong {
+            color: var(--gold-primary);
+        }
+        
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(201, 162, 39, 0.2);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        .modal-footer .btn {
+            min-width: 150px;
+            justify-content: center;
+        }
+        
+        .step-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .step-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .step-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .step-list .step-num {
+            background: var(--gold-primary);
+            color: var(--bg-dark);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+        
+        .step-list .step-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .step-list .step-text strong {
+            color: var(--text-primary);
+        }
     </style>
 </head>
 <body>
@@ -829,14 +1032,14 @@
             </p>
             
             <div class="hero-buttons">
-                <a id="hero-launcher-btn" href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases" class="btn btn-primary">
+                <button id="hero-launcher-btn" class="btn btn-primary" onclick="openModal('modal-launcher')">
                     <i class="fas fa-download"></i>
                     <span id="hero-launcher-text">Baixar Launcher</span>
-                </a>
-                <a id="hero-translation-btn" href="#download" class="btn btn-secondary">
+                </button>
+                <button id="hero-translation-btn" class="btn btn-secondary" onclick="openModal('modal-manual')">
                     <i class="fas fa-file-archive"></i>
                     <span id="hero-translation-text">Download Tradução</span>
-                </a>
+                </button>
             </div>
             
             <div class="hero-stats">
@@ -882,10 +1085,10 @@
                         <li><i class="fas fa-check"></i> Suporte a escalas de DPI</li>
                     </ul>
                     
-                    <a id="download-launcher-btn" href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases" class="btn btn-primary" style="width: 100%;">
+                    <button id="download-launcher-btn" class="btn btn-primary" style="width: 100%;" onclick="openModal('modal-launcher')">
                         <i class="fas fa-download"></i>
                         <span id="download-launcher-text">Baixar Launcher (.exe)</span>
-                    </a>
+                    </button>
                 </div>
                 
                 <!-- Manual -->
@@ -903,10 +1106,10 @@
                         <li><i class="fas fa-check"></i> Portátil</li>
                     </ul>
                     
-                    <a id="download-translation-btn" href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases" class="btn btn-secondary" style="width: 100%;">
+                    <button id="download-translation-btn" class="btn btn-secondary" style="width: 100%;" onclick="openModal('modal-manual')">
                         <i class="fas fa-file-archive"></i>
                         <span id="download-translation-text">Baixar Tradução (.zip)</span>
-                    </a>
+                    </button>
                 </div>
                 
                 <!-- Source -->
@@ -1097,6 +1300,181 @@
         </div>
     </section>
     
+    <!-- Modal: Launcher -->
+    <div id="modal-launcher" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-rocket"></i> Como usar o Launcher</h2>
+                <button class="modal-close" onclick="closeModal('modal-launcher')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3><i class="fas fa-download"></i> Passo a Passo</h3>
+                    <ol class="step-list">
+                        <li>
+                            <span class="step-num">1</span>
+                            <span class="step-text">Baixe e execute o <strong>WWM_Tradutor_PTBR.exe</strong> (não precisa instalar)</span>
+                        </li>
+                        <li>
+                            <span class="step-num">2</span>
+                            <span class="step-text">Clique em <strong>"Selecionar"</strong> e encontre o arquivo <strong>wwm.exe</strong> do seu jogo (veja como abaixo)</span>
+                        </li>
+                        <li>
+                            <span class="step-num">3</span>
+                            <span class="step-text">Clique em <strong>"Instalar Tradução"</strong> e aguarde o download</span>
+                        </li>
+                        <li>
+                            <span class="step-num">4</span>
+                            <span class="step-text">Pronto! Clique em <strong>"Jogar"</strong> para iniciar o jogo traduzido</span>
+                        </li>
+                    </ol>
+                </div>
+                
+                <div class="modal-section">
+                    <h3><i class="fas fa-folder-open"></i> Como encontrar o wwm.exe</h3>
+                    
+                    <div class="path-box">
+                        <div class="platform-name"><i class="fab fa-steam"></i> Steam</div>
+                        <code>
+                            <strong>Método rápido:</strong> Biblioteca Steam → Clique direito no jogo → Gerenciar → Navegar arquivos locais<br><br>
+                            <strong>Caminho:</strong> Abra a pasta do jogo, depois navegue até:<br>
+                            📁 Engine → 📁 Binaries → 📁 Win64r → 📄 <strong>wwm.exe</strong><br><br>
+                            <strong>Caminho completo:</strong><br>
+                            C:\Program Files (x86)\Steam\steamapps\common\Where Winds Meet\Engine\Binaries\Win64r\<strong>wwm.exe</strong>
+                        </code>
+                    </div>
+                    
+                    <div class="path-box">
+                        <div class="platform-name"><i class="fas fa-gamepad"></i> Epic Games</div>
+                        <code>
+                            <strong>Método rápido:</strong> Epic Games → Biblioteca → Clique nos 3 pontos (...) → Gerenciar → Abrir pasta de instalação<br><br>
+                            <strong>Caminho:</strong> Abra a pasta do jogo, depois navegue até:<br>
+                            📁 Engine → 📁 Binaries → 📁 Win64r → 📄 <strong>wwm.exe</strong><br><br>
+                            <strong>Caminho completo:</strong><br>
+                            C:\Program Files\Epic Games\WhereWindsMeet\Engine\Binaries\Win64r\<strong>wwm.exe</strong>
+                        </code>
+                    </div>
+                    
+                    <div class="path-box">
+                        <div class="platform-name"><i class="fas fa-desktop"></i> Standalone (Standard ou Lite)</div>
+                        <code>
+                            <strong>Localização padrão:</strong> O jogo standalone é instalado na pasta que você escolheu<br><br>
+                            <strong>Caminho:</strong> Abra a pasta wwm_standard (ou wwm_lite), depois navegue até:<br>
+                            📁 Engine → 📁 Binaries → 📁 Win64r → 📄 <strong>wwm.exe</strong><br><br>
+                            <strong>Caminho comum:</strong><br>
+                            C:\Program Files\wwm\wwm_standard\Engine\Binaries\Win64r\<strong>wwm.exe</strong><br>
+                            C:\Program Files\wwm\wwm_lite\Engine\Binaries\Win64r\<strong>wwm.exe</strong>
+                        </code>
+                    </div>
+                </div>
+                
+                <div class="modal-tip">
+                    <p><strong>💡 Dica:</strong> O launcher detecta automaticamente a plataforma e cria backup dos arquivos originais. Você pode restaurar a qualquer momento!</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-launcher')">Fechar</button>
+                <a id="modal-launcher-download" href="#" class="btn btn-primary">
+                    <i class="fas fa-download"></i>
+                    Baixar Launcher
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal: Instalação Manual -->
+    <div id="modal-manual" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-wrench"></i> Instalação Manual</h2>
+                <button class="modal-close" onclick="closeModal('modal-manual')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3><i class="fas fa-download"></i> Passo a Passo</h3>
+                    <ol class="step-list">
+                        <li>
+                            <span class="step-num">1</span>
+                            <span class="step-text">Baixe o arquivo <strong>traducao_ptbr.zip</strong></span>
+                        </li>
+                        <li>
+                            <span class="step-num">2</span>
+                            <span class="step-text">Extraia o conteúdo do ZIP (dois arquivos)</span>
+                        </li>
+                        <li>
+                            <span class="step-num">3</span>
+                            <span class="step-text">Navegue até a <strong>pasta de tradução</strong> do seu jogo (veja como abaixo)</span>
+                        </li>
+                        <li>
+                            <span class="step-num">4</span>
+                            <span class="step-text">Cole os arquivos e <strong>substitua</strong> quando perguntado</span>
+                        </li>
+                    </ol>
+                </div>
+                
+                <div class="modal-section">
+                    <h3><i class="fas fa-file"></i> Arquivos incluídos no ZIP</h3>
+                    <div class="path-box">
+                        <div class="platform-name"><i class="fas fa-file-alt"></i> Arquivos de Tradução</div>
+                        <code>
+                            • <strong>translate_words_map_en</strong> (~30.000 strings)<br>
+                            • <strong>translate_words_map_en_diff</strong> (~20.000 strings)
+                        </code>
+                    </div>
+                </div>
+                
+                <div class="modal-section">
+                    <h3><i class="fas fa-folder-open"></i> Como chegar na pasta de tradução</h3>
+                    
+                    <div class="path-box">
+                        <div class="platform-name"><i class="fab fa-steam"></i> Steam</div>
+                        <code>
+                            <strong>Método rápido:</strong> Biblioteca Steam → Clique direito no jogo → Gerenciar → Navegar arquivos locais<br><br>
+                            <strong>Caminho:</strong> Abra a pasta do jogo, depois navegue até:<br>
+                            📁 Package → 📁 HD → 📁 oversea → 📁 <strong>locale</strong><br><br>
+                            <strong>Caminho completo:</strong><br>
+                            C:\Program Files (x86)\Steam\steamapps\common\Where Winds Meet\<strong>Package\HD\oversea\locale\</strong>
+                        </code>
+                    </div>
+                    
+                    <div class="path-box">
+                        <div class="platform-name"><i class="fas fa-gamepad"></i> Epic Games</div>
+                        <code>
+                            <strong>Método rápido:</strong> Epic Games → Biblioteca → Clique nos 3 pontos (...) → Gerenciar → Abrir pasta de instalação<br><br>
+                            <strong>Caminho:</strong> Abra a pasta do jogo, depois navegue até:<br>
+                            📁 Package → 📁 HD → 📁 oversea → 📁 <strong>locale</strong><br><br>
+                            <strong>Caminho completo:</strong><br>
+                            C:\Program Files\Epic Games\WhereWindsMeet\<strong>Package\HD\oversea\locale\</strong>
+                        </code>
+                    </div>
+                    
+                    <div class="path-box">
+                        <div class="platform-name"><i class="fas fa-desktop"></i> Standalone (Standard ou Lite)</div>
+                        <code>
+                            <strong>Localização padrão:</strong> O jogo standalone é instalado na pasta que você escolheu<br><br>
+                            <strong>Caminho:</strong> Abra a pasta wwm_standard (ou wwm_lite), depois navegue até:<br>
+                            📁 LocalData → 📁 Patch → 📁 HD → 📁 oversea → 📁 <strong>locale</strong><br><br>
+                            <strong>Caminho comum:</strong><br>
+                            C:\Program Files\wwm\wwm_standard\<strong>LocalData\Patch\HD\oversea\locale\</strong><br>
+                            C:\Program Files\wwm\wwm_lite\<strong>LocalData\Patch\HD\oversea\locale\</strong>
+                        </code>
+                    </div>
+                </div>
+                
+                <div class="modal-tip">
+                    <p><strong>💡 Dica:</strong> Faça backup dos arquivos originais antes de substituir! Renomeie-os para <strong>.backup</strong> assim você pode restaurar caso precise.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-manual')">Fechar</button>
+                <a id="modal-manual-download" href="#" class="btn btn-primary">
+                    <i class="fas fa-file-archive"></i>
+                    Baixar Tradução (.zip)
+                </a>
+            </div>
+        </div>
+    </div>
+    
     <!-- Footer -->
     <footer>
         <div class="footer-content">
@@ -1171,16 +1549,12 @@
                 const launcherAsset = findAsset(latestLauncher, '.exe');
                 const launcherUrl = launcherAsset ? launcherAsset.browser_download_url : latestLauncher.html_url;
                 
-                // Hero
-                const heroLauncherBtn = document.getElementById('hero-launcher-btn');
+                // Hero (agora é button, só atualiza texto)
                 const heroLauncherText = document.getElementById('hero-launcher-text');
-                if (heroLauncherBtn) heroLauncherBtn.href = launcherUrl;
                 if (heroLauncherText) heroLauncherText.textContent = `Baixar Launcher v${launcherVersion}`;
                 
-                // Download section
-                const downloadLauncherBtn = document.getElementById('download-launcher-btn');
+                // Download section (agora é button, só atualiza texto)
                 const downloadLauncherText = document.getElementById('download-launcher-text');
-                if (downloadLauncherBtn) downloadLauncherBtn.href = launcherUrl;
                 if (downloadLauncherText) downloadLauncherText.textContent = `Baixar Launcher v${launcherVersion} (.exe)`;
                 
                 // Footer
@@ -1188,6 +1562,13 @@
                 if (footerLauncherLink) {
                     footerLauncherLink.href = launcherUrl;
                     footerLauncherLink.textContent = `Launcher v${launcherVersion} (.exe)`;
+                }
+                
+                // Modal launcher download button
+                const modalLauncherDownload = document.getElementById('modal-launcher-download');
+                if (modalLauncherDownload) {
+                    modalLauncherDownload.href = launcherUrl;
+                    modalLauncherDownload.innerHTML = `<i class="fas fa-download"></i> Baixar Launcher v${launcherVersion}`;
                 }
             }
             
@@ -1197,16 +1578,12 @@
                 const translationAsset = findAsset(latestTranslation, '.zip');
                 const translationUrl = translationAsset ? translationAsset.browser_download_url : latestTranslation.html_url;
                 
-                // Hero
-                const heroTranslationBtn = document.getElementById('hero-translation-btn');
+                // Hero (agora é button, só atualiza texto)
                 const heroTranslationText = document.getElementById('hero-translation-text');
-                if (heroTranslationBtn) heroTranslationBtn.href = translationUrl;
                 if (heroTranslationText) heroTranslationText.textContent = `Baixar Tradução v${translationVersion}`;
                 
-                // Download section
-                const downloadTranslationBtn = document.getElementById('download-translation-btn');
+                // Download section (agora é button, só atualiza texto)
                 const downloadTranslationText = document.getElementById('download-translation-text');
-                if (downloadTranslationBtn) downloadTranslationBtn.href = translationUrl;
                 if (downloadTranslationText) downloadTranslationText.textContent = `Baixar Tradução v${translationVersion} (.zip)`;
                 
                 // Footer
@@ -1214,6 +1591,13 @@
                 if (footerTranslationLink) {
                     footerTranslationLink.href = translationUrl;
                     footerTranslationLink.textContent = `Tradução v${translationVersion} (.zip)`;
+                }
+                
+                // Modal manual download button
+                const modalManualDownload = document.getElementById('modal-manual-download');
+                if (modalManualDownload) {
+                    modalManualDownload.href = translationUrl;
+                    modalManualDownload.innerHTML = `<i class="fas fa-file-archive"></i> Baixar Tradução v${translationVersion}`;
                 }
                 
                 // Stats
@@ -1333,6 +1717,43 @@
                     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
+        });
+        
+        // ========== MODAL FUNCTIONS ==========
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        // Fechar modal ao clicar fora
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+        
+        // Fechar modal com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+                document.body.style.overflow = '';
+            }
         });
     </script>
 </body>
