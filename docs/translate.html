@@ -1897,97 +1897,6 @@
             }
         }
         
-        // Modal para inserir Personal Access Token (fallback)
-        function showTokenInputModal() {
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.id = 'token-modal';
-            modal.innerHTML = `
-                <div class="modal-content" style="max-width: 550px;">
-                    <div class="modal-header">
-                        <h2><i class="fab fa-github"></i> Conectar com GitHub</h2>
-                        <button class="modal-close" onclick="closeTokenModal()">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <p style="margin-bottom: 1rem; color: var(--text-secondary);">
-                            Para enviar sugestões diretamente, você precisa de um <strong>Personal Access Token</strong> do GitHub.
-                        </p>
-                        
-                        <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                            <strong>Como criar seu token:</strong>
-                            <ol style="margin: 0.5rem 0 0 1.5rem; color: var(--text-secondary); font-size: 0.9rem;">
-                                <li>Acesse <a href="https://github.com/settings/tokens/new?description=WWM%20Brasileiro%20Translate&scopes=public_repo" target="_blank" style="color: var(--gold-primary);">GitHub Token Settings</a></li>
-                                <li>Marque apenas <code>public_repo</code></li>
-                                <li>Clique em "Generate token"</li>
-                                <li>Copie e cole aqui</li>
-                            </ol>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label><i class="fas fa-key"></i> Personal Access Token</label>
-                            <input type="password" id="token-input" class="form-control" 
-                                placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" 
-                                style="font-family: monospace;">
-                        </div>
-                        
-                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
-                            <i class="fas fa-lock"></i> Seu token é salvo apenas no seu navegador e nunca é enviado para nossos servidores.
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn-cancel" onclick="closeTokenModal()">Cancelar</button>
-                        <button class="btn-submit" onclick="saveToken()">
-                            <i class="fas fa-check"></i> Conectar
-                        </button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-            modal.style.display = 'flex';
-            
-            // Focus no input
-            setTimeout(() => document.getElementById('token-input').focus(), 100);
-        }
-        
-        function closeTokenModal() {
-            const modal = document.getElementById('token-modal');
-            if (modal) modal.remove();
-        }
-        
-        async function saveToken() {
-            const tokenInput = document.getElementById('token-input');
-            const token = tokenInput.value.trim();
-            
-            if (!token) {
-                showToast('Por favor, insira um token válido');
-                return;
-            }
-            
-            // Validar token
-            try {
-                const response = await fetch('https://api.github.com/user', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
-                
-                if (response.ok) {
-                    githubUser = await response.json();
-                    githubToken = token;
-                    localStorage.setItem('github_token', token);
-                    
-                    closeTokenModal();
-                    updateAuthButton();
-                    showToast(`Bem-vindo, ${githubUser.login}!`);
-                } else {
-                    showToast('Token inválido. Verifique e tente novamente.');
-                }
-            } catch (error) {
-                showToast('Erro ao validar token.');
-            }
-        }
-        
         // Atualizar botão de auth
         function updateAuthButton() {
             const btn = document.getElementById('github-auth-btn');
@@ -1997,7 +1906,7 @@
                 btn.innerHTML = `
                     <img src="${githubUser.avatar_url}" class="avatar" alt="${githubUser.login}">
                     ${githubUser.login}
-                    <i class="fas fa-sign-out-alt logout-icon" onclick="event.stopPropagation(); logout();" title="Sair"></i>
+                    <i class="fas fa-sign-out-alt logout-icon" onclick="event.stopPropagation(); logout();" title="Sair"></i></i>
                 `;
             } else {
                 btn.classList.remove('logged-in');
@@ -2031,8 +1940,8 @@
             
             // Verificar se está logado
             if (!githubToken || !githubUser) {
-                showTokenInputModal();
-                showToast('Faça login para enviar sugestões');
+                // Redirecionar para OAuth (não mostrar modal de token)
+                handleGitHubAuth();
                 return;
             }
             
