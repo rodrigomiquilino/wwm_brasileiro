@@ -196,6 +196,129 @@
             color: var(--text-secondary);
         }
         
+        /* Progress Bar */
+        .progress-bar-container {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .progress-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-bar-title {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar-percent {
+            color: var(--gold-primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: var(--bg-dark);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold-primary), var(--gold-light));
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+        
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .progress-bar-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        /* Toast com cores */
+        .toast-notification {
+            position: fixed;
+            bottom: 100px;
+            right: 2rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .toast-notification.success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .toast-notification.error {
+            background: var(--red-primary);
+            color: white;
+        }
+        
+        .toast-notification.warning {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .toast-notification.info {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* Keyboard hints */
+        .keyboard-hint {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+        
+        .keyboard-hint kbd {
+            background: var(--bg-dark);
+            border: 1px solid var(--text-muted);
+            border-radius: 3px;
+            padding: 0.1rem 0.4rem;
+            font-family: monospace;
+            font-size: 0.65rem;
+        }
+        
         /* File Tabs */
         .file-tabs {
             display: flex;
@@ -1123,6 +1246,22 @@
                 </button>
             </div>
             
+            <!-- Barra de Progresso Visual -->
+            <div class="progress-bar-container">
+                <div class="progress-bar-header">
+                    <span class="progress-bar-title"><i class="fas fa-chart-line"></i> Progresso da Tradução</span>
+                    <span class="progress-bar-percent" id="progress-percent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-bar-stats">
+                    <span><i class="fas fa-check"></i> <span id="progress-done">0</span> traduzidas</span>
+                    <span><i class="fas fa-clock"></i> <span id="progress-pending">0</span> pendentes</span>
+                    <span><i class="fas fa-list"></i> <span id="progress-total">0</span> total</span>
+                </div>
+            </div>
+            
             <div class="stats-bar">
                 <div class="stat-item">
                     <div class="stat-value" id="stat-total">-</div>
@@ -1229,6 +1368,9 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <div class="keyboard-hint">
+                    <kbd>Enter</kbd> adicionar • <kbd>Esc</kbd> fechar
+                </div>
                 <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
                 <button class="btn-submit" onclick="addToCart()">
                     <i class="fas fa-plus"></i> Adicionar ao Lote
@@ -1422,6 +1564,13 @@
             document.getElementById('stat-translated').textContent = translated.toLocaleString('pt-BR');
             document.getElementById('stat-pending').textContent = pending.toLocaleString('pt-BR');
             document.getElementById('stat-progress').textContent = `${progress}%`;
+            
+            // Atualiza barra de progresso visual
+            document.getElementById('progress-percent').textContent = `${progress}%`;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+            document.getElementById('progress-done').textContent = translated.toLocaleString('pt-BR');
+            document.getElementById('progress-pending').textContent = pending.toLocaleString('pt-BR');
+            document.getElementById('progress-total').textContent = total.toLocaleString('pt-BR');
         }
         
         // Apply filter and search
@@ -1642,6 +1791,44 @@
         let currentSuggestionId = '';
         let suggestionCart = []; // Carrinho de sugestões
         
+        // ========== PERSISTÊNCIA DO CARRINHO ==========
+        const CART_STORAGE_KEY = 'wwm_suggestion_cart';
+        
+        // Salvar carrinho no localStorage
+        function saveCartToStorage() {
+            try {
+                localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(suggestionCart));
+            } catch (e) {
+                console.warn('Erro ao salvar carrinho:', e);
+            }
+        }
+        
+        // Carregar carrinho do localStorage
+        function loadCartFromStorage() {
+            try {
+                const saved = localStorage.getItem(CART_STORAGE_KEY);
+                if (saved) {
+                    suggestionCart = JSON.parse(saved);
+                    if (suggestionCart.length > 0) {
+                        updateCartUI();
+                        showToast(`${suggestionCart.length} sugestão(ões) restaurada(s) do rascunho`, 'info');
+                    }
+                }
+            } catch (e) {
+                console.warn('Erro ao carregar carrinho:', e);
+                suggestionCart = [];
+            }
+        }
+        
+        // Limpar carrinho do localStorage
+        function clearCartFromStorage() {
+            try {
+                localStorage.removeItem(CART_STORAGE_KEY);
+            } catch (e) {
+                console.warn('Erro ao limpar carrinho:', e);
+            }
+        }
+        
         function openSuggestionModal(id, originalEncoded, currentEncoded, lineNumber) {
             currentSuggestionId = id;
             
@@ -1722,7 +1909,9 @@
             if (suggestionCart.length === 0) return;
             if (confirm('Tem certeza que deseja limpar todas as sugestões?')) {
                 suggestionCart = [];
+                clearCartFromStorage();
                 updateCartUI();
+                showToast('Carrinho limpo', 'info');
             }
         }
         
@@ -1744,6 +1933,9 @@
             count.textContent = suggestionCart.length;
             badge.classList.toggle('hidden', suggestionCart.length === 0);
             submit.disabled = suggestionCart.length === 0;
+            
+            // Salvar no localStorage
+            saveCartToStorage();
             
             // Renderiza itens
             if (suggestionCart.length === 0) {
@@ -1780,7 +1972,7 @@
             if (error) {
                 // Usuário cancelou ou erro
                 window.history.replaceState({}, document.title, window.location.pathname);
-                showToast('Login cancelado');
+                showToast('Login cancelado', 'warning');
                 return;
             }
             
@@ -1815,7 +2007,7 @@
                 closeLoadingModal();
                 
                 if (data.error) {
-                    showToast('Erro: ' + data.error);
+                    showToast('Erro: ' + data.error, 'error');
                     return;
                 }
                 
@@ -1834,7 +2026,7 @@
             } catch (error) {
                 closeLoadingModal();
                 console.error('Erro na autenticação:', error);
-                showToast('Erro na autenticação. Tente novamente.');
+                showToast('Erro na autenticação. Tente novamente.', 'error');
             }
         }
         
@@ -1920,7 +2112,7 @@
             githubUser = null;
             localStorage.removeItem('github_token');
             updateAuthButton();
-            showToast('Desconectado do GitHub');
+            showToast('Desconectado do GitHub', 'info');
         }
         
         // Menu do usuário
@@ -2047,8 +2239,7 @@
                 }
                 
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-            
-            try {
+                
                 // Monta o JSON estruturado para o GitHub Action processar
                 const jsonData = {
                     version: "1.0",
@@ -2103,10 +2294,15 @@ ${suggestionCart.map((item, i) => `${i+1}. \`${item.id}\` → ${item.suggestion.
                     // Sucesso!
                     showToast(`Issue #${issue.number} criada com sucesso!`);
                     
-                    // Limpar carrinho
+                    // Limpar carrinho e localStorage
                     suggestionCart = [];
+                    clearCartFromStorage();
                     updateCartUI();
                     toggleCart();
+                    
+                    // Invalidar cache de duplicatas para próxima verificação
+                    pendingIssuesCache = null;
+                    pendingIssuesCacheTime = 0;
                     
                     // Mostrar link para a issue
                     showIssueCreatedModal(issue);
@@ -2117,17 +2313,17 @@ ${suggestionCart.map((item, i) => `${i+1}. \`${item.id}\` → ${item.suggestion.
                     
                     if (response.status === 401) {
                         logout();
-                        showToast('Token expirado. Faça login novamente.');
+                        showToast('Token expirado. Faça login novamente.', 'error');
                     } else if (response.status === 403) {
-                        showToast('Sem permissão. Verifique se o token tem permissão "public_repo".');
+                        showToast('Sem permissão. Verifique se o token tem permissão "public_repo".', 'error');
                     } else {
-                        showToast(`Erro: ${error.message || 'Falha ao criar issue'}`);
+                        showToast(`Erro: ${error.message || 'Falha ao criar issue'}`, 'error');
                     }
                 }
                 
             } catch (error) {
                 console.error('Erro:', error);
-                showToast('Erro de conexão. Tente novamente.');
+                showToast('Erro de conexão. Tente novamente.', 'error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
@@ -2173,23 +2369,22 @@ ${suggestionCart.map((item, i) => `${i+1}. \`${item.id}\` → ${item.suggestion.
             });
         }
         
-        // Toast notification
-        function showToast(message) {
+        // Toast notification com tipos
+        function showToast(message, type = 'success') {
+            // Remove toast anterior se existir
+            const existingToast = document.querySelector('.toast-notification');
+            if (existingToast) existingToast.remove();
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            
             const toast = document.createElement('div');
-            toast.className = 'toast-notification';
-            toast.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 100px;
-                right: 2rem;
-                background: var(--success);
-                color: white;
-                padding: 0.75rem 1.5rem;
-                border-radius: 8px;
-                font-size: 0.9rem;
-                z-index: 2000;
-                animation: slideIn 0.3s ease;
-            `;
+            toast.className = `toast-notification ${type}`;
+            toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i> ${message}`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
@@ -2201,17 +2396,35 @@ ${suggestionCart.map((item, i) => `${i+1}. \`${item.id}\` → ${item.suggestion.
             }
         });
         
-        // Fecha modal com ESC
+        // Atalhos de teclado
         document.addEventListener('keydown', function(e) {
+            const modal = document.getElementById('suggestion-modal');
+            const isModalOpen = modal.classList.contains('active');
+            
+            // ESC - fechar modal ou carrinho
             if (e.key === 'Escape') {
-                closeModal();
-                document.getElementById('cart-panel').classList.remove('active');
+                if (isModalOpen) {
+                    closeModal();
+                } else {
+                    document.getElementById('cart-panel').classList.remove('active');
+                }
+            }
+            
+            // Enter no modal - adicionar ao carrinho (só se não for Shift+Enter para nova linha)
+            if (e.key === 'Enter' && !e.shiftKey && isModalOpen) {
+                const activeElement = document.activeElement;
+                // Só ativa se estiver no textarea de sugestão
+                if (activeElement && activeElement.id === 'modal-suggestion') {
+                    e.preventDefault();
+                    addToCart();
+                }
             }
         });
         
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             checkOAuthCallback(); // Verificar login
+            loadCartFromStorage(); // Restaurar carrinho salvo
             loadTranslations();
             loadContributors();
         });
