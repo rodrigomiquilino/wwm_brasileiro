@@ -51,9 +51,9 @@
 
 ### ⬇️ Download Rápido
 
-[![Download Launcher](https://img.shields.io/badge/⬇_BAIXAR_LAUNCHER_v2.0.0-WWM__Tradutor__PTBR.exe-c9a227?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases/download/launcher-2.0.0/WWM_Tradutor_PTBR.exe)
+[![Download Launcher](https://img.shields.io/badge/⬇_BAIXAR_LAUNCHER-WWM__Tradutor__PTBR.exe-c9a227?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases?q=launcher)
 
-[![Download Manual](https://img.shields.io/badge/📦_Download_Manual-traducao__ptbr.zip-blue?style=flat-square)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
+[![Download Tradução](https://img.shields.io/badge/📦_BAIXAR_TRADUÇÃO-traducao__ptbr.zip-blue?style=flat-square)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases)
 
 ---
 
@@ -90,7 +90,9 @@ A forma mais fácil de instalar a tradução! O launcher faz tudo por você.
 
 <div align="center">
 
-[![Download Launcher](https://img.shields.io/badge/⬇_BAIXAR_LAUNCHER_v2.0.0_(~40MB)-WWM__Tradutor__PTBR.exe-c9a227?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases/download/launcher-2.0.0/WWM_Tradutor_PTBR.exe)
+[![Download Launcher](https://img.shields.io/badge/⬇_BAIXAR_LAUNCHER_(~40MB)-WWM__Tradutor__PTBR.exe-c9a227?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/rodrigomiquilino/wwm_brasileiro/releases?q=launcher)
+
+> 💡 Na página de releases, baixe o `WWM_Tradutor_PTBR.exe` da versão mais recente com tag `launcher-x.x.x`
 
 </div>
 

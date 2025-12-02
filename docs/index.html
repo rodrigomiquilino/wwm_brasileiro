@@ -557,6 +557,11 @@
             color: var(--gold-primary);
         }
         
+        .release-tag.launcher {
+            background: rgba(21, 101, 192, 0.2);
+            color: #42a5f5;
+        }
+        
         /* ========== COMMITS ========== */
         #atualizacoes {
             background: var(--bg-medium);
@@ -824,13 +829,13 @@
             </p>
             
             <div class="hero-buttons">
-                <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases/download/launcher-2.0.0/WWM_Tradutor_PTBR.exe" class="btn btn-primary">
+                <a id="hero-launcher-btn" href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases" class="btn btn-primary">
                     <i class="fas fa-download"></i>
-                    Baixar Launcher v2.0.0
+                    <span id="hero-launcher-text">Baixar Launcher</span>
                 </a>
-                <a href="#download" class="btn btn-secondary">
+                <a id="hero-translation-btn" href="#download" class="btn btn-secondary">
                     <i class="fas fa-file-archive"></i>
-                    Download Manual
+                    <span id="hero-translation-text">Download Tradução</span>
                 </a>
             </div>
             
@@ -877,9 +882,9 @@
                         <li><i class="fas fa-check"></i> Suporte a escalas de DPI</li>
                     </ul>
                     
-                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases/download/launcher-2.0.0/WWM_Tradutor_PTBR.exe" class="btn btn-primary" style="width: 100%;">
+                    <a id="download-launcher-btn" href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases" class="btn btn-primary" style="width: 100%;">
                         <i class="fas fa-download"></i>
-                        Baixar Launcher v2.0.0 (.exe)
+                        <span id="download-launcher-text">Baixar Launcher (.exe)</span>
                     </a>
                 </div>
                 
@@ -898,9 +903,9 @@
                         <li><i class="fas fa-check"></i> Portátil</li>
                     </ul>
                     
-                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases" class="btn btn-secondary" style="width: 100%;">
+                    <a id="download-translation-btn" href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases" class="btn btn-secondary" style="width: 100%;">
                         <i class="fas fa-file-archive"></i>
-                        Ver Releases (baixar ZIP)
+                        <span id="download-translation-text">Baixar Tradução (.zip)</span>
                     </a>
                 </div>
                 
@@ -1102,8 +1107,8 @@
             
             <div class="footer-links">
                 <h4>Downloads</h4>
-                <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases/download/launcher-2.0.0/WWM_Tradutor_PTBR.exe">Launcher v2.0.0 (.exe)</a>
-                <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases">Arquivos ZIP (Releases)</a>
+                <a id="footer-launcher-link" href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases">Launcher (.exe)</a>
+                <a id="footer-translation-link" href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases">Tradução (.zip)</a>
                 <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases">Todas as versões</a>
             </div>
             
@@ -1133,6 +1138,90 @@
         // ========== API CALLS ==========
         const GITHUB_API = 'https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro';
         
+        // Armazena as versões encontradas
+        let latestLauncher = null;
+        let latestTranslation = null;
+        
+        // Encontra a release mais recente do launcher (tag começa com "launcher-")
+        function findLatestLauncher(releases) {
+            return releases.find(r => r.tag_name.startsWith('launcher-'));
+        }
+        
+        // Encontra a release mais recente da tradução (tag NÃO começa com "launcher")
+        function findLatestTranslation(releases) {
+            return releases.find(r => !r.tag_name.startsWith('launcher'));
+        }
+        
+        // Encontra o asset de download em uma release
+        function findAsset(release, extension) {
+            if (!release || !release.assets) return null;
+            return release.assets.find(a => a.name.endsWith(extension));
+        }
+        
+        // Extrai versão da tag (remove prefixos como "launcher-" ou "v")
+        function extractVersion(tag) {
+            return tag.replace(/^(launcher-|v)/i, '');
+        }
+        
+        // Atualiza os links de download dinamicamente
+        function updateDownloadLinks() {
+            // Launcher
+            if (latestLauncher) {
+                const launcherVersion = extractVersion(latestLauncher.tag_name);
+                const launcherAsset = findAsset(latestLauncher, '.exe');
+                const launcherUrl = launcherAsset ? launcherAsset.browser_download_url : latestLauncher.html_url;
+                
+                // Hero
+                const heroLauncherBtn = document.getElementById('hero-launcher-btn');
+                const heroLauncherText = document.getElementById('hero-launcher-text');
+                if (heroLauncherBtn) heroLauncherBtn.href = launcherUrl;
+                if (heroLauncherText) heroLauncherText.textContent = `Baixar Launcher v${launcherVersion}`;
+                
+                // Download section
+                const downloadLauncherBtn = document.getElementById('download-launcher-btn');
+                const downloadLauncherText = document.getElementById('download-launcher-text');
+                if (downloadLauncherBtn) downloadLauncherBtn.href = launcherUrl;
+                if (downloadLauncherText) downloadLauncherText.textContent = `Baixar Launcher v${launcherVersion} (.exe)`;
+                
+                // Footer
+                const footerLauncherLink = document.getElementById('footer-launcher-link');
+                if (footerLauncherLink) {
+                    footerLauncherLink.href = launcherUrl;
+                    footerLauncherLink.textContent = `Launcher v${launcherVersion} (.exe)`;
+                }
+            }
+            
+            // Tradução
+            if (latestTranslation) {
+                const translationVersion = extractVersion(latestTranslation.tag_name);
+                const translationAsset = findAsset(latestTranslation, '.zip');
+                const translationUrl = translationAsset ? translationAsset.browser_download_url : latestTranslation.html_url;
+                
+                // Hero
+                const heroTranslationBtn = document.getElementById('hero-translation-btn');
+                const heroTranslationText = document.getElementById('hero-translation-text');
+                if (heroTranslationBtn) heroTranslationBtn.href = translationUrl;
+                if (heroTranslationText) heroTranslationText.textContent = `Baixar Tradução v${translationVersion}`;
+                
+                // Download section
+                const downloadTranslationBtn = document.getElementById('download-translation-btn');
+                const downloadTranslationText = document.getElementById('download-translation-text');
+                if (downloadTranslationBtn) downloadTranslationBtn.href = translationUrl;
+                if (downloadTranslationText) downloadTranslationText.textContent = `Baixar Tradução v${translationVersion} (.zip)`;
+                
+                // Footer
+                const footerTranslationLink = document.getElementById('footer-translation-link');
+                if (footerTranslationLink) {
+                    footerTranslationLink.href = translationUrl;
+                    footerTranslationLink.textContent = `Tradução v${translationVersion} (.zip)`;
+                }
+                
+                // Stats
+                const statVersion = document.getElementById('stat-version');
+                if (statVersion) statVersion.textContent = `v${translationVersion}`;
+            }
+        }
+        
         // Fetch releases
         async function fetchReleases() {
             try {
@@ -1146,6 +1235,13 @@
                     return;
                 }
                 
+                // Encontra as releases mais recentes de cada tipo
+                latestLauncher = findLatestLauncher(releases);
+                latestTranslation = findLatestTranslation(releases);
+                
+                // Atualiza os links de download
+                updateDownloadLinks();
+                
                 // Update stats
                 let totalDownloads = 0;
                 releases.forEach(r => {
@@ -1153,21 +1249,27 @@
                 });
                 
                 document.getElementById('stat-downloads').textContent = totalDownloads.toLocaleString('pt-BR');
-                document.getElementById('stat-version').textContent = releases[0].tag_name || 'v1.0.0';
                 
-                // Render releases
-                container.innerHTML = releases.slice(0, 10).map((release, index) => `
-                    <a href="${release.html_url}" target="_blank" class="release-item" style="text-decoration: none; color: inherit;">
-                        <div class="release-icon">
-                            <i class="fas fa-tag"></i>
-                        </div>
-                        <div class="release-info">
-                            <div class="release-version">${release.name || release.tag_name}</div>
-                            <div class="release-date">${new Date(release.published_at).toLocaleDateString('pt-BR')}</div>
-                        </div>
-                        ${index === 0 ? '<span class="release-tag latest">Mais recente</span>' : ''}
-                    </a>
-                `).join('');
+                // Render releases (mostra todas, com ícone diferente para launcher)
+                container.innerHTML = releases.slice(0, 10).map((release, index) => {
+                    const isLauncher = release.tag_name.startsWith('launcher-');
+                    const isLatestLauncher = latestLauncher && release.tag_name === latestLauncher.tag_name;
+                    const isLatestTranslation = latestTranslation && release.tag_name === latestTranslation.tag_name;
+                    const tagLabel = isLatestLauncher ? 'Launcher' : (isLatestTranslation ? 'Tradução' : '');
+                    
+                    return `
+                        <a href="${release.html_url}" target="_blank" class="release-item" style="text-decoration: none; color: inherit;">
+                            <div class="release-icon">
+                                <i class="fas ${isLauncher ? 'fa-rocket' : 'fa-tag'}"></i>
+                            </div>
+                            <div class="release-info">
+                                <div class="release-version">${release.name || release.tag_name}</div>
+                                <div class="release-date">${new Date(release.published_at).toLocaleDateString('pt-BR')}</div>
+                            </div>
+                            ${tagLabel ? `<span class="release-tag ${isLatestLauncher ? 'launcher' : 'latest'}">${tagLabel}</span>` : ''}
+                        </a>
+                    `;
+                }).join('');
                 
             } catch (error) {
                 document.getElementById('releases-list').innerHTML = 
