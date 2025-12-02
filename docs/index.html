@@ -670,15 +670,22 @@
             font-size: 0.875rem;
         }
         
-        .opensource-banner code {
+        /* Code block específico do opensource-banner (fora dos modais) */
+        .opensource-banner > code,
+        #instalacao .opensource-banner code {
             display: block;
             background: var(--bg-dark);
             padding: 1rem;
             border-radius: 8px;
-            margin: 0.5rem 0;
+            margin: 0.5rem auto;
+            max-width: 600px;
             color: var(--gold-primary);
+            font-family: 'Consolas', monospace;
             font-size: 0.85rem;
             text-align: left;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            line-height: 1.6;
         }
         
         .opensource-banner.mt-3 {
@@ -807,13 +814,15 @@
             /* Fix path-box overflow on mobile */
             .path-box {
                 padding: 0.75rem;
+                text-align: left;
             }
             
             .path-box code {
                 font-size: 0.7rem;
                 word-break: break-all;
                 overflow-wrap: anywhere;
-                white-space: pre-wrap;
+                white-space: normal;
+                text-align: left;
             }
             
             .modal-body {
@@ -935,10 +944,12 @@
         
         .modal-body {
             padding: 2rem;
+            text-align: left;
         }
         
         .modal-section {
             margin-bottom: 1.5rem;
+            text-align: left;
         }
         
         .modal-section:last-child {
@@ -964,6 +975,7 @@
             border-radius: 8px;
             padding: 1rem;
             margin-bottom: 0.75rem;
+            text-align: left;
         }
         
         .path-box .platform-name {
@@ -983,8 +995,9 @@
             font-size: 0.8rem;
             word-break: break-word;
             overflow-wrap: anywhere;
-            white-space: pre-wrap;
-            line-height: 1.5;
+            white-space: normal;
+            line-height: 1.8;
+            text-align: left;
         }
         
         .path-box code strong {
