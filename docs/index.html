@@ -75,6 +75,7 @@
             right: 0;
             z-index: 1000;
             background: rgba(10, 10, 15, 0.95);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(201, 162, 39, 0.2);
             padding: 1rem 0;
@@ -665,11 +666,41 @@
             margin: 0 auto 1.5rem;
         }
         
+        .opensource-banner p.small {
+            font-size: 0.875rem;
+        }
+        
+        .opensource-banner code {
+            display: block;
+            background: var(--bg-dark);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+            color: var(--gold-primary);
+            font-size: 0.85rem;
+            text-align: left;
+        }
+        
+        .opensource-banner.mt-3 {
+            margin-top: 3rem;
+        }
+        
         .opensource-links {
             display: flex;
             justify-content: center;
             gap: 1rem;
             flex-wrap: wrap;
+        }
+        
+        /* Botões full width para download cards */
+        .download-card .btn {
+            width: 100%;
+        }
+        
+        /* Botões pequenos para headers */
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
         }
         
         /* ========== FOOTER ========== */
@@ -772,6 +803,41 @@
                 max-width: 300px;
                 justify-content: center;
             }
+            
+            /* Fix path-box overflow on mobile */
+            .path-box {
+                padding: 0.75rem;
+            }
+            
+            .path-box code {
+                font-size: 0.7rem;
+                word-break: break-all;
+                overflow-wrap: anywhere;
+                white-space: pre-wrap;
+            }
+            
+            .modal-body {
+                padding: 1rem;
+            }
+            
+            .modal-section h3 {
+                font-size: 1rem;
+            }
+            
+            .opensource-banner code {
+                font-size: 0.75rem;
+                word-break: break-all;
+                overflow-wrap: anywhere;
+                white-space: pre-wrap;
+            }
+            
+            .install-steps {
+                gap: 1rem;
+            }
+            
+            .install-step {
+                padding: 1.5rem 1rem;
+            }
         }
         
         /* ========== SCROLLBAR ========== */
@@ -805,6 +871,7 @@
             align-items: center;
             justify-content: center;
             padding: 1rem;
+            -webkit-backdrop-filter: blur(5px);
             backdrop-filter: blur(5px);
         }
         
@@ -914,7 +981,9 @@
             color: var(--text-secondary);
             font-family: 'Consolas', monospace;
             font-size: 0.8rem;
-            word-break: break-all;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
             line-height: 1.5;
         }
         
@@ -1012,7 +1081,7 @@
                 <li><a href="#atualizacoes">Atualizações</a></li>
             </ul>
             
-            <a href="https://github.com/rodrigomiquilino/wwm_brasileiro" target="_blank" class="nav-github">
+            <a href="https://github.com/rodrigomiquilino/wwm_brasileiro" target="_blank" rel="noopener" class="nav-github">
                 <i class="fab fa-github"></i>
                 GitHub
             </a>
@@ -1036,11 +1105,11 @@
             </p>
             
             <div class="hero-buttons">
-                <button id="hero-launcher-btn" class="btn btn-primary" onclick="openModal('modal-launcher')">
+                <button id="hero-launcher-btn" type="button" class="btn btn-primary" data-modal="modal-launcher">
                     <i class="fas fa-download"></i>
                     <span id="hero-launcher-text">Baixar Launcher</span>
                 </button>
-                <button id="hero-translation-btn" class="btn btn-secondary" onclick="openModal('modal-manual')">
+                <button id="hero-translation-btn" type="button" class="btn btn-secondary" data-modal="modal-manual">
                     <i class="fas fa-file-archive"></i>
                     <span id="hero-translation-text">Download Tradução</span>
                 </button>
@@ -1089,7 +1158,7 @@
                         <li><i class="fas fa-check"></i> Suporte a escalas de DPI</li>
                     </ul>
                     
-                    <button id="download-launcher-btn" class="btn btn-primary" style="width: 100%;" onclick="openModal('modal-launcher')">
+                    <button id="download-launcher-btn" type="button" class="btn btn-primary" data-modal="modal-launcher">
                         <i class="fas fa-download"></i>
                         <span id="download-launcher-text">Baixar Launcher (.exe)</span>
                     </button>
@@ -1110,7 +1179,7 @@
                         <li><i class="fas fa-check"></i> Portátil</li>
                     </ul>
                     
-                    <button id="download-translation-btn" class="btn btn-secondary" style="width: 100%;" onclick="openModal('modal-manual')">
+                    <button id="download-translation-btn" type="button" class="btn btn-secondary" data-modal="modal-manual">
                         <i class="fas fa-file-archive"></i>
                         <span id="download-translation-text">Baixar Tradução (.zip)</span>
                     </button>
@@ -1131,7 +1200,7 @@
                         <li><i class="fas fa-check"></i> Issues & Pull Requests</li>
                     </ul>
                     
-                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro" target="_blank" class="btn btn-secondary" style="width: 100%;">
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro" target="_blank" rel="noopener" class="btn btn-secondary">
                         <i class="fab fa-github"></i>
                         Ver no GitHub
                     </a>
@@ -1215,16 +1284,16 @@
             </div>
             
             <!-- Manual Installation -->
-            <div class="opensource-banner" style="margin-top: 3rem;">
+            <div class="opensource-banner mt-3">
                 <h3><i class="fas fa-wrench"></i> Instalação Manual</h3>
                 <p>
                     Se preferir instalar manualmente, baixe o arquivo ZIP e extraia os arquivos para a pasta de locale do seu jogo:
                 </p>
-                <code style="display: block; background: var(--bg-dark); padding: 1rem; border-radius: 8px; margin: 0.5rem 0; color: var(--gold-primary); font-size: 0.85rem; text-align: left;">
+                <code>
                     <strong>Steam/Epic:</strong> ...\Where Winds Meet\Package\HD\oversea\locale\<br>
                     <strong>Standalone:</strong> ...\wwm_standard\LocalData\Patch\HD\oversea\locale\
                 </code>
-                <p style="font-size: 0.875rem;">
+                <p class="small">
                     Substitua os arquivos <strong>translate_words_map_en</strong> e <strong>translate_words_map_en_diff</strong>
                 </p>
             </div>
@@ -1242,7 +1311,7 @@
             <div class="releases-container">
                 <div class="releases-header">
                     <h3><i class="fas fa-tag"></i> Releases</h3>
-                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases" target="_blank" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">
                         Ver todas
                     </a>
                 </div>
@@ -1267,7 +1336,7 @@
             <div class="commits-container">
                 <div class="commits-header">
                     <h3><i class="fas fa-history"></i> Commits Recentes</h3>
-                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/commits/main" target="_blank" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/commits/main" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">
                         Ver todos
                     </a>
                 </div>
@@ -1287,15 +1356,15 @@
                     Qualquer pessoa pode contribuir, modificar ou distribuir.
                 </p>
                 <div class="opensource-links">
-                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/issues" target="_blank" class="btn btn-secondary">
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/issues" target="_blank" rel="noopener" class="btn btn-secondary">
                         <i class="fas fa-bug"></i>
                         Reportar Bug
                     </a>
-                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/pulls" target="_blank" class="btn btn-secondary">
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/pulls" target="_blank" rel="noopener" class="btn btn-secondary">
                         <i class="fas fa-code-pull-request"></i>
                         Contribuir
                     </a>
-                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/stargazers" target="_blank" class="btn btn-primary">
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/stargazers" target="_blank" rel="noopener" class="btn btn-primary">
                         <i class="fas fa-star"></i>
                         Dar uma Estrela
                     </a>
@@ -1309,7 +1378,7 @@
         <div class="modal">
             <div class="modal-header">
                 <h2><i class="fas fa-rocket"></i> Como usar o Launcher</h2>
-                <button class="modal-close" onclick="closeModal('modal-launcher')">&times;</button>
+                <button type="button" class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="modal-section">
@@ -1377,8 +1446,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-launcher')">Fechar</button>
-                <a id="modal-launcher-download" href="#" class="btn btn-primary">
+                <button type="button" class="btn btn-secondary">Fechar</button>
+                <a id="modal-launcher-download" href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases" target="_blank" rel="noopener" class="btn btn-primary">
                     <i class="fas fa-download"></i>
                     Baixar Launcher
                 </a>
@@ -1391,7 +1460,7 @@
         <div class="modal">
             <div class="modal-header">
                 <h2><i class="fas fa-wrench"></i> Instalação Manual</h2>
-                <button class="modal-close" onclick="closeModal('modal-manual')">&times;</button>
+                <button type="button" class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="modal-section">
@@ -1470,8 +1539,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-manual')">Fechar</button>
-                <a id="modal-manual-download" href="#" class="btn btn-primary">
+                <button type="button" class="btn btn-secondary">Fechar</button>
+                <a id="modal-manual-download" href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases" target="_blank" rel="noopener" class="btn btn-primary">
                     <i class="fas fa-file-archive"></i>
                     Baixar Tradução (.zip)
                 </a>
@@ -1739,6 +1808,27 @@
                 document.body.style.overflow = '';
             }
         }
+        
+        // Event listeners para botões de download (usando data-modal)
+        document.querySelectorAll('[data-modal]').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const modalId = this.getAttribute('data-modal');
+                openModal(modalId);
+            });
+        });
+        
+        // Event listeners para botões de fechar modal
+        document.querySelectorAll('.modal-close, .modal-footer .btn-secondary').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const modal = this.closest('.modal-overlay');
+                if (modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
         
         // Fechar modal ao clicar fora
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
