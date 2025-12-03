@@ -3703,7 +3703,7 @@
                     if (shortTitle.length > 50) shortTitle = shortTitle.substring(0, 47) + '...';
                     
                     return `
-                        <div class="admin-issue-card">
+                        <div class="admin-issue-card" data-issue="${issue.number}">
                             <div class="admin-card-header">
                                 <span class="admin-issue-number"><i class="fas fa-hashtag"></i> ${issue.number}</span>
                                 <span class="admin-issue-title">${escapeHtml(shortTitle)}</span>
@@ -4229,25 +4229,33 @@
             );
             if (!confirmed) return;
             
+            // Fechar modal IMEDIATAMENTE para UX mais fluida
+            const modal = document.getElementById('admin-issue-modal'); 
+            if (modal) modal.remove();
+            
+            // Remover card da lista visualmente (feedback instantâneo)
+            const card = document.querySelector(`.admin-issue-card[data-issue="${issueNumber}"]`);
+            if (card) {
+                card.style.transition = 'all 0.3s ease';
+                card.style.opacity = '0.5';
+                card.style.transform = 'scale(0.95)';
+                card.innerHTML = `<div style="text-align:center;padding:1rem;"><i class="fas fa-spinner fa-spin"></i> Aprovando...</div>`;
+            }
+            
             try {
-                showLoadingModal('Processando aprovação...');
-                
-                // 1. Salvar edições se houver
-                const saveResult = await saveEditsIfNeeded(issueNumber);
-                if (!saveResult.success) {
-                    closeLoadingModal();
-                    showToast('Erro ao salvar edições: ' + saveResult.error, 'error');
-                    return;
-                }
-                
-                if (saveResult.hadEdits) {
-                    console.log('Edições salvas antes de aprovar');
-                }
-                
-                // 2. Aplicar label de aprovação
                 const headers = { 'Accept': 'application/vnd.github.v3+json' };
                 if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
                 
+                // 1. Salvar edições se houver (em background)
+                const saveResult = await saveEditsIfNeeded(issueNumber);
+                if (!saveResult.success) {
+                    showToast('Erro ao salvar edições: ' + saveResult.error, 'error');
+                    if (card) card.remove();
+                    loadAdminIssues(); // Recarregar em caso de erro
+                    return;
+                }
+                
+                // 2. Aplicar label de aprovação
                 const resp = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}/labels`, {
                     method: 'POST', 
                     headers, 
@@ -4256,25 +4264,30 @@
                 
                 if (!resp.ok) throw new Error('Falha ao aplicar label');
                 
-                closeLoadingModal();
+                // Remover card completamente
+                if (card) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.8)';
+                    setTimeout(() => card.remove(), 300);
+                }
                 
                 const message = saveResult.hadEdits 
-                    ? 'Edições salvas e issue aprovada!' 
-                    : 'Issue aprovada!';
+                    ? '✅ Edições salvas e aprovada!' 
+                    : '✅ Issue aprovada!';
                 showToast(message, 'success');
                 
-                // Limpa cache e atualiza
+                // Limpa cache (para próximo reload)
                 localStorage.removeItem(CONFIG.CACHE_PREFIX + 'admin_open_issues');
                 localStorage.removeItem(CONFIG.CACHE_PREFIX + 'applied_issues');
-                loadAdminIssues();
                 
-                const m = document.getElementById('admin-issue-modal'); 
-                if (m) m.remove();
+                // Verificar se lista ficou vazia
+                checkEmptyAdminList();
                 
             } catch (e) {
-                closeLoadingModal();
                 console.error(e);
                 showToast('Erro ao aprovar: ' + e.message, 'error');
+                if (card) card.remove();
+                loadAdminIssues(); // Recarregar em caso de erro
             }
         }
         
@@ -4293,9 +4306,20 @@
             );
             if (reason === null) return;
             
+            // Fechar modal IMEDIATAMENTE
+            const modal = document.getElementById('admin-issue-modal'); 
+            if (modal) modal.remove();
+            
+            // Remover card da lista visualmente (feedback instantâneo)
+            const card = document.querySelector(`.admin-issue-card[data-issue="${issueNumber}"]`);
+            if (card) {
+                card.style.transition = 'all 0.3s ease';
+                card.style.opacity = '0.5';
+                card.style.transform = 'scale(0.95)';
+                card.innerHTML = `<div style="text-align:center;padding:1rem;"><i class="fas fa-spinner fa-spin"></i> Rejeitando...</div>`;
+            }
+            
             try {
-                showLoadingModal('Processando rejeição...');
-                
                 const headers = { 'Accept': 'application/vnd.github.v3+json' };
                 if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
                 
@@ -4306,31 +4330,54 @@
                     body: JSON.stringify({ labels: ['rejected'] })
                 });
                 
-                // 2. Adicionar comentário com motivo (se fornecido)
+                // 2. Adicionar comentário com motivo (se fornecido) - fire and forget
                 if (reason.trim()) {
-                    await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}/comments`, {
+                    fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}/comments`, {
                         method: 'POST', 
                         headers, 
                         body: JSON.stringify({ body: `❌ **Rejeitado pelo revisor**\n\n${reason}` })
-                    });
+                    }); // Não espera - comentário é secundário
                 }
                 
-                closeLoadingModal();
-                showToast('Issue rejeitada.', 'info');
+                // Remover card completamente
+                if (card) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.8)';
+                    setTimeout(() => card.remove(), 300);
+                }
                 
-                // Limpa cache e atualiza
+                showToast('❌ Issue rejeitada.', 'info');
+                
+                // Limpa cache
                 localStorage.removeItem(CONFIG.CACHE_PREFIX + 'admin_open_issues');
-                loadAdminIssues();
                 
-                const m = document.getElementById('admin-issue-modal'); 
-                if (m) m.remove();
+                // Verificar se lista ficou vazia
+                checkEmptyAdminList();
                 
             } catch (e) {
-                closeLoadingModal();
                 console.error(e);
                 showToast('Erro ao rejeitar: ' + e.message, 'error');
+                if (card) card.remove();
+                loadAdminIssues();
             }
         }
+        
+        // Verifica se a lista de admin ficou vazia
+        function checkEmptyAdminList() {
+            const grid = document.querySelector('.admin-issues-grid');
+            if (grid && grid.children.length === 0) {
+                const adminList = document.getElementById('admin-list');
+                if (adminList) {
+                    adminList.innerHTML = `
+                        <div class="admin-empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>Nenhuma issue de tradução pendente</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+        
         // ========================================
         // Verificação de Issues Duplicadas
         // ========================================
