@@ -4446,54 +4446,95 @@
         }
         
         // Salva edições na issue (retorna true se sucesso ou se não havia edições)
-        async function saveEditsIfNeeded(issueNumber, forceCheck = false) {
+        // IMPORTANTE: edits deve ser passado como parâmetro (coletado ANTES de fechar o modal)
+        async function saveEditsIfNeeded(issueNumber, edits = null) {
             const headers = { 'Accept': 'application/vnd.github.v3+json' };
             if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
-            
+
             try {
+                // Se não passou edições, tenta coletar do modal (fallback)
+                if (!edits || edits.length === 0) {
+                    edits = collectEditsFromModal();
+                }
+                
+                // Se ainda não tem edições, não há o que salvar
+                if (!edits || edits.length === 0) {
+                    console.warn('saveEditsIfNeeded: Nenhuma edição para salvar');
+                    return { success: true, hadEdits: false };
+                }
+
                 // Buscar issue atual
                 const resp = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}`, { headers });
                 if (!resp.ok) throw new Error('Falha ao buscar issue');
                 const issue = await resp.json();
-                
+
                 // Extrair sugestões
                 const suggestions = parseIssueSuggestions(issue.body);
                 if (suggestions.length === 0) return { success: true, hadEdits: false };
-                
-                // Coletar edições do modal
-                const edits = collectEditsFromModal();
-                
+
                 // Verificar se houve mudanças
                 if (!hasEdits(suggestions, edits)) {
+                    console.log('saveEditsIfNeeded: Sem mudanças detectadas');
                     return { success: true, hadEdits: false };
                 }
-                
-                // Aplicar edições
+
+                // Aplicar edições localmente
                 edits.forEach(edit => {
                     if (suggestions[edit.idx]) {
                         suggestions[edit.idx].suggestion = edit.value;
                     }
                 });
-                
-                // Reconstruir JSON
-                const jsonMatch = issue.body.match(/```json\s*\n([\s\S]*?)\n```/);
-                if (!jsonMatch) return { success: true, hadEdits: false };
-                
-                let data = JSON.parse(jsonMatch[1].trim());
-                data.suggestions = suggestions;
-                
-                const newJson = JSON.stringify(data);
-                const newBody = issue.body.replace(/```json\s*\n[\s\S]*?\n```/, '```json\n' + newJson + '\n```');
-                
-                // Atualizar issue
+
+                // Tentar localizar bloco JSON com mais tolerância
+                // 1) procurar fence ```json ... ``` (case-insensitive)
+                let jsonMatch = issue.body.match(/```(?:json)?\s*\n([\s\S]*?)\n```/i);
+                let newBody;
+                if (jsonMatch) {
+                    try {
+                        let data = JSON.parse(jsonMatch[1].trim());
+                        data.suggestions = suggestions;
+                        const newJson = JSON.stringify(data);
+                        newBody = issue.body.replace(/```(?:json)?\s*\n[\s\S]*?\n```/i, '```json\n' + newJson + '\n```');
+                    } catch (e) {
+                        console.warn('JSON existente inválido, fallback para busca de objeto JSON:', e);
+                        jsonMatch = null; // forçar fallback
+                    }
+                }
+
+                // 2) fallback: tentar encontrar primeiro objeto JSON bruto no corpo
+                if (!jsonMatch) {
+                    const objMatch = issue.body.match(/\{[\s\S]*\}/);
+                    if (objMatch) {
+                        try {
+                            let data = JSON.parse(objMatch[0]);
+                            data.suggestions = suggestions;
+                            const newJson = JSON.stringify(data);
+                            // substituir o objeto JSON encontrado
+                            newBody = issue.body.replace(/\{[\s\S]*\}/, newJson);
+                        } catch (e) {
+                            console.error('Falha ao parsear JSON no fallback:', e);
+                            return { success: false, error: 'JSON inválido no corpo da issue' };
+                        }
+                    } else {
+                        // Não encontrou JSON; vamos anexar um bloco JSON ao final
+                        const payload = { suggestions };
+                        const newJson = JSON.stringify(payload);
+                        newBody = issue.body + '\n\n```json\n' + newJson + '\n```';
+                    }
+                }
+
+                // Atualizar issue com novo body
                 const updateResp = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}`, {
                     method: 'PATCH',
                     headers: { ...headers, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ body: newBody })
                 });
-                
-                if (!updateResp.ok) throw new Error('Falha ao salvar edições');
-                
+
+                if (!updateResp.ok) {
+                    const errText = await updateResp.text();
+                    throw new Error('Falha ao salvar edições: ' + updateResp.status + ' ' + errText);
+                }
+
                 return { success: true, hadEdits: true };
             } catch (e) {
                 console.error('Erro ao salvar edições:', e);
@@ -4503,6 +4544,10 @@
         
         // APROVAR COM EDIÇÕES - Salva edições automaticamente e aprova
         async function approveIssueWithEdits(issueNumber) {
+            // ⚠️ CRÍTICO: Coletar edições ANTES de qualquer confirmação ou fechamento do modal!
+            const editsBeforeClose = collectEditsFromModal();
+            console.log('approveIssueWithEdits: Edições coletadas:', editsBeforeClose);
+            
             const confirmed = await showConfirm(
                 '<strong>Aprovar esta tradução?</strong><br><br>' +
                 '<small style="color: var(--text-muted);">' +
@@ -4520,7 +4565,7 @@
             );
             if (!confirmed) return;
             
-            // Fechar modal IMEDIATAMENTE para UX mais fluida
+            // Agora sim podemos fechar o modal (já coletamos as edições)
             const modal = document.getElementById('admin-issue-modal'); 
             if (modal) modal.remove();
             
@@ -4537,8 +4582,8 @@
                 const headers = { 'Accept': 'application/vnd.github.v3+json' };
                 if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
                 
-                // 1. Salvar edições se houver (em background)
-                const saveResult = await saveEditsIfNeeded(issueNumber);
+                // 1. Salvar edições PRIMEIRO (passando as edições coletadas)
+                const saveResult = await saveEditsIfNeeded(issueNumber, editsBeforeClose);
                 if (!saveResult.success) {
                     showToast('Erro ao salvar edições: ' + saveResult.error, 'error');
                     if (card) card.remove();
@@ -4546,7 +4591,14 @@
                     return;
                 }
                 
-                // 2. Aplicar label de aprovação
+                // 2. Pequeno delay para garantir que o GitHub processou o PATCH antes de disparar o workflow
+                // Isso evita race condition onde o workflow pega o body antigo
+                if (saveResult.hadEdits) {
+                    console.log('Aguardando 1.5s para GitHub processar as edições...');
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                }
+                
+                // 3. Aplicar label de aprovação (dispara o workflow)
                 const resp = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}/labels`, {
                     method: 'POST', 
                     headers, 
