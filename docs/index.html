@@ -2551,12 +2551,16 @@
             CACHE_KEY: 'wwm_api_cache_index',
             CACHE_TTL: 10 * 60 * 1000, // 10 minutos
             
-            get(key) {
+            get(key, allowExpired = false) {
                 try {
                     const cache = JSON.parse(localStorage.getItem(this.CACHE_KEY) || '{}');
                     const item = cache[key];
                     if (item && Date.now() - item.timestamp < this.CACHE_TTL) {
                         console.log(`[Cache HIT] ${key}`);
+                        return item.data;
+                    }
+                    if (item && allowExpired) {
+                        console.log(`[Cache STALE] ${key} (usando dados antigos)`);
                         return item.data;
                     }
                     if (item) {
@@ -2584,19 +2588,43 @@
             }
         };
         
-        // API call com cache
+        // API call com cache e fallback para dados expirados
         async function cachedApiCall(cacheKey, url, options = {}) {
+            // Primeiro tenta cache válido
             const cached = CacheManager.get(cacheKey);
             if (cached) return cached;
             
-            const response = await fetch(url, options);
-            if (!response.ok) {
-                throw new Error(`API error: ${response.status}`);
+            try {
+                const response = await fetch(url, options);
+                
+                // Rate limit atingido
+                if (response.status === 403) {
+                    const staleData = CacheManager.get(cacheKey, true); // allowExpired
+                    if (staleData) {
+                        console.warn(`[Rate Limit] Usando cache expirado para ${cacheKey}`);
+                        return staleData;
+                    }
+                    const resetTime = response.headers.get('X-RateLimit-Reset');
+                    const resetDate = resetTime ? new Date(parseInt(resetTime) * 1000).toLocaleTimeString('pt-BR') : 'em breve';
+                    throw new Error(`Rate limit excedido. Tente novamente às ${resetDate}`);
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                CacheManager.set(cacheKey, data);
+                return data;
+            } catch (error) {
+                // Em caso de erro de rede, tenta cache expirado
+                const staleData = CacheManager.get(cacheKey, true);
+                if (staleData) {
+                    console.warn(`[Fallback] Usando cache expirado para ${cacheKey}`);
+                    return staleData;
+                }
+                throw error;
             }
-            
-            const data = await response.json();
-            CacheManager.set(cacheKey, data);
-            return data;
         }
         
         // ========== STATE ==========

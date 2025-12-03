@@ -2431,7 +2431,7 @@
             },
             
             // Recupera dados do cache se ainda válidos
-            get(key) {
+            get(key, allowExpired = false) {
                 try {
                     const cached = localStorage.getItem(CONFIG.CACHE_PREFIX + key);
                     if (!cached) return null;
@@ -2444,8 +2444,12 @@
                         return cacheItem.data;
                     }
                     
+                    if (allowExpired) {
+                        console.log(`[Cache STALE] ${key} (usando dados antigos)`);
+                        return cacheItem.data;
+                    }
+                    
                     console.log(`[Cache EXPIRED] ${key}`);
-                    localStorage.removeItem(CONFIG.CACHE_PREFIX + key);
                     return null;
                 } catch (e) {
                     return null;
@@ -2517,6 +2521,12 @@
                             const resetDate = new Date(parseInt(resetTime) * 1000);
                             console.error(`[API] Rate limit exceeded. Resets at: ${resetDate.toLocaleTimeString()}`);
                         }
+                        // Tenta usar dados expirados como fallback
+                        const staleData = apiCache.get(cacheKey, true);
+                        if (staleData) {
+                            console.warn(`[API] Usando cache expirado como fallback para ${cacheKey}`);
+                            return { ok: true, data: staleData, fromCache: true, stale: true };
+                        }
                     }
                     return { ok: false, status: response.status, data: null };
                 }
@@ -2529,6 +2539,12 @@
                 return { ok: true, data: data, fromCache: false };
             } catch (error) {
                 console.error(`[API] Fetch error for ${cacheKey}:`, error);
+                // Em caso de erro de rede, tenta cache expirado
+                const staleData = apiCache.get(cacheKey, true);
+                if (staleData) {
+                    console.warn(`[API] Usando cache expirado como fallback para ${cacheKey}`);
+                    return { ok: true, data: staleData, fromCache: true, stale: true };
+                }
                 return { ok: false, data: null, error };
             }
         }
