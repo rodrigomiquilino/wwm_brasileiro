@@ -1269,6 +1269,9 @@
                     <i class="fas fa-code-branch"></i> Arquivo Diff (Novos)
                     <span class="tab-count" id="diff-count">-</span>
                 </button>
+                <button class="file-tab" data-file="admin" id="admin-tab" style="display: none;">
+                    <i class="fas fa-user-shield"></i> Admin Issues
+                </button>
             </div>
             
             <!-- Barra de Progresso Visual -->
@@ -1343,6 +1346,19 @@
                 </div>
             </div>
             
+            <!-- Painel Administrativo (visível apenas para o dono do repositório) -->
+            <div id="admin-panel" class="hidden" style="margin-top:1.5rem;">
+                <div class="contributors-section" style="background:var(--bg-card); border:1px solid rgba(201,162,39,0.15);">
+                    <h2><i class="fas fa-user-shield"></i> Painel Admin — Issues de Tradução</h2>
+                    <p class="contributors-subtitle">Apenas visível para o dono do projeto. Aqui você pode revisar, editar e aprovar/rejeitar issues.</p>
+                    <div id="admin-loading" class="loading hidden">
+                        <div class="spinner"></div>
+                        <p>Carregando issues...</p>
+                    </div>
+                    <div id="admin-list"></div>
+                </div>
+            </div>
+
             <div class="contributors-section">
                 <h2><i class="fas fa-medal"></i> Heróis da Tradução</h2>
                 <p class="contributors-subtitle">Agradecemos a todos que contribuíram com a tradução!</p>
@@ -1433,6 +1449,7 @@
         const CONFIG = {
             GITHUB_REPO: 'rodrigomiquilino/wwm_brasileiro',
             GITHUB_OWNER: 'rodrigomiquilino',
+            GITHUB_OWNER_ID: 22358284, // ID numérico imutável - segurança extra
             GITHUB_REPO_NAME: 'wwm_brasileiro',
             // OAuth
             GITHUB_CLIENT_ID: 'Ov23liLPua7ghOOFV8WG',
@@ -1567,7 +1584,16 @@
         // Switch between files
         function switchFile(file) {
             currentFile = file;
-            allData = file === 'main' ? mainData : diffData;
+            if (file === 'admin') {
+                allData = [];
+                // mostra painel admin
+                document.getElementById('admin-panel').classList.remove('hidden');
+                document.getElementById('table-scroll').classList.add('hidden');
+            } else {
+                allData = file === 'main' ? mainData : diffData;
+                document.getElementById('admin-panel').classList.add('hidden');
+                document.getElementById('table-scroll').classList.remove('hidden');
+            }
             
             // Atualiza tabs
             document.querySelectorAll('.file-tab').forEach(tab => {
@@ -2131,6 +2157,8 @@
                 btn.classList.remove('logged-in');
                 btn.innerHTML = '<i class="fab fa-github"></i> Entrar com GitHub';
             }
+            // Atualiza visibilidade da aba admin caso o usuário seja o dono do repo
+            showAdminTabIfOwner();
         }
         
         // Logout
@@ -2147,6 +2175,252 @@
             // Por simplicidade, só faz logout
             if (confirm(`Logado como ${githubUser.login}.\n\nDeseja sair?`)) {
                 logout();
+            }
+        }
+        
+        // ========================================
+        // Admin Issues Panel (apenas dono/owner)
+        // ========================================
+
+        // Verifica se o usuário é realmente o dono com múltiplas camadas de segurança
+        async function isAuthenticatedOwner() {
+            if (!githubUser || !githubToken) return false;
+            
+            // 1. Verificação por username (case-insensitive)
+            const usernameMatch = githubUser.login && 
+                githubUser.login.toLowerCase() === CONFIG.GITHUB_OWNER.toLowerCase();
+            
+            // 2. Verificação por ID numérico (imutável - mais seguro)
+            const idMatch = githubUser.id && githubUser.id === CONFIG.GITHUB_OWNER_ID;
+            
+            // Se ambos não baterem, não é o dono
+            if (!usernameMatch || !idMatch) {
+                console.warn('Admin check failed: username or ID mismatch');
+                return false;
+            }
+            
+            // 3. Verificação de permissão no repositório via API
+            try {
+                const resp = await fetch(
+                    `https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/collaborators/${githubUser.login}/permission`,
+                    {
+                        headers: {
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Authorization': `Bearer ${githubToken}`
+                        }
+                    }
+                );
+                
+                if (!resp.ok) {
+                    console.warn('Admin check failed: could not verify repo permission');
+                    return false;
+                }
+                
+                const data = await resp.json();
+                // Só permite se for 'admin' ou 'write' (owner tem admin)
+                const hasPermission = data.permission === 'admin' || data.permission === 'write';
+                
+                if (!hasPermission) {
+                    console.warn('Admin check failed: insufficient repo permission:', data.permission);
+                    return false;
+                }
+                
+                return true;
+            } catch (e) {
+                console.error('Admin permission check error:', e);
+                return false;
+            }
+        }
+
+        // Mostra a aba admin somente se passar em TODAS as verificações de segurança
+        async function showAdminTabIfOwner() {
+            const adminTab = document.getElementById('admin-tab');
+            const adminPanel = document.getElementById('admin-panel');
+            if (!adminTab || !adminPanel) return;
+            
+            try {
+                const isOwner = await isAuthenticatedOwner();
+                
+                if (isOwner) {
+                    adminTab.style.display = '';
+                    // Remove listener antigo para evitar duplicatas
+                    adminTab.onclick = () => {
+                        switchFile('admin');
+                        loadAdminIssues();
+                    };
+                    console.log('✅ Admin access granted');
+                } else {
+                    adminTab.style.display = 'none';
+                    adminPanel.classList.add('hidden');
+                    adminTab.onclick = null;
+                }
+            } catch (e) {
+                console.error('showAdminTabIfOwner error', e);
+                adminTab.style.display = 'none';
+                adminPanel.classList.add('hidden');
+            }
+        }
+
+        // Carrega Issues abertas com label 'translation' ou 'batch-suggestion'
+        async function loadAdminIssues() {
+            const adminPanel = document.getElementById('admin-panel');
+            const adminList = document.getElementById('admin-list');
+            const adminLoading = document.getElementById('admin-loading');
+            if (!adminPanel || !adminList || !adminLoading) return;
+            adminPanel.classList.remove('hidden');
+            adminLoading.classList.remove('hidden');
+            adminList.innerHTML = '';
+
+            try {
+                let url = `https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues?state=open&per_page=100&labels=translation,batch-suggestion`;
+                const headers = { 'Accept': 'application/vnd.github.v3+json' };
+                if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
+
+                const resp = await fetch(url, { headers });
+                if (!resp.ok) throw new Error('Falha ao buscar issues: ' + resp.status);
+                const issues = await resp.json();
+
+                if (!issues || issues.length === 0) {
+                    adminList.innerHTML = '<div class="cart-empty">Nenhuma issue de tradução aberta encontrada.</div>';
+                    return;
+                }
+
+                // Render list
+                adminList.innerHTML = issues.map(issue => {
+                    const created = new Date(issue.created_at).toLocaleString();
+                    return `
+                        <div class="cart-item" style="margin-bottom:0.6rem;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <div style="font-weight:700">#${issue.number} — ${escapeHtml(issue.title || '')}</div>
+                                <div style="color:var(--text-muted);font-size:0.85rem">${created}</div>
+                            </div>
+                            <div style="margin-top:0.5rem;color:var(--text-secondary);">${escapeHtml(issue.body ? issue.body.substring(0,400) : '')} ${issue.body && issue.body.length>400? '...' : ''}</div>
+                            <div style="margin-top:0.6rem;display:flex;gap:8px;justify-content:flex-end;">
+                                <button class="btn-edit" onclick="openAdminIssueModal(${issue.number})"><i class="fas fa-eye"></i> Ver / Revisar</button>
+                                <button class="btn-cancel" onclick="rejectIssue(${issue.number})"><i class="fas fa-times"></i> Rejeitar</button>
+                                <button class="btn-submit" onclick="approveIssue(${issue.number})"><i class="fas fa-check"></i> Aprovar</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (e) {
+                console.error(e);
+                adminList.innerHTML = `<div class="cart-empty">Erro ao carregar issues: ${e.message}</div>`;
+            } finally {
+                adminLoading.classList.add('hidden');
+            }
+        }
+
+        // Abre modal com detalhes da issue e permite editar o corpo antes de aprovar
+        async function openAdminIssueModal(issueNumber) {
+            try {
+                const headers = { 'Accept': 'application/vnd.github.v3+json' };
+                if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
+                const resp = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}`, { headers });
+                if (!resp.ok) throw new Error('Falha ao buscar issue');
+                const issue = await resp.json();
+
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.id = 'admin-issue-modal';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width:800px;">
+                        <div class="modal-header">
+                            <h3>Issue #${issue.number} — ${escapeHtml(issue.title)}</h3>
+                            <button class="modal-close" onclick="document.getElementById('admin-issue-modal').remove()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>ID / Link</label>
+                                <div><a href="${issue.html_url}" target="_blank">Abrir no GitHub</a></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Corpo da Issue (JSON / Sugestões)</label>
+                                <textarea id="admin-issue-body" class="form-control" style="min-height:200px;">${issue.body ? issue.body.replace(/`/g,'`') : ''}</textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-cancel" onclick="document.getElementById('admin-issue-modal').remove()">Fechar</button>
+                            <button class="btn-cancel" onclick="rejectIssue(${issue.number})">Rejeitar</button>
+                            <button class="btn-submit" onclick="editIssueBody(${issue.number})">Salvar</button>
+                            <button class="btn-submit" onclick="approveIssue(${issue.number})">Aprovar</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.style.display = 'flex';
+
+            } catch (e) {
+                console.error(e);
+                showToast('Erro ao abrir a issue', 'error');
+            }
+        }
+
+        // Aprova issue: adiciona label 'approved'
+        async function approveIssue(issueNumber) {
+            if (!confirm('Tem certeza que deseja aprovar esta issue? Isso acionará a automação (label "approved").')) return;
+            try {
+                const headers = { 'Accept': 'application/vnd.github.v3+json' };
+                if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
+                const resp = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}/labels`, {
+                    method: 'POST', headers, body: JSON.stringify({ labels: ['approved'] })
+                });
+                if (!resp.ok) throw new Error('Falha ao aplicar label');
+                showToast('Issue aprovada (label "approved" aplicada).', 'success');
+                // refresh admin list
+                loadAdminIssues();
+                // close modal if open
+                const m = document.getElementById('admin-issue-modal'); if (m) m.remove();
+            } catch (e) {
+                console.error(e);
+                showToast('Erro ao aprovar issue: ' + e.message, 'error');
+            }
+        }
+
+        // Rejeitar issue: aplica label 'rejected' e adiciona comentário padrão
+        async function rejectIssue(issueNumber) {
+            const reason = prompt('Motivo da rejeição (será postado como comentário):', 'Sugestão não adequada / Formato incorreto');
+            if (reason === null) return;
+            try {
+                const headers = { 'Accept': 'application/vnd.github.v3+json' };
+                if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
+                // aplica label
+                await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}/labels`, {
+                    method: 'POST', headers, body: JSON.stringify({ labels: ['rejected'] })
+                });
+                // comenta
+                await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}/comments`, {
+                    method: 'POST', headers, body: JSON.stringify({ body: `Rejeitado pelo mantenedor: ${reason}` })
+                });
+                showToast('Issue rejeitada e comentário adicionado.', 'info');
+                loadAdminIssues();
+                const m = document.getElementById('admin-issue-modal'); if (m) m.remove();
+            } catch (e) {
+                console.error(e);
+                showToast('Erro ao rejeitar issue: ' + e.message, 'error');
+            }
+        }
+
+        // Edita o corpo da issue (salva alterações)
+        async function editIssueBody(issueNumber) {
+            const textarea = document.getElementById('admin-issue-body');
+            if (!textarea) return;
+            const newBody = textarea.value;
+            if (!confirm('Salvar alterações no corpo da issue?')) return;
+            try {
+                const headers = { 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+                if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
+                const resp = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}`, {
+                    method: 'PATCH', headers, body: JSON.stringify({ body: newBody })
+                });
+                if (!resp.ok) throw new Error('Falha ao salvar corpo da issue');
+                showToast('Issue atualizada com sucesso.', 'success');
+                loadAdminIssues();
+                const m = document.getElementById('admin-issue-modal'); if (m) m.remove();
+            } catch (e) {
+                console.error(e);
+                showToast('Erro ao atualizar issue: ' + e.message, 'error');
             }
         }
         
