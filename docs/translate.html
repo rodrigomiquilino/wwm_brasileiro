@@ -1330,6 +1330,42 @@
             margin-bottom: 1rem;
         }
         
+        /* ========== Notificação de Novas Issues ========== */
+        .new-issues-notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4);
+            z-index: 10000;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+        }
+        
+        .new-issues-notification.show {
+            transform: translateX(0);
+        }
+        
+        .new-issues-notification i {
+            font-size: 1.1rem;
+            animation: bellRing 0.5s ease-in-out;
+        }
+        
+        @keyframes bellRing {
+            0%, 100% { transform: rotate(0); }
+            20% { transform: rotate(15deg); }
+            40% { transform: rotate(-15deg); }
+            60% { transform: rotate(10deg); }
+            80% { transform: rotate(-10deg); }
+        }
+        
         /* ========== Admin Panel Styles ========== */
         .admin-issues-grid {
             display: grid;
@@ -2724,10 +2760,14 @@
                 // mostra painel admin
                 document.getElementById('admin-panel').classList.remove('hidden');
                 document.getElementById('table-scroll').classList.add('hidden');
+                // Inicia auto-refresh
+                startAdminPolling();
             } else {
                 allData = file === 'main' ? mainData : diffData;
                 document.getElementById('admin-panel').classList.add('hidden');
                 document.getElementById('table-scroll').classList.remove('hidden');
+                // Para auto-refresh quando sai do admin
+                stopAdminPolling();
             }
             
             // Atualiza tabs
@@ -3609,6 +3649,90 @@
             localStorage.removeItem(CONFIG.CACHE_PREFIX + 'admin_open_issues');
             loadAdminIssues();
         }
+        
+        // ========== AUTO-REFRESH INTELIGENTE ==========
+        let adminPollingInterval = null;
+        let lastKnownIssueIds = new Set();
+        const ADMIN_POLL_INTERVAL = 2 * 60 * 1000; // 2 minutos - gentil com a API
+        
+        // Inicia polling quando entra na aba admin
+        function startAdminPolling() {
+            if (adminPollingInterval) return; // Já está rodando
+            
+            console.log('[Admin] Auto-refresh iniciado (a cada 2 min)');
+            adminPollingInterval = setInterval(() => {
+                // Só atualiza se a página estiver visível E na aba admin
+                if (document.visibilityState === 'visible' && currentFile === 'admin') {
+                    checkForNewIssues();
+                }
+            }, ADMIN_POLL_INTERVAL);
+        }
+        
+        // Para polling quando sai da aba admin
+        function stopAdminPolling() {
+            if (adminPollingInterval) {
+                clearInterval(adminPollingInterval);
+                adminPollingInterval = null;
+                console.log('[Admin] Auto-refresh pausado');
+            }
+        }
+        
+        // Verifica se há novas issues (sem recarregar tudo)
+        async function checkForNewIssues() {
+            try {
+                const headers = { 'Accept': 'application/vnd.github.v3+json' };
+                if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
+                
+                // Buscar apenas issues mais recentes (per_page=10 para economizar)
+                const resp = await fetch(
+                    `https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues?state=open&per_page=20&sort=created&direction=desc`,
+                    { headers }
+                );
+                
+                if (!resp.ok) return;
+                
+                const issues = await resp.json();
+                const currentIds = new Set(issues.map(i => i.number));
+                
+                // Verificar novas issues
+                const newIssues = issues.filter(i => !lastKnownIssueIds.has(i.number));
+                
+                if (newIssues.length > 0 && lastKnownIssueIds.size > 0) {
+                    // Há novas issues! Mostrar notificação e atualizar
+                    showNewIssuesNotification(newIssues.length);
+                    
+                    // Limpar cache e recarregar
+                    localStorage.removeItem(CONFIG.CACHE_PREFIX + 'admin_open_issues');
+                    loadAdminIssues();
+                }
+                
+                // Atualizar IDs conhecidos
+                lastKnownIssueIds = currentIds;
+                
+            } catch (e) {
+                console.warn('[Admin] Erro no auto-refresh:', e);
+            }
+        }
+        
+        // Notificação discreta de novas issues
+        function showNewIssuesNotification(count) {
+            const notification = document.createElement('div');
+            notification.className = 'new-issues-notification';
+            notification.innerHTML = `
+                <i class="fas fa-bell"></i>
+                <span>${count} nova${count > 1 ? 's' : ''} issue${count > 1 ? 's' : ''} de tradução!</span>
+            `;
+            document.body.appendChild(notification);
+            
+            // Animar entrada
+            setTimeout(() => notification.classList.add('show'), 10);
+            
+            // Remover após 4 segundos
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
 
         // Carrega Issues abertas (todas, filtrando por título/conteúdo de tradução)
         async function loadAdminIssues() {
@@ -3736,6 +3860,9 @@
                         </div>
                     `;
                 }).join('')}</div>`;
+                
+                // Atualizar IDs conhecidos para o auto-refresh
+                lastKnownIssueIds = new Set(issues.map(i => i.number));
 
             } catch (e) {
                 console.error(e);
@@ -4893,6 +5020,15 @@ ${suggestionCart.map((item, i) => `${i+1}. \`${item.id}\` → ${item.suggestion.
             loadCartFromStorage(); // Restaurar carrinho salvo
             loadTranslations();
             loadContributors();
+            
+            // Pausar polling quando página fica invisível (economia de API)
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') {
+                    stopAdminPolling();
+                } else if (currentFile === 'admin') {
+                    startAdminPolling();
+                }
+            });
         });
     </script>
 </body>
