@@ -1367,6 +1367,84 @@
         }
         
         /* ========== Admin Panel Styles ========== */
+        .admin-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .admin-title-section h2 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .admin-refresh-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--bg-dark);
+            padding: 0.5rem 0.75rem;
+            border-radius: 10px;
+            border: 1px solid rgba(201, 162, 39, 0.2);
+        }
+        
+        .admin-countdown {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .admin-countdown i {
+            font-size: 0.75rem;
+            animation: spin 2s linear infinite;
+            animation-play-state: paused;
+        }
+        
+        .admin-countdown.active i {
+            animation-play-state: running;
+            color: var(--gold-primary);
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .admin-refresh-btn {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+            border: none;
+            color: var(--bg-dark);
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+        }
+        
+        .admin-refresh-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(201, 162, 39, 0.3);
+        }
+        
+        .admin-refresh-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .admin-refresh-btn.checking i {
+            animation: spin 0.8s linear infinite;
+        }
+        
         .admin-issues-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -2379,8 +2457,21 @@
             <!-- Painel Administrativo (visível apenas para o dono do repositório) -->
             <div id="admin-panel" class="hidden">
                 <div class="contributors-section admin-panel-container">
-                    <h2><i class="fas fa-user-shield"></i> Painel Admin — Issues de Tradução</h2>
-                    <p class="contributors-subtitle">Apenas visível para o dono do projeto. Aqui você pode revisar, editar e aprovar/rejeitar issues.</p>
+                    <div class="admin-header-row">
+                        <div class="admin-title-section">
+                            <h2><i class="fas fa-user-shield"></i> Painel Admin — Issues de Tradução</h2>
+                            <p class="contributors-subtitle">Apenas visível para o dono do projeto. Aqui você pode revisar, editar e aprovar/rejeitar issues.</p>
+                        </div>
+                        <div class="admin-refresh-section" id="admin-refresh-section">
+                            <div class="admin-countdown" id="admin-countdown" title="Próxima verificação automática">
+                                <i class="fas fa-sync-alt"></i>
+                                <span id="countdown-timer">2:00</span>
+                            </div>
+                            <button class="admin-refresh-btn" onclick="manualCheckNewIssues()" title="Verificar agora">
+                                <i class="fas fa-search"></i> Verificar
+                            </button>
+                        </div>
+                    </div>
                     <div id="admin-loading" class="loading hidden">
                         <div class="spinner"></div>
                         <p>Carregando issues...</p>
@@ -3652,6 +3743,8 @@
         
         // ========== AUTO-REFRESH INTELIGENTE ==========
         let adminPollingInterval = null;
+        let countdownInterval = null;
+        let countdownSeconds = 120; // 2 minutos
         let lastKnownIssueIds = new Set();
         const ADMIN_POLL_INTERVAL = 2 * 60 * 1000; // 2 minutos - gentil com a API
         
@@ -3660,36 +3753,93 @@
             if (adminPollingInterval) return; // Já está rodando
             
             console.log('[Admin] Auto-refresh iniciado (a cada 2 min)');
-            adminPollingInterval = setInterval(() => {
-                // Só atualiza se a página estiver visível E na aba admin
+            countdownSeconds = 120;
+            updateCountdownDisplay();
+            
+            // Countdown visual
+            countdownInterval = setInterval(() => {
                 if (document.visibilityState === 'visible' && currentFile === 'admin') {
-                    checkForNewIssues();
+                    countdownSeconds--;
+                    updateCountdownDisplay();
+                    
+                    if (countdownSeconds <= 0) {
+                        countdownSeconds = 120;
+                        checkForNewIssues();
+                    }
                 }
-            }, ADMIN_POLL_INTERVAL);
+            }, 1000);
+            
+            // Marcar como ativo
+            const countdownEl = document.getElementById('admin-countdown');
+            if (countdownEl) countdownEl.classList.add('active');
+        }
+        
+        // Atualiza display do countdown
+        function updateCountdownDisplay() {
+            const timerEl = document.getElementById('countdown-timer');
+            if (timerEl) {
+                const mins = Math.floor(countdownSeconds / 60);
+                const secs = countdownSeconds % 60;
+                timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            }
         }
         
         // Para polling quando sai da aba admin
         function stopAdminPolling() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
             if (adminPollingInterval) {
                 clearInterval(adminPollingInterval);
                 adminPollingInterval = null;
-                console.log('[Admin] Auto-refresh pausado');
+            }
+            
+            const countdownEl = document.getElementById('admin-countdown');
+            if (countdownEl) countdownEl.classList.remove('active');
+            
+            console.log('[Admin] Auto-refresh pausado');
+        }
+        
+        // Verificação manual (botão)
+        async function manualCheckNewIssues() {
+            const btn = document.querySelector('.admin-refresh-btn');
+            if (btn) {
+                btn.disabled = true;
+                btn.classList.add('checking');
+                btn.innerHTML = '<i class="fas fa-sync-alt"></i> Verificando...';
+            }
+            
+            try {
+                await checkForNewIssues(true); // force = true
+                showToast('✓ Verificação concluída', 'success');
+            } catch (e) {
+                showToast('Erro ao verificar: ' + e.message, 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('checking');
+                    btn.innerHTML = '<i class="fas fa-search"></i> Verificar';
+                }
+                // Resetar countdown após verificação manual
+                countdownSeconds = 120;
+                updateCountdownDisplay();
             }
         }
         
         // Verifica se há novas issues (sem recarregar tudo)
-        async function checkForNewIssues() {
+        async function checkForNewIssues(forceReload = false) {
             try {
                 const headers = { 'Accept': 'application/vnd.github.v3+json' };
                 if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
                 
-                // Buscar apenas issues mais recentes (per_page=10 para economizar)
+                // Buscar apenas issues mais recentes (per_page=20 para economizar)
                 const resp = await fetch(
                     `https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues?state=open&per_page=20&sort=created&direction=desc`,
                     { headers }
                 );
                 
-                if (!resp.ok) return;
+                if (!resp.ok) throw new Error('Falha ao buscar issues');
                 
                 const issues = await resp.json();
                 const currentIds = new Set(issues.map(i => i.number));
@@ -3697,13 +3847,18 @@
                 // Verificar novas issues
                 const newIssues = issues.filter(i => !lastKnownIssueIds.has(i.number));
                 
-                if (newIssues.length > 0 && lastKnownIssueIds.size > 0) {
-                    // Há novas issues! Mostrar notificação e atualizar
-                    showNewIssuesNotification(newIssues.length);
+                // Se forceReload ou há novas issues
+                if (forceReload || (newIssues.length > 0 && lastKnownIssueIds.size > 0)) {
+                    if (newIssues.length > 0 && lastKnownIssueIds.size > 0) {
+                        // Só mostra notificação se não foi manual
+                        if (!forceReload) {
+                            showNewIssuesNotification(newIssues.length);
+                        }
+                    }
                     
                     // Limpar cache e recarregar
                     localStorage.removeItem(CONFIG.CACHE_PREFIX + 'admin_open_issues');
-                    loadAdminIssues();
+                    await loadAdminIssues();
                 }
                 
                 // Atualizar IDs conhecidos
@@ -3711,6 +3866,7 @@
                 
             } catch (e) {
                 console.warn('[Admin] Erro no auto-refresh:', e);
+                throw e; // Re-throw para o handler manual capturar
             }
         }
         
@@ -4219,7 +4375,7 @@
             }
         }
 
-        // Rejeitar issue: aplica label 'rejected' e adiciona comentário padrão
+        // Rejeitar issue: aplica label 'rejected', fecha issue e adiciona comentário
         async function rejectIssue(issueNumber) {
             const reason = await showPrompt(
                 'Digite o motivo da rejeição. Isso será postado como comentário na Issue.',
@@ -4236,15 +4392,23 @@
             try {
                 const headers = { 'Accept': 'application/vnd.github.v3+json' };
                 if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
-                // aplica label
-                await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}/labels`, {
-                    method: 'POST', headers, body: JSON.stringify({ labels: ['rejected'] })
+                
+                // Aplica label 'rejected' E FECHA a issue
+                await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}`, {
+                    method: 'PATCH', 
+                    headers: { ...headers, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        state: 'closed',
+                        labels: ['rejected']
+                    })
                 });
-                // comenta
+                
+                // Adiciona comentário
                 await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}/comments`, {
-                    method: 'POST', headers, body: JSON.stringify({ body: `Rejeitado pelo mantenedor: ${reason}` })
+                    method: 'POST', headers, body: JSON.stringify({ body: `❌ **Rejeitado pelo revisor**\n\n${reason}` })
                 });
-                showToast('Issue rejeitada e comentário adicionado.', 'info');
+                
+                showToast('Issue rejeitada e fechada.', 'info');
                 // Limpa cache e refresh admin list
                 localStorage.removeItem(CONFIG.CACHE_PREFIX + 'admin_open_issues');
                 loadAdminIssues();
@@ -4450,11 +4614,14 @@
                 const headers = { 'Accept': 'application/vnd.github.v3+json' };
                 if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
                 
-                // 1. Aplicar label 'rejected'
-                await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}/labels`, {
-                    method: 'POST', 
-                    headers, 
-                    body: JSON.stringify({ labels: ['rejected'] })
+                // 1. Aplicar label 'rejected' E FECHAR a issue
+                await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}`, {
+                    method: 'PATCH', 
+                    headers: { ...headers, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        state: 'closed',
+                        labels: ['rejected']
+                    })
                 });
                 
                 // 2. Adicionar comentário com motivo (se fornecido) - fire and forget
