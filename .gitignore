@@ -52,3 +52,4 @@ tools/config_ptbr.ini
 /.vs
 .history/
 
+launcher/dist/wwm_ptbr_launcher.json

@@ -1675,6 +1675,56 @@
             flex-wrap: wrap;
         }
         
+        .admin-modal-actions .btn-reject {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .admin-modal-actions .btn-reject:hover {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .admin-modal-actions .btn-approve {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+        }
+        
+        .admin-modal-actions .btn-approve:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+        }
+        
+        .admin-modal-actions .btn-cancel {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+        
+        .admin-modal-actions .btn-cancel:hover {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+        }
+        
         .admin-empty-state {
             text-align: center;
             padding: 3rem 2rem;
@@ -2410,7 +2460,7 @@
             ITEMS_PER_PAGE: 50,
             BRANCH: 'main',
             // Cache settings
-            CACHE_DURATION: 10 * 60 * 1000, // 10 minutos em ms
+            CACHE_DURATION: 15 * 60 * 1000, // 15 minutos em ms
             CACHE_PREFIX: 'wwm_cache_'
         };
         
@@ -3553,6 +3603,12 @@
                 adminPanel.classList.add('hidden');
             }
         }
+        
+        // Força atualização das issues do admin (limpa cache)
+        function refreshAdminIssues() {
+            localStorage.removeItem(CONFIG.CACHE_PREFIX + 'admin_open_issues');
+            loadAdminIssues();
+        }
 
         // Carrega Issues abertas (todas, filtrando por título/conteúdo de tradução)
         async function loadAdminIssues() {
@@ -3568,14 +3624,26 @@
                 const headers = { 'Accept': 'application/vnd.github.v3+json' };
                 if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
                 
-                // Buscar TODAS as issues abertas (usuários não podem aplicar labels)
-                const resp = await fetch(
-                    `https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues?state=open&per_page=100&sort=created&direction=desc`,
-                    { headers }
-                );
+                // Buscar issues abertas COM CACHE (TTL curto de 2 min via key específica)
+                const cacheKey = 'admin_open_issues';
+                let issues = apiCache.get(cacheKey);
                 
-                if (!resp.ok) throw new Error('Falha ao buscar issues: ' + resp.status);
-                let issues = await resp.json();
+                if (!issues) {
+                    const resp = await fetch(
+                        `https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues?state=open&per_page=100&sort=created&direction=desc`,
+                        { headers }
+                    );
+                    
+                    if (!resp.ok) throw new Error('Falha ao buscar issues: ' + resp.status);
+                    issues = await resp.json();
+                    
+                    // Cache curto de 2 minutos para admin (precisa ser mais atualizado)
+                    const shortCache = {
+                        data: issues,
+                        timestamp: Date.now()
+                    };
+                    localStorage.setItem(CONFIG.CACHE_PREFIX + cacheKey, JSON.stringify(shortCache));
+                }
                 
                 // Filtrar issues que parecem ser de tradução:
                 issues = issues.filter(issue => {
@@ -3809,15 +3877,10 @@
                             <button class="btn-cancel" onclick="document.getElementById('admin-issue-modal').remove()">
                                 <i class="fas fa-times"></i> Fechar
                             </button>
-                            ${suggestions.length > 0 ? `
-                                <button class="btn-cancel" onclick="saveAdminEdits(${issue.number})" style="border-color: var(--gold-primary); color: var(--gold-primary);">
-                                    <i class="fas fa-save"></i> Salvar Edições
-                                </button>
-                            ` : ''}
-                            <button class="btn-cancel" onclick="rejectIssue(${issue.number})" style="border-color: var(--red-primary); color: #ff6b6b;">
+                            <button class="btn-reject" onclick="rejectIssueWithEdits(${issue.number})">
                                 <i class="fas fa-ban"></i> Rejeitar
                             </button>
-                            <button class="btn-submit" onclick="approveIssue(${issue.number})">
+                            <button class="btn-approve" onclick="approveIssueWithEdits(${issue.number})">
                                 <i class="fas fa-check-circle"></i> Aprovar
                             </button>
                         </div>
@@ -4017,7 +4080,9 @@
                 });
                 if (!resp.ok) throw new Error('Falha ao aplicar label');
                 showToast('Issue aprovada (label "approved" aplicada).', 'success');
-                // refresh admin list
+                // Limpa cache e refresh admin list
+                localStorage.removeItem(CONFIG.CACHE_PREFIX + 'admin_open_issues');
+                localStorage.removeItem(CONFIG.CACHE_PREFIX + 'applied_issues');
                 loadAdminIssues();
                 // close modal if open
                 const m = document.getElementById('admin-issue-modal'); if (m) m.remove();
@@ -4053,6 +4118,8 @@
                     method: 'POST', headers, body: JSON.stringify({ body: `Rejeitado pelo mantenedor: ${reason}` })
                 });
                 showToast('Issue rejeitada e comentário adicionado.', 'info');
+                // Limpa cache e refresh admin list
+                localStorage.removeItem(CONFIG.CACHE_PREFIX + 'admin_open_issues');
                 loadAdminIssues();
                 const m = document.getElementById('admin-issue-modal'); if (m) m.remove();
             } catch (e) {
@@ -4061,6 +4128,209 @@
             }
         }
         
+        // ========== FUNÇÕES COMBINADAS: EDITAR + APROVAR/REJEITAR ==========
+        
+        // Coleta edições dos textareas do modal
+        function collectEditsFromModal() {
+            const textareas = document.querySelectorAll('.admin-edit-suggestion');
+            const edits = [];
+            textareas.forEach(ta => {
+                edits.push({
+                    idx: parseInt(ta.dataset.sugIdx),
+                    id: ta.dataset.sugId,
+                    value: ta.value
+                });
+            });
+            return edits;
+        }
+        
+        // Verifica se houve edições comparando com os valores originais
+        function hasEdits(suggestions, edits) {
+            for (const edit of edits) {
+                if (suggestions[edit.idx] && suggestions[edit.idx].suggestion !== edit.value) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        // Salva edições na issue (retorna true se sucesso ou se não havia edições)
+        async function saveEditsIfNeeded(issueNumber, forceCheck = false) {
+            const headers = { 'Accept': 'application/vnd.github.v3+json' };
+            if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
+            
+            try {
+                // Buscar issue atual
+                const resp = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}`, { headers });
+                if (!resp.ok) throw new Error('Falha ao buscar issue');
+                const issue = await resp.json();
+                
+                // Extrair sugestões
+                const suggestions = parseIssueSuggestions(issue.body);
+                if (suggestions.length === 0) return { success: true, hadEdits: false };
+                
+                // Coletar edições do modal
+                const edits = collectEditsFromModal();
+                
+                // Verificar se houve mudanças
+                if (!hasEdits(suggestions, edits)) {
+                    return { success: true, hadEdits: false };
+                }
+                
+                // Aplicar edições
+                edits.forEach(edit => {
+                    if (suggestions[edit.idx]) {
+                        suggestions[edit.idx].suggestion = edit.value;
+                    }
+                });
+                
+                // Reconstruir JSON
+                const jsonMatch = issue.body.match(/```json\s*\n([\s\S]*?)\n```/);
+                if (!jsonMatch) return { success: true, hadEdits: false };
+                
+                let data = JSON.parse(jsonMatch[1].trim());
+                data.suggestions = suggestions;
+                
+                const newJson = JSON.stringify(data);
+                const newBody = issue.body.replace(/```json\s*\n[\s\S]*?\n```/, '```json\n' + newJson + '\n```');
+                
+                // Atualizar issue
+                const updateResp = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}`, {
+                    method: 'PATCH',
+                    headers: { ...headers, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ body: newBody })
+                });
+                
+                if (!updateResp.ok) throw new Error('Falha ao salvar edições');
+                
+                return { success: true, hadEdits: true };
+            } catch (e) {
+                console.error('Erro ao salvar edições:', e);
+                return { success: false, error: e.message };
+            }
+        }
+        
+        // APROVAR COM EDIÇÕES - Salva edições automaticamente e aprova
+        async function approveIssueWithEdits(issueNumber) {
+            const confirmed = await showConfirm(
+                '<strong>Aprovar esta tradução?</strong><br><br>' +
+                '<small style="color: var(--text-muted);">' +
+                'Se você fez edições nas sugestões, elas serão salvas automaticamente.<br>' +
+                'A automação será acionada para aplicar as traduções no repositório.' +
+                '</small>',
+                {
+                    title: 'Aprovar Tradução',
+                    type: 'success',
+                    confirmText: 'Aprovar',
+                    cancelText: 'Cancelar',
+                    confirmClass: 'custom-modal-btn-success',
+                    icon: 'fa-check-circle'
+                }
+            );
+            if (!confirmed) return;
+            
+            try {
+                showLoadingModal('Processando aprovação...');
+                
+                // 1. Salvar edições se houver
+                const saveResult = await saveEditsIfNeeded(issueNumber);
+                if (!saveResult.success) {
+                    closeLoadingModal();
+                    showToast('Erro ao salvar edições: ' + saveResult.error, 'error');
+                    return;
+                }
+                
+                if (saveResult.hadEdits) {
+                    console.log('Edições salvas antes de aprovar');
+                }
+                
+                // 2. Aplicar label de aprovação
+                const headers = { 'Accept': 'application/vnd.github.v3+json' };
+                if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
+                
+                const resp = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}/labels`, {
+                    method: 'POST', 
+                    headers, 
+                    body: JSON.stringify({ labels: ['approved'] })
+                });
+                
+                if (!resp.ok) throw new Error('Falha ao aplicar label');
+                
+                closeLoadingModal();
+                
+                const message = saveResult.hadEdits 
+                    ? 'Edições salvas e issue aprovada!' 
+                    : 'Issue aprovada!';
+                showToast(message, 'success');
+                
+                // Limpa cache e atualiza
+                localStorage.removeItem(CONFIG.CACHE_PREFIX + 'admin_open_issues');
+                localStorage.removeItem(CONFIG.CACHE_PREFIX + 'applied_issues');
+                loadAdminIssues();
+                
+                const m = document.getElementById('admin-issue-modal'); 
+                if (m) m.remove();
+                
+            } catch (e) {
+                closeLoadingModal();
+                console.error(e);
+                showToast('Erro ao aprovar: ' + e.message, 'error');
+            }
+        }
+        
+        // REJEITAR COM EDIÇÕES - Pergunta motivo e rejeita (edições são descartadas)
+        async function rejectIssueWithEdits(issueNumber) {
+            const reason = await showPrompt(
+                'Digite o motivo da rejeição.<br><small style="color: var(--text-muted);">Será postado como comentário na Issue.</small>',
+                {
+                    title: 'Rejeitar Tradução',
+                    type: 'danger',
+                    defaultValue: '',
+                    placeholder: 'Ex: Tradução incorreta, erro gramatical, etc.',
+                    confirmText: 'Rejeitar',
+                    cancelText: 'Cancelar'
+                }
+            );
+            if (reason === null) return;
+            
+            try {
+                showLoadingModal('Processando rejeição...');
+                
+                const headers = { 'Accept': 'application/vnd.github.v3+json' };
+                if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
+                
+                // 1. Aplicar label 'rejected'
+                await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}/labels`, {
+                    method: 'POST', 
+                    headers, 
+                    body: JSON.stringify({ labels: ['rejected'] })
+                });
+                
+                // 2. Adicionar comentário com motivo (se fornecido)
+                if (reason.trim()) {
+                    await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}/comments`, {
+                        method: 'POST', 
+                        headers, 
+                        body: JSON.stringify({ body: `❌ **Rejeitado pelo revisor**\n\n${reason}` })
+                    });
+                }
+                
+                closeLoadingModal();
+                showToast('Issue rejeitada.', 'info');
+                
+                // Limpa cache e atualiza
+                localStorage.removeItem(CONFIG.CACHE_PREFIX + 'admin_open_issues');
+                loadAdminIssues();
+                
+                const m = document.getElementById('admin-issue-modal'); 
+                if (m) m.remove();
+                
+            } catch (e) {
+                closeLoadingModal();
+                console.error(e);
+                showToast('Erro ao rejeitar: ' + e.message, 'error');
+            }
+        }
         // ========================================
         // Verificação de Issues Duplicadas
         // ========================================

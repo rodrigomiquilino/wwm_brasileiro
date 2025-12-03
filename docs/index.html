@@ -2548,8 +2548,8 @@
         
         // ========== CACHE SYSTEM ==========
         const CacheManager = {
-            CACHE_KEY: 'wwm_api_cache_index',
-            CACHE_TTL: 10 * 60 * 1000, // 10 minutos
+            CACHE_KEY: 'wwm_api_cache', // Compartilhado com translate.html
+            CACHE_TTL: 15 * 60 * 1000, // 15 minutos
             
             get(key, allowExpired = false) {
                 try {
@@ -3023,25 +3023,30 @@
             }
         }
         
-        // Load Recent Translations (Issues com label "applied") - COM CACHE
+        // Load Recent Translations - Reutiliza cache do Hall da Fama
         async function loadRecentTranslations() {
             const grid = document.getElementById('recent-translations-grid');
             if (!grid) return;
             
             try {
-                // Buscar issues fechadas com label "applied" - COM CACHE
-                const issues = await cachedApiCall(
-                    'recent_translations',
-                    'https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues?state=closed&labels=applied&per_page=6&sort=updated&direction=desc'
+                // Reutiliza o mesmo cache do Hall (applied_issues) - economia de 1 chamada
+                const allIssues = await cachedApiCall(
+                    'applied_issues',
+                    'https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues?state=closed&labels=applied&per_page=100'
                 );
+                
+                // Ordenar por data de fechamento e pegar os 6 mais recentes
+                const issues = [...allIssues]
+                    .sort((a, b) => new Date(b.closed_at) - new Date(a.closed_at))
+                    .slice(0, 6);
                 
                 if (!issues || issues.length === 0) {
                     grid.innerHTML = '<div class="recent-translations-empty"><i class="fas fa-inbox"></i> Nenhuma tradução aprovada ainda. Seja o primeiro!</div>';
                     return;
                 }
                 
-                // Processar cada issue para extrair dados
-                const cards = await Promise.all(issues.slice(0, 6).map(async issue => {
+                // Processar cada issue para extrair dados (SEM buscar eventos - economia de API)
+                const cards = issues.slice(0, 6).map(issue => {
                     // Extrair JSON do corpo da issue
                     let suggestions = [];
                     let firstSuggestion = null;
@@ -3055,24 +3060,6 @@
                         }
                     } catch (e) {
                         console.warn('Erro ao parsear JSON da issue:', issue.number);
-                    }
-                    
-                    // Buscar quem aprovou (último evento de label)
-                    let reviewer = null;
-                    try {
-                        const events = await cachedApiCall(
-                            `issue_events_${issue.number}`,
-                            `https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues/${issue.number}/events?per_page=20`
-                        );
-                        // Procurar evento de adição da label "approved"
-                        const approvalEvent = events.find(e => 
-                            e.event === 'labeled' && e.label?.name === 'approved'
-                        );
-                        if (approvalEvent && approvalEvent.actor) {
-                            reviewer = approvalEvent.actor;
-                        }
-                    } catch (e) {
-                        console.warn('Erro ao buscar eventos:', issue.number);
                     }
                     
                     const closedDate = new Date(issue.closed_at);
@@ -3128,17 +3115,10 @@
                                     <img src="${issue.user?.avatar_url || ''}" alt="${issue.user?.login || 'user'}">
                                     <span>@${issue.user?.login || 'anônimo'}</span>
                                 </div>
-                                ${reviewer ? `
-                                    <div class="recent-translation-reviewer">
-                                        <span class="recent-translation-label">Revisor</span>
-                                        <img src="${reviewer.avatar_url || ''}" alt="${reviewer.login || 'revisor'}">
-                                        <span>@${reviewer.login}</span>
-                                    </div>
-                                ` : ''}
                             </div>
                         </div>
                     `;
-                }));
+                });
                 
                 grid.innerHTML = cards.join('');
                 
@@ -3148,12 +3128,34 @@
             }
         }
         
-        // Initialize
+        // Initialize with Lazy Loading (só carrega quando visível)
         document.addEventListener('DOMContentLoaded', () => {
+            // Releases e commits são importantes - carregar imediatamente
             fetchReleases();
             fetchCommits();
-            loadContributors();
-            loadRecentTranslations();
+            
+            // Hall da Fama e Traduções Recentes - lazy load quando visível
+            const lazyLoadObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        if (id === 'hall-container' && !entry.target.dataset.loaded) {
+                            entry.target.dataset.loaded = 'true';
+                            loadContributors();
+                        } else if (id === 'recent-translations-grid' && !entry.target.dataset.loaded) {
+                            entry.target.dataset.loaded = 'true';
+                            loadRecentTranslations();
+                        }
+                        lazyLoadObserver.unobserve(entry.target);
+                    }
+                });
+            }, { rootMargin: '200px' }); // Carrega 200px antes de aparecer
+            
+            const hallContainer = document.getElementById('hall-container');
+            const recentGrid = document.getElementById('recent-translations-grid');
+            
+            if (hallContainer) lazyLoadObserver.observe(hallContainer);
+            if (recentGrid) lazyLoadObserver.observe(recentGrid);
         });
         
         // Smooth scroll for navigation
