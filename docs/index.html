@@ -1276,6 +1276,21 @@
             gap: 0.3rem;
         }
         
+        .recent-translation-edited {
+            font-size: 0.7rem;
+            color: #60a5fa;
+            background: rgba(96, 165, 250, 0.15);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .recent-translation-edited i {
+            font-size: 0.65rem;
+        }
+        
         .recent-translation-count {
             background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
             color: var(--bg-dark);
@@ -3050,6 +3065,7 @@
                     // Extrair JSON do corpo da issue
                     let suggestions = [];
                     let firstSuggestion = null;
+                    let editedCount = 0;
                     
                     try {
                         const jsonMatch = issue.body?.match(/```json\s*\n([\s\S]*?)\n```/);
@@ -3057,6 +3073,8 @@
                             const data = JSON.parse(jsonMatch[1].trim());
                             suggestions = data.suggestions || [];
                             firstSuggestion = suggestions[0];
+                            // Contar quantas foram editadas pelo revisor
+                            editedCount = suggestions.filter(s => s.editedByReviewer).length;
                         }
                     } catch (e) {
                         console.warn('Erro ao parsear JSON da issue:', issue.number);
@@ -3072,18 +3090,28 @@
                     // Extrair uma amostra de tradução
                     let sampleOriginal = '';
                     let sampleTranslation = '';
+                    let wasEdited = false;
                     
                     if (firstSuggestion) {
                         sampleOriginal = firstSuggestion.id?.substring(0, 12) + '...';
                         sampleTranslation = firstSuggestion.suggestion?.substring(0, 80) + (firstSuggestion.suggestion?.length > 80 ? '...' : '');
+                        wasEdited = firstSuggestion.editedByReviewer || false;
                     } else {
-                        // Fallback: tentar extrair do resumo
-                        const summaryMatch = issue.body?.match(/\d+\.\s*`([^`]+)`\s*→\s*([^\n]+)/);
+                        // Fallback: tentar extrair do resumo (verificar se tem ✏️)
+                        const summaryMatch = issue.body?.match(/\d+\.\s*`([^`]+)`\s*(✏️)?\s*→\s*([^\n]+)/);
                         if (summaryMatch) {
                             sampleOriginal = summaryMatch[1].substring(0, 12) + '...';
-                            sampleTranslation = summaryMatch[2].substring(0, 80);
+                            wasEdited = !!summaryMatch[2];
+                            sampleTranslation = summaryMatch[3].substring(0, 80);
                         }
                     }
+                    
+                    // Badge de edição do revisor
+                    const reviewerBadge = editedCount > 0 ? `
+                        <span class="recent-translation-edited" title="${editedCount} tradução(ões) editada(s) pelo revisor">
+                            <i class="fas fa-edit"></i> ${editedCount} editada${editedCount > 1 ? 's' : ''}
+                        </span>
+                    ` : '';
                     
                     return `
                         <div class="recent-translation-card">
@@ -3092,6 +3120,7 @@
                                     <span class="recent-translation-date">
                                         <i class="fas fa-calendar-check"></i> ${dateStr}
                                     </span>
+                                    ${reviewerBadge}
                                 </div>
                                 <span class="recent-translation-count">
                                     <i class="fas fa-language"></i> ${suggestions.length || '?'} tradução${suggestions.length !== 1 ? 'ões' : ''}
@@ -3101,7 +3130,7 @@
                             ${sampleTranslation ? `
                                 <div class="recent-translation-text">
                                     <div class="recent-translation-original">
-                                        <i class="fas fa-quote-left" style="opacity: 0.5;"></i> ID: ${sampleOriginal}
+                                        <i class="fas fa-quote-left" style="opacity: 0.5;"></i> ID: ${sampleOriginal}${wasEdited ? ' <span style="color: #60a5fa;" title="Editada pelo revisor">✏️</span>' : ''}
                                     </div>
                                     <div class="recent-translation-result">
                                         "${sampleTranslation}"
