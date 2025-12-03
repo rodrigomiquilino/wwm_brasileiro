@@ -2408,8 +2408,130 @@
             TRANSLATE_MAIN: 'community/translate/translate_words_map_en.tsv',
             TRANSLATE_DIFF: 'community/translate/translate_words_map_en_diff.tsv',
             ITEMS_PER_PAGE: 50,
-            BRANCH: 'main'
+            BRANCH: 'main',
+            // Cache settings
+            CACHE_DURATION: 10 * 60 * 1000, // 10 minutos em ms
+            CACHE_PREFIX: 'wwm_cache_'
         };
+        
+        // ========== SISTEMA DE CACHE ==========
+        const apiCache = {
+            // Salva dados no cache com timestamp
+            set(key, data) {
+                const cacheItem = {
+                    data: data,
+                    timestamp: Date.now()
+                };
+                try {
+                    localStorage.setItem(CONFIG.CACHE_PREFIX + key, JSON.stringify(cacheItem));
+                } catch (e) {
+                    console.warn('Cache storage full, clearing old entries');
+                    this.clearOld();
+                }
+            },
+            
+            // Recupera dados do cache se ainda válidos
+            get(key) {
+                try {
+                    const cached = localStorage.getItem(CONFIG.CACHE_PREFIX + key);
+                    if (!cached) return null;
+                    
+                    const cacheItem = JSON.parse(cached);
+                    const age = Date.now() - cacheItem.timestamp;
+                    
+                    if (age < CONFIG.CACHE_DURATION) {
+                        console.log(`[Cache HIT] ${key} (age: ${Math.round(age/1000)}s)`);
+                        return cacheItem.data;
+                    }
+                    
+                    console.log(`[Cache EXPIRED] ${key}`);
+                    localStorage.removeItem(CONFIG.CACHE_PREFIX + key);
+                    return null;
+                } catch (e) {
+                    return null;
+                }
+            },
+            
+            // Limpa entradas antigas do cache
+            clearOld() {
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith(CONFIG.CACHE_PREFIX)) {
+                        try {
+                            const cached = JSON.parse(localStorage.getItem(key));
+                            if (Date.now() - cached.timestamp > CONFIG.CACHE_DURATION) {
+                                keysToRemove.push(key);
+                            }
+                        } catch (e) {
+                            keysToRemove.push(key);
+                        }
+                    }
+                }
+                keysToRemove.forEach(k => localStorage.removeItem(k));
+            },
+            
+            // Limpa todo o cache
+            clearAll() {
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith(CONFIG.CACHE_PREFIX)) {
+                        keysToRemove.push(key);
+                    }
+                }
+                keysToRemove.forEach(k => localStorage.removeItem(k));
+                console.log('[Cache] Cleared all entries');
+            }
+        };
+        
+        // ========== FETCH COM CACHE E AUTH ==========
+        async function cachedFetch(url, cacheKey, options = {}) {
+            // Tenta cache primeiro
+            const cached = apiCache.get(cacheKey);
+            if (cached) return { ok: true, data: cached, fromCache: true };
+            
+            // Prepara headers com token se disponível
+            const headers = { ...options.headers };
+            if (githubToken) {
+                headers['Authorization'] = `Bearer ${githubToken}`;
+            }
+            
+            try {
+                const response = await fetch(url, { ...options, headers });
+                
+                // Verifica rate limit
+                const remaining = response.headers.get('X-RateLimit-Remaining');
+                const limit = response.headers.get('X-RateLimit-Limit');
+                if (remaining !== null) {
+                    console.log(`[API] Rate limit: ${remaining}/${limit}`);
+                    if (parseInt(remaining) < 10) {
+                        console.warn('[API] Rate limit baixo!');
+                    }
+                }
+                
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        const resetTime = response.headers.get('X-RateLimit-Reset');
+                        if (resetTime) {
+                            const resetDate = new Date(parseInt(resetTime) * 1000);
+                            console.error(`[API] Rate limit exceeded. Resets at: ${resetDate.toLocaleTimeString()}`);
+                        }
+                    }
+                    return { ok: false, status: response.status, data: null };
+                }
+                
+                const data = await response.json();
+                
+                // Salva no cache
+                apiCache.set(cacheKey, data);
+                
+                return { ok: true, data: data, fromCache: false };
+            } catch (error) {
+                console.error(`[API] Fetch error for ${cacheKey}:`, error);
+                return { ok: false, data: null, error };
+            }
+        }
         
         // GitHub Auth State
         let githubUser = null;
@@ -2717,7 +2839,7 @@
             document.getElementById('table-scroll').scrollTop = 0;
         }
         
-        // Load Hall of Fame - Two Column Layout
+        // Load Hall of Fame - Two Column Layout (COM CACHE)
         async function loadContributors() {
             const container = document.getElementById('hall-container');
             if (!container) return;
@@ -2729,30 +2851,26 @@
             try {
                 container.innerHTML = '<div class="hall-loading"><i class="fas fa-spinner fa-spin"></i> Carregando Hall da Fama...</div>';
                 
-                // Buscar dados em paralelo
-                const [contributorsResp, issuesResp, leadUserResp, secondaryUserResp] = await Promise.all([
-                    fetch(`https://api.github.com/repos/${CONFIG.GITHUB_REPO}/contributors?per_page=50`),
-                    fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues?state=closed&labels=applied&per_page=100`),
-                    fetch(`https://api.github.com/users/${LEAD_DEV}`),
-                    fetch(`https://api.github.com/users/${SECONDARY_DEV}`)
+                // Buscar dados em paralelo COM CACHE
+                const [contributorsResult, issuesResult, leadUserResult, secondaryUserResult] = await Promise.all([
+                    cachedFetch(
+                        `https://api.github.com/repos/${CONFIG.GITHUB_REPO}/contributors?per_page=50`,
+                        'contributors'
+                    ),
+                    cachedFetch(
+                        `https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues?state=closed&labels=applied&per_page=100`,
+                        'issues_applied'
+                    ),
+                    cachedFetch(`https://api.github.com/users/${LEAD_DEV}`, `user_${LEAD_DEV}`),
+                    cachedFetch(`https://api.github.com/users/${SECONDARY_DEV}`, `user_${SECONDARY_DEV}`)
                 ]);
                 
                 // Dados dos desenvolvedores
-                let leadDevData = null;
-                let secondaryDevData = null;
-                
-                if (leadUserResp.ok) {
-                    leadDevData = await leadUserResp.json();
-                }
-                if (secondaryUserResp.ok) {
-                    secondaryDevData = await secondaryUserResp.json();
-                }
+                const leadDevData = leadUserResult.ok ? leadUserResult.data : null;
+                const secondaryDevData = secondaryUserResult.ok ? secondaryUserResult.data : null;
                 
                 // Processar contributors do repo
-                let repoContributors = [];
-                if (contributorsResp.ok) {
-                    repoContributors = await contributorsResp.json();
-                }
+                const repoContributors = contributorsResult.ok ? contributorsResult.data : [];
                 
                 // Buscar commits dos devs principais
                 const leadDevContrib = repoContributors.find(c => c.login === LEAD_DEV);
@@ -2760,8 +2878,8 @@
                 
                 // Processar autores de issues aprovadas
                 let issueAuthors = [];
-                if (issuesResp.ok) {
-                    const issues = await issuesResp.json();
+                if (issuesResult.ok) {
+                    const issues = issuesResult.data;
                     const authorCounts = {};
                     issues.forEach(issue => {
                         if (issue.user && issue.user.type === 'User') {

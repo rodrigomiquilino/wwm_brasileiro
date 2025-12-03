@@ -2546,6 +2546,60 @@
         // ========== API CALLS ==========
         const GITHUB_API = 'https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro';
         
+        // ========== CACHE SYSTEM ==========
+        const CacheManager = {
+            CACHE_KEY: 'wwm_api_cache_index',
+            CACHE_TTL: 10 * 60 * 1000, // 10 minutos
+            
+            get(key) {
+                try {
+                    const cache = JSON.parse(localStorage.getItem(this.CACHE_KEY) || '{}');
+                    const item = cache[key];
+                    if (item && Date.now() - item.timestamp < this.CACHE_TTL) {
+                        console.log(`[Cache HIT] ${key}`);
+                        return item.data;
+                    }
+                    if (item) {
+                        console.log(`[Cache EXPIRED] ${key}`);
+                    }
+                    return null;
+                } catch (e) {
+                    return null;
+                }
+            },
+            
+            set(key, data) {
+                try {
+                    const cache = JSON.parse(localStorage.getItem(this.CACHE_KEY) || '{}');
+                    cache[key] = { data, timestamp: Date.now() };
+                    localStorage.setItem(this.CACHE_KEY, JSON.stringify(cache));
+                    console.log(`[Cache SET] ${key}`);
+                } catch (e) {
+                    console.warn('Cache write failed:', e);
+                }
+            },
+            
+            clear() {
+                localStorage.removeItem(this.CACHE_KEY);
+            }
+        };
+        
+        // API call com cache
+        async function cachedApiCall(cacheKey, url, options = {}) {
+            const cached = CacheManager.get(cacheKey);
+            if (cached) return cached;
+            
+            const response = await fetch(url, options);
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            CacheManager.set(cacheKey, data);
+            return data;
+        }
+        
+        // ========== STATE ==========
         // Armazena as versões encontradas
         let latestLauncher = null;
         let latestTranslation = null;
@@ -2639,8 +2693,7 @@
         // Fetch releases
         async function fetchReleases() {
             try {
-                const response = await fetch(`${GITHUB_API}/releases`);
-                const releases = await response.json();
+                const releases = await cachedApiCall('releases', `${GITHUB_API}/releases`);
                 
                 const container = document.getElementById('releases-list');
                 
@@ -2694,8 +2747,7 @@
         // Fetch commits
         async function fetchCommits() {
             try {
-                const response = await fetch(`${GITHUB_API}/commits?per_page=15`);
-                const commits = await response.json();
+                const commits = await cachedApiCall('commits', `${GITHUB_API}/commits?per_page=15`);
                 
                 const container = document.getElementById('commits-list');
                 
@@ -2732,7 +2784,7 @@
             }
         }
         
-        // Load Hall of Fame - Two Column Layout
+        // Load Hall of Fame - Two Column Layout (COM CACHE)
         async function loadContributors() {
             const container = document.getElementById('hall-container');
             if (!container) return;
@@ -2744,30 +2796,13 @@
             try {
                 container.innerHTML = '<div class="hall-loading"><i class="fas fa-spinner fa-spin"></i> Carregando Hall da Fama...</div>';
                 
-                // Buscar dados em paralelo
-                const [contributorsResp, issuesResp, leadUserResp, secondaryUserResp] = await Promise.all([
-                    fetch('https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/contributors?per_page=50'),
-                    fetch('https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues?state=closed&labels=applied&per_page=100'),
-                    fetch(`https://api.github.com/users/${LEAD_DEV}`),
-                    fetch(`https://api.github.com/users/${SECONDARY_DEV}`)
+                // Buscar dados em paralelo COM CACHE
+                const [repoContributors, issues, leadDevData, secondaryDevData] = await Promise.all([
+                    cachedApiCall('contributors', 'https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/contributors?per_page=50'),
+                    cachedApiCall('applied_issues', 'https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues?state=closed&labels=applied&per_page=100'),
+                    cachedApiCall(`user_${LEAD_DEV}`, `https://api.github.com/users/${LEAD_DEV}`),
+                    cachedApiCall(`user_${SECONDARY_DEV}`, `https://api.github.com/users/${SECONDARY_DEV}`)
                 ]);
-                
-                // Dados dos desenvolvedores
-                let leadDevData = null;
-                let secondaryDevData = null;
-                
-                if (leadUserResp.ok) {
-                    leadDevData = await leadUserResp.json();
-                }
-                if (secondaryUserResp.ok) {
-                    secondaryDevData = await secondaryUserResp.json();
-                }
-                
-                // Processar contributors do repo
-                let repoContributors = [];
-                if (contributorsResp.ok) {
-                    repoContributors = await contributorsResp.json();
-                }
                 
                 // Buscar commits dos devs principais
                 const leadDevContrib = repoContributors.find(c => c.login === LEAD_DEV);
@@ -2775,32 +2810,29 @@
                 
                 // Processar autores de issues aprovadas
                 let issueAuthors = [];
-                if (issuesResp.ok) {
-                    const issues = await issuesResp.json();
-                    const authorCounts = {};
-                    issues.forEach(issue => {
-                        if (issue.user && issue.user.type === 'User') {
-                            const login = issue.user.login;
-                            if (!authorCounts[login]) {
-                                authorCounts[login] = {
-                                    login: login,
-                                    avatar_url: issue.user.avatar_url,
-                                    html_url: issue.user.html_url,
-                                    contributions: 0,
-                                    source: 'issues'
-                                };
-                            }
-                            try {
-                                const jsonMatch = issue.body?.match(/"total"\s*:\s*(\d+)/);
-                                const count = jsonMatch ? parseInt(jsonMatch[1]) : 1;
-                                authorCounts[login].contributions += count;
-                            } catch (e) {
-                                authorCounts[login].contributions += 1;
-                            }
+                const authorCounts = {};
+                issues.forEach(issue => {
+                    if (issue.user && issue.user.type === 'User') {
+                        const login = issue.user.login;
+                        if (!authorCounts[login]) {
+                            authorCounts[login] = {
+                                login: login,
+                                avatar_url: issue.user.avatar_url,
+                                html_url: issue.user.html_url,
+                                contributions: 0,
+                                source: 'issues'
+                            };
                         }
-                    });
-                    issueAuthors = Object.values(authorCounts);
-                }
+                        try {
+                            const jsonMatch = issue.body?.match(/"total"\s*:\s*(\d+)/);
+                            const count = jsonMatch ? parseInt(jsonMatch[1]) : 1;
+                            authorCounts[login].contributions += count;
+                        } catch (e) {
+                            authorCounts[login].contributions += 1;
+                        }
+                    }
+                });
+                issueAuthors = Object.values(authorCounts);
                 
                 // Combinar contributors (excluindo os devs principais)
                 const communityContributors = new Map();
@@ -2963,20 +2995,17 @@
             }
         }
         
-        // Load Recent Translations (Issues com label "applied")
+        // Load Recent Translations (Issues com label "applied") - COM CACHE
         async function loadRecentTranslations() {
             const grid = document.getElementById('recent-translations-grid');
             if (!grid) return;
             
             try {
-                // Buscar issues fechadas com label "applied"
-                const response = await fetch(
+                // Buscar issues fechadas com label "applied" - COM CACHE
+                const issues = await cachedApiCall(
+                    'recent_translations',
                     'https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues?state=closed&labels=applied&per_page=6&sort=updated&direction=desc'
                 );
-                
-                if (!response.ok) throw new Error('Failed to fetch');
-                
-                const issues = await response.json();
                 
                 if (!issues || issues.length === 0) {
                     grid.innerHTML = '<div class="recent-translations-empty"><i class="fas fa-inbox"></i> Nenhuma tradução aprovada ainda. Seja o primeiro!</div>';
@@ -3003,18 +3032,16 @@
                     // Buscar quem aprovou (último evento de label)
                     let reviewer = null;
                     try {
-                        const eventsResp = await fetch(
+                        const events = await cachedApiCall(
+                            `issue_events_${issue.number}`,
                             `https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues/${issue.number}/events?per_page=20`
                         );
-                        if (eventsResp.ok) {
-                            const events = await eventsResp.json();
-                            // Procurar evento de adição da label "approved"
-                            const approvalEvent = events.find(e => 
-                                e.event === 'labeled' && e.label?.name === 'approved'
-                            );
-                            if (approvalEvent && approvalEvent.actor) {
-                                reviewer = approvalEvent.actor;
-                            }
+                        // Procurar evento de adição da label "approved"
+                        const approvalEvent = events.find(e => 
+                            e.event === 'labeled' && e.label?.name === 'approved'
+                        );
+                        if (approvalEvent && approvalEvent.actor) {
+                            reviewer = approvalEvent.actor;
                         }
                     } catch (e) {
                         console.warn('Erro ao buscar eventos:', issue.number);
