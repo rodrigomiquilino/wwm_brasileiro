@@ -739,7 +739,7 @@
             font-size: 0.875rem;
         }
         
-        /* ========== CONTRIBUTORS SECTION - LEADERBOARD ========== */
+        /* ========== HALL DA FAMA - TWO COLUMN LAYOUT ========== */
         .contributors-section {
             padding: 4rem 2rem;
             background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
@@ -763,7 +763,7 @@
             font-size: 2rem;
             color: var(--gold-primary);
             margin-bottom: 0.5rem;
-            text-shadow: 0 0 30px rgba(201, 162, 39, 0.3);
+            text-shadow: 0 0 30px rgba(201, 162, 39, 0.4);
         }
         
         .contributors-section > p {
@@ -771,239 +771,390 @@
             margin-bottom: 2rem;
         }
         
-        /* Leaderboard Container */
-        .leaderboard-wrapper {
-            max-width: 800px;
+        /* Hall Container */
+        .hall-wrapper {
+            max-width: 1000px;
             margin: 0 auto 2rem;
-            background: var(--bg-card);
-            border: 1px solid rgba(201, 162, 39, 0.2);
-            border-radius: 16px;
-            padding: 1.5rem;
         }
         
-        .leaderboard-container {
-            max-height: 450px;
-            overflow-y: auto;
-            padding-right: 0.5rem;
-        }
-        
-        .leaderboard-container::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .leaderboard-container::-webkit-scrollbar-track {
-            background: var(--bg-dark);
-            border-radius: 3px;
-        }
-        
-        .leaderboard-container::-webkit-scrollbar-thumb {
-            background: var(--gold-dark);
-            border-radius: 3px;
-        }
-        
-        .leaderboard-loading {
-            text-align: center;
-            color: var(--text-muted);
-            padding: 2rem;
-        }
-        
-        .leaderboard-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        
-        .leaderboard-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.75rem 1rem;
-            background: var(--bg-dark);
-            border-radius: 10px;
-            border: 1px solid transparent;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+        .hall-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
             text-align: left;
         }
         
-        .leaderboard-item:hover {
-            border-color: var(--gold-primary);
-            transform: translateX(5px);
-            box-shadow: 0 0 20px rgba(201, 162, 39, 0.15);
+        /* ===== LEFT COLUMN - DEVELOPERS CASTLE ===== */
+        .devs-castle {
+            background: linear-gradient(180deg, rgba(30, 25, 15, 0.6) 0%, rgba(20, 15, 10, 0.8) 100%);
+            border: 2px solid rgba(201, 162, 39, 0.4);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
         }
         
-        /* Top 3 */
-        .leaderboard-item.rank-1 {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%);
-            border-color: rgba(255, 215, 0, 0.4);
+        .devs-castle::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.05) 0%, transparent 70%);
+            animation: castleGlow 4s ease-in-out infinite;
         }
         
-        .leaderboard-item.rank-2 {
-            background: linear-gradient(135deg, rgba(192, 192, 192, 0.12) 0%, rgba(192, 192, 192, 0.04) 100%);
-            border-color: rgba(192, 192, 192, 0.3);
+        @keyframes castleGlow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
         }
         
-        .leaderboard-item.rank-3 {
-            background: linear-gradient(135deg, rgba(205, 127, 50, 0.12) 0%, rgba(205, 127, 50, 0.04) 100%);
-            border-color: rgba(205, 127, 50, 0.3);
+        .castle-title {
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            color: var(--gold-light);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1;
         }
         
-        .leaderboard-rank {
-            width: 40px;
-            height: 40px;
+        .castle-title i {
+            margin-right: 0.5rem;
+            color: #ffd700;
+        }
+        
+        /* Developer Cards */
+        .dev-card {
+            position: relative;
+            z-index: 1;
+            padding: 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .dev-card:last-child {
+            margin-bottom: 0;
+        }
+        
+        .dev-card.lead {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 180, 0, 0.08) 50%, rgba(255, 215, 0, 0.15) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 
+                0 0 30px rgba(255, 215, 0, 0.2),
+                inset 0 0 30px rgba(255, 215, 0, 0.05);
+            animation: goldPulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes goldPulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.2), inset 0 0 30px rgba(255, 215, 0, 0.05); }
+            50% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.35), inset 0 0 40px rgba(255, 215, 0, 0.1); }
+        }
+        
+        .dev-card.secondary {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.12) 0%, rgba(160, 160, 170, 0.06) 50%, rgba(192, 192, 192, 0.12) 100%);
+            border: 2px solid rgba(192, 192, 192, 0.4);
+            box-shadow: 0 0 20px rgba(192, 192, 192, 0.15);
+        }
+        
+        .dev-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .dev-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .dev-rank-badge {
+            width: 50px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
-            font-size: 1rem;
-            border-radius: 10px;
-            background: var(--bg-medium);
-            color: var(--text-muted);
+            font-size: 1.8rem;
             flex-shrink: 0;
         }
         
-        .rank-1 .leaderboard-rank {
-            background: linear-gradient(135deg, #ffd700, #ffb800);
-            color: #1a1a1a;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        .dev-card.lead .dev-rank-badge {
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+            animation: crownFloat 2s ease-in-out infinite;
         }
         
-        .rank-2 .leaderboard-rank {
-            background: linear-gradient(135deg, #c0c0c0, #a8a8a8);
-            color: #1a1a1a;
+        @keyframes crownFloat {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-5px) rotate(5deg); }
         }
         
-        .rank-3 .leaderboard-rank {
-            background: linear-gradient(135deg, #cd7f32, #b8722d);
-            color: #1a1a1a;
-        }
-        
-        .leaderboard-avatar {
+        .dev-avatar {
             position: relative;
-            flex-shrink: 0;
         }
         
-        .leaderboard-avatar img {
-            width: 50px;
-            height: 50px;
+        .dev-avatar img {
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            border: 2px solid var(--bg-medium);
             transition: all 0.3s;
         }
         
-        .rank-1 .leaderboard-avatar img {
-            border-color: #ffd700;
-            box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+        .dev-card.lead .dev-avatar img {
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
         
-        .rank-2 .leaderboard-avatar img {
-            border-color: #c0c0c0;
+        .dev-card.secondary .dev-avatar img {
+            border: 3px solid #c0c0c0;
+            box-shadow: 0 0 15px rgba(192, 192, 192, 0.4);
         }
         
-        .rank-3 .leaderboard-avatar img {
-            border-color: #cd7f32;
-        }
-        
-        .leaderboard-type-badge {
+        .dev-avatar-glow {
             position: absolute;
-            bottom: -2px;
-            right: -2px;
-            font-size: 0.8rem;
-            background: var(--bg-dark);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
-            padding: 3px;
-            line-height: 1;
+            z-index: -1;
         }
         
-        .leaderboard-info {
+        .dev-card.lead .dev-avatar-glow {
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes glowPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+        }
+        
+        .dev-info {
             flex: 1;
-            min-width: 0;
         }
         
-        .leaderboard-name {
-            font-weight: 600;
-            color: var(--text-primary);
-            font-size: 1rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .dev-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
         }
         
-        .leaderboard-name a {
+        .dev-card.lead .dev-name {
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .dev-card.secondary .dev-name {
+            color: #e0e0e0;
+        }
+        
+        .dev-name a {
             color: inherit;
             text-decoration: none;
         }
         
-        .leaderboard-name a:hover {
-            color: var(--gold-primary);
+        .dev-name a:hover {
+            text-decoration: underline;
         }
         
-        .rank-1 .leaderboard-name {
-            color: #ffd700;
-        }
-        
-        .leaderboard-role {
+        .dev-title {
             font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 0.15rem;
-        }
-        
-        .leaderboard-stats {
+            text-transform: uppercase;
+            letter-spacing: 1px;
             display: flex;
             align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .dev-card.lead .dev-title {
+            color: rgba(255, 215, 0, 0.8);
+        }
+        
+        .dev-card.secondary .dev-title {
+            color: rgba(192, 192, 192, 0.8);
+        }
+        
+        .dev-stats {
+            display: flex;
             gap: 0.75rem;
-            flex-shrink: 0;
+            flex-wrap: wrap;
         }
         
-        .leaderboard-stat {
+        .dev-stat {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
             text-align: center;
-            padding: 0.4rem 0.6rem;
-            background: rgba(201, 162, 39, 0.1);
-            border-radius: 6px;
-            min-width: 65px;
+            min-width: 70px;
         }
         
-        .leaderboard-stat-value {
+        .dev-card.lead .dev-stat {
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .dev-card.secondary .dev-stat {
+            border: 1px solid rgba(192, 192, 192, 0.3);
+        }
+        
+        .dev-stat-value {
             font-weight: 700;
             font-size: 1.1rem;
-            color: var(--gold-primary);
             font-family: 'Courier New', monospace;
         }
         
-        .rank-1 .leaderboard-stat-value {
+        .dev-card.lead .dev-stat-value {
             color: #ffd700;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
         }
         
-        .leaderboard-stat-label {
-            font-size: 0.65rem;
+        .dev-card.secondary .dev-stat-value {
+            color: #c0c0c0;
+        }
+        
+        .dev-stat-label {
+            font-size: 0.6rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         
-        .leaderboard-xp-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--gold-primary), var(--gold-light));
-            opacity: 0.6;
-            transition: width 0.5s ease;
+        /* ===== RIGHT COLUMN - COMMUNITY RANKING ===== */
+        .community-ranking {
+            background: linear-gradient(180deg, rgba(25, 20, 15, 0.6) 0%, rgba(15, 12, 10, 0.8) 100%);
+            border: 2px solid rgba(205, 127, 50, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
         }
         
-        .leaderboard-empty {
+        .ranking-title {
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            color: #cd7f32;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .ranking-title i {
+            margin-right: 0.5rem;
+        }
+        
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(205, 127, 50, 0.08);
+            border-radius: 8px;
+            border: 1px solid rgba(205, 127, 50, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .ranking-item:hover {
+            background: rgba(205, 127, 50, 0.15);
+            border-color: rgba(205, 127, 50, 0.4);
+            transform: translateX(5px);
+        }
+        
+        .ranking-position {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #cd7f32, #b8722d);
+            color: #1a1a1a;
+            font-weight: 800;
+            font-size: 0.75rem;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        
+        .ranking-item:first-child .ranking-position {
+            background: linear-gradient(135deg, #cd7f32, #a0522d);
+            box-shadow: 0 0 10px rgba(205, 127, 50, 0.4);
+        }
+        
+        .ranking-avatar img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(205, 127, 50, 0.5);
+        }
+        
+        .ranking-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .ranking-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .ranking-name a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .ranking-name a:hover {
+            color: #cd7f32;
+        }
+        
+        .ranking-role {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+        }
+        
+        .ranking-score {
+            text-align: right;
+            flex-shrink: 0;
+        }
+        
+        .ranking-score-value {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #cd7f32;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .ranking-score-label {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        
+        .ranking-empty {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 2rem;
+            font-style: italic;
+        }
+        
+        /* Hall Loading */
+        .hall-loading {
             text-align: center;
             color: var(--text-muted);
             padding: 3rem;
-        }
-        
-        .leaderboard-empty i {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: var(--gold-dark);
-            display: block;
+            grid-column: 1 / -1;
         }
         
         .contributors-cta {
@@ -1024,30 +1175,28 @@
             box-shadow: 0 6px 20px rgba(201, 162, 39, 0.4);
         }
         
-        @media (max-width: 600px) {
-            .leaderboard-item {
-                padding: 0.6rem 0.75rem;
-                gap: 0.75rem;
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hall-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
             }
             
-            .leaderboard-rank {
-                width: 32px;
-                height: 32px;
-                font-size: 0.85rem;
-            }
-            
-            .leaderboard-avatar img {
-                width: 40px;
-                height: 40px;
-            }
-            
-            .leaderboard-stats {
+            .dev-header {
                 flex-direction: column;
-                gap: 0.25rem;
+                text-align: center;
             }
             
-            .leaderboard-stat {
-                min-width: 50px;
+            .dev-stats {
+                justify-content: center;
+            }
+            
+            .dev-avatar img {
+                width: 60px;
+                height: 60px;
+            }
+        }
+        
                 padding: 0.25rem 0.4rem;
             }
         }
@@ -2279,14 +2428,14 @@
         </div>
     </div>
     
-    <!-- Contributors Section - Leaderboard -->
+    <!-- Hall da Fama - Two Column Layout -->
     <section class="contributors-section">
-        <h2><i class="fas fa-trophy"></i> Hall da Fama dos Tradutores</h2>
+        <h2><i class="fas fa-trophy"></i> Hall da Fama</h2>
         <p>Os guerreiros que estão traduzindo Where Winds Meet!</p>
         
-        <div class="leaderboard-wrapper">
-            <div class="leaderboard-container" id="leaderboard-container">
-                <div class="leaderboard-loading"><i class="fas fa-spinner fa-spin"></i> Carregando ranking...</div>
+        <div class="hall-wrapper">
+            <div class="hall-container" id="hall-container">
+                <div class="hall-loading"><i class="fas fa-spinner fa-spin"></i> Carregando Hall da Fama...</div>
             </div>
         </div>
         
@@ -2587,27 +2736,48 @@
             }
         }
         
-        // Load Contributors - Leaderboard Style
+        // Load Hall of Fame - Two Column Layout
         async function loadContributors() {
-            const container = document.getElementById('leaderboard-container');
+            const container = document.getElementById('hall-container');
             if (!container) return;
             
+            // Developers fixos
+            const LEAD_DEV = 'rodrigomiquilino';
+            const SECONDARY_DEV = 'DOG729';
+            
             try {
-                container.innerHTML = '<div class="leaderboard-loading"><i class="fas fa-spinner fa-spin"></i> Carregando ranking...</div>';
+                container.innerHTML = '<div class="hall-loading"><i class="fas fa-spinner fa-spin"></i> Carregando Hall da Fama...</div>';
                 
-                // Buscar em paralelo: contributors do repo + autores de issues aprovadas
-                const [contributorsResp, issuesResp] = await Promise.all([
+                // Buscar dados em paralelo
+                const [contributorsResp, issuesResp, leadUserResp, secondaryUserResp] = await Promise.all([
                     fetch('https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/contributors?per_page=50'),
-                    fetch('https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues?state=closed&labels=applied&per_page=100')
+                    fetch('https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues?state=closed&labels=applied&per_page=100'),
+                    fetch(`https://api.github.com/users/${LEAD_DEV}`),
+                    fetch(`https://api.github.com/users/${SECONDARY_DEV}`)
                 ]);
                 
-                // Processar contributors do repo (commits)
+                // Dados dos desenvolvedores
+                let leadDevData = null;
+                let secondaryDevData = null;
+                
+                if (leadUserResp.ok) {
+                    leadDevData = await leadUserResp.json();
+                }
+                if (secondaryUserResp.ok) {
+                    secondaryDevData = await secondaryUserResp.json();
+                }
+                
+                // Processar contributors do repo
                 let repoContributors = [];
                 if (contributorsResp.ok) {
                     repoContributors = await contributorsResp.json();
                 }
                 
-                // Processar autores de issues aprovadas (traduções via site)
+                // Buscar commits dos devs principais
+                const leadDevContrib = repoContributors.find(c => c.login === LEAD_DEV);
+                const secondaryDevContrib = repoContributors.find(c => c.login === SECONDARY_DEV);
+                
+                // Processar autores de issues aprovadas
                 let issueAuthors = [];
                 if (issuesResp.ok) {
                     const issues = await issuesResp.json();
@@ -2636,13 +2806,13 @@
                     issueAuthors = Object.values(authorCounts);
                 }
                 
-                // Combinar e mesclar
-                const allContributors = new Map();
+                // Combinar contributors (excluindo os devs principais)
+                const communityContributors = new Map();
                 
                 repoContributors
-                    .filter(c => c.type === 'User')
+                    .filter(c => c.type === 'User' && c.login !== LEAD_DEV && c.login !== SECONDARY_DEV)
                     .forEach(c => {
-                        allContributors.set(c.login, {
+                        communityContributors.set(c.login, {
                             login: c.login,
                             avatar_url: c.avatar_url,
                             html_url: c.html_url,
@@ -2651,83 +2821,147 @@
                         });
                     });
                 
-                issueAuthors.forEach(author => {
-                    if (allContributors.has(author.login)) {
-                        const existing = allContributors.get(author.login);
-                        existing.contributions += author.contributions;
-                        existing.source = 'both';
-                    } else {
-                        allContributors.set(author.login, author);
-                    }
-                });
+                issueAuthors
+                    .filter(a => a.login !== LEAD_DEV && a.login !== SECONDARY_DEV)
+                    .forEach(author => {
+                        if (communityContributors.has(author.login)) {
+                            const existing = communityContributors.get(author.login);
+                            existing.contributions += author.contributions;
+                            existing.source = 'both';
+                        } else {
+                            communityContributors.set(author.login, author);
+                        }
+                    });
                 
-                // Ordenar por contribuições (sem limite)
-                const displayContributors = Array.from(allContributors.values())
-                    .sort((a, b) => b.contributions - a.contributions);
+                // Ordenar e pegar top 10
+                const topCommunity = Array.from(communityContributors.values())
+                    .sort((a, b) => b.contributions - a.contributions)
+                    .slice(0, 10);
                 
-                // Calcular máximo para barra XP
-                const maxContrib = displayContributors.length > 0 ? displayContributors[0].contributions : 1;
-                
-                if (displayContributors.length === 0) {
-                    container.innerHTML = `
-                        <div class="leaderboard-empty">
-                            <i class="fas fa-users"></i>
-                            <p>Seja o primeiro a entrar no ranking!</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
+                // Renderizar o layout
                 container.innerHTML = `
-                    <div class="leaderboard-list">
-                        ${displayContributors.map((contributor, index) => {
-                            const rank = index + 1;
-                            const rankClass = rank <= 3 ? `rank-${rank}` : '';
-                            
-                            const badgeIcon = contributor.source === 'issues' ? '💬' : 
-                                              contributor.source === 'both' ? '⭐' : '💻';
-                            const badgeTitle = contributor.source === 'issues' ? 'Tradutor via site' : 
-                                               contributor.source === 'both' ? 'Tradutor + Desenvolvedor' : 'Desenvolvedor';
-                            const roleName = contributor.source === 'issues' ? 'Tradutor' : 
-                                             contributor.source === 'both' ? 'Tradutor & Dev' : 'Desenvolvedor';
-                            
-                            const xpWidth = (contributor.contributions / maxContrib) * 100;
-                            const rankIcon = rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
-                            
-                            return `
-                                <div class="leaderboard-item ${rankClass}">
-                                    <div class="leaderboard-rank">${rankIcon}</div>
-                                    <div class="leaderboard-avatar">
-                                        <a href="${contributor.html_url}" target="_blank" rel="noopener">
-                                            <img src="${contributor.avatar_url}" alt="${contributor.login}" loading="lazy">
-                                        </a>
-                                        <span class="leaderboard-type-badge" title="${badgeTitle}">${badgeIcon}</span>
-                                    </div>
-                                    <div class="leaderboard-info">
-                                        <div class="leaderboard-name">
-                                            <a href="${contributor.html_url}" target="_blank" rel="noopener">@${contributor.login}</a>
-                                        </div>
-                                        <div class="leaderboard-role">${roleName}</div>
-                                    </div>
-                                    <div class="leaderboard-stats">
-                                        <div class="leaderboard-stat">
-                                            <div class="leaderboard-stat-value">${contributor.contributions}</div>
-                                            <div class="leaderboard-stat-label">Contrib.</div>
-                                        </div>
-                                    </div>
-                                    <div class="leaderboard-xp-bar" style="width: ${xpWidth}%"></div>
+                    <!-- Left Column: Developers Castle -->
+                    <div class="devs-castle">
+                        <div class="castle-title"><i class="fas fa-crown"></i> Desenvolvedores</div>
+                        
+                        <!-- Lead Developer - GOLD -->
+                        <div class="dev-card lead">
+                            <div class="dev-header">
+                                <div class="dev-rank-badge">👑</div>
+                                <div class="dev-avatar">
+                                    <div class="dev-avatar-glow"></div>
+                                    <a href="${leadDevData?.html_url || 'https://github.com/' + LEAD_DEV}" target="_blank">
+                                        <img src="${leadDevData?.avatar_url || 'https://github.com/' + LEAD_DEV + '.png'}" alt="${LEAD_DEV}">
+                                    </a>
                                 </div>
-                            `;
-                        }).join('')}
+                                <div class="dev-info">
+                                    <div class="dev-name">
+                                        <a href="${leadDevData?.html_url || 'https://github.com/' + LEAD_DEV}" target="_blank">@${LEAD_DEV}</a>
+                                    </div>
+                                    <div class="dev-title">
+                                        <i class="fas fa-code"></i> Desenvolvedor Principal
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dev-stats">
+                                <div class="dev-stat">
+                                    <div class="dev-stat-value">${leadDevContrib?.contributions || '∞'}</div>
+                                    <div class="dev-stat-label">Commits</div>
+                                </div>
+                                <div class="dev-stat">
+                                    <div class="dev-stat-value">${leadDevData?.public_repos || '-'}</div>
+                                    <div class="dev-stat-label">Repos</div>
+                                </div>
+                                <div class="dev-stat">
+                                    <div class="dev-stat-value">${leadDevData?.followers || '-'}</div>
+                                    <div class="dev-stat-label">Seguidores</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Secondary Developer - SILVER -->
+                        <div class="dev-card secondary">
+                            <div class="dev-header">
+                                <div class="dev-rank-badge">🥈</div>
+                                <div class="dev-avatar">
+                                    <a href="${secondaryDevData?.html_url || 'https://github.com/' + SECONDARY_DEV}" target="_blank">
+                                        <img src="${secondaryDevData?.avatar_url || 'https://github.com/' + SECONDARY_DEV + '.png'}" alt="${SECONDARY_DEV}">
+                                    </a>
+                                </div>
+                                <div class="dev-info">
+                                    <div class="dev-name">
+                                        <a href="${secondaryDevData?.html_url || 'https://github.com/' + SECONDARY_DEV}" target="_blank">@${SECONDARY_DEV}</a>
+                                    </div>
+                                    <div class="dev-title">
+                                        <i class="fas fa-code-branch"></i> Desenvolvedor Secundário
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dev-stats">
+                                <div class="dev-stat">
+                                    <div class="dev-stat-value">${secondaryDevContrib?.contributions || '-'}</div>
+                                    <div class="dev-stat-label">Commits</div>
+                                </div>
+                                <div class="dev-stat">
+                                    <div class="dev-stat-value">${secondaryDevData?.public_repos || '-'}</div>
+                                    <div class="dev-stat-label">Repos</div>
+                                </div>
+                                <div class="dev-stat">
+                                    <div class="dev-stat-value">${secondaryDevData?.followers || '-'}</div>
+                                    <div class="dev-stat-label">Seguidores</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column: Community Ranking -->
+                    <div class="community-ranking">
+                        <div class="ranking-title"><i class="fas fa-medal"></i> Top Tradutores</div>
+                        
+                        ${topCommunity.length > 0 ? `
+                            <div class="ranking-list">
+                                ${topCommunity.map((contributor, index) => {
+                                    const position = index + 1;
+                                    const roleName = contributor.source === 'issues' ? 'Tradutor' : 
+                                                     contributor.source === 'both' ? 'Tradutor & Dev' : 'Contributor';
+                                    
+                                    return `
+                                        <div class="ranking-item">
+                                            <div class="ranking-position">${position}º</div>
+                                            <div class="ranking-avatar">
+                                                <a href="${contributor.html_url}" target="_blank">
+                                                    <img src="${contributor.avatar_url}" alt="${contributor.login}" loading="lazy">
+                                                </a>
+                                            </div>
+                                            <div class="ranking-info">
+                                                <div class="ranking-name">
+                                                    <a href="${contributor.html_url}" target="_blank">@${contributor.login}</a>
+                                                </div>
+                                                <div class="ranking-role">${roleName}</div>
+                                            </div>
+                                            <div class="ranking-score">
+                                                <div class="ranking-score-value">${contributor.contributions}</div>
+                                                <div class="ranking-score-label">pts</div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        ` : `
+                            <div class="ranking-empty">
+                                <i class="fas fa-users"></i>
+                                <p>Seja o primeiro tradutor!</p>
+                            </div>
+                        `}
                     </div>
                 `;
                 
             } catch (error) {
-                console.error('Error loading contributors:', error);
+                console.error('Error loading hall of fame:', error);
                 container.innerHTML = `
-                    <div class="leaderboard-empty">
+                    <div class="hall-loading">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <p>Erro ao carregar ranking</p>
+                        <p>Erro ao carregar Hall da Fama</p>
                     </div>
                 `;
             }
