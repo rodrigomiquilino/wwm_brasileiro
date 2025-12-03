@@ -4445,6 +4445,35 @@
             return false;
         }
         
+        // Atualiza a seção de Resumo no corpo da issue para refletir as edições
+        function updateSummarySection(body, suggestions) {
+            // Gerar novo resumo com indicação de edições
+            const newSummary = suggestions.map((item, i) => {
+                const text = item.suggestion.substring(0, 50);
+                const edited = item.editedByReviewer ? ' ✏️' : '';
+                return `${i+1}. \`${item.id}\`${edited} → ${text}...`;
+            }).join('\n');
+            
+            // Adicionar nota sobre edições do revisor
+            const editedCount = suggestions.filter(s => s.editedByReviewer).length;
+            let reviewerNote = '';
+            if (editedCount > 0) {
+                reviewerNote = `\n\n> ✏️ **${editedCount} tradução(ões) editada(s) pelo revisor** antes da aprovação.`;
+            }
+            
+            // Substituir a seção de resumo existente
+            // Padrão: "### 📄 Resumo" seguido de linhas numeradas até "---"
+            const summaryPattern = /### 📄 Resumo\n([\s\S]*?)(\n---|\n\n---|\n> ⚠️)/;
+            const match = body.match(summaryPattern);
+            
+            if (match) {
+                const newSection = `### 📄 Resumo\n${newSummary}${reviewerNote}\n\n---`;
+                body = body.replace(summaryPattern, newSection);
+            }
+            
+            return body;
+        }
+        
         // Salva edições na issue (retorna true se sucesso ou se não havia edições)
         // IMPORTANTE: edits deve ser passado como parâmetro (coletado ANTES de fechar o modal)
         async function saveEditsIfNeeded(issueNumber, edits = null) {
@@ -4482,6 +4511,7 @@
                 edits.forEach(edit => {
                     if (suggestions[edit.idx]) {
                         suggestions[edit.idx].suggestion = edit.value;
+                        suggestions[edit.idx].editedByReviewer = true; // Marcar como editado
                     }
                 });
 
@@ -4494,7 +4524,12 @@
                         let data = JSON.parse(jsonMatch[1].trim());
                         data.suggestions = suggestions;
                         const newJson = JSON.stringify(data);
+                        
+                        // Atualizar o bloco JSON
                         newBody = issue.body.replace(/```(?:json)?\s*\n[\s\S]*?\n```/i, '```json\n' + newJson + '\n```');
+                        
+                        // Atualizar também a seção de Resumo para refletir as edições
+                        newBody = updateSummarySection(newBody, suggestions);
                     } catch (e) {
                         console.warn('JSON existente inválido, fallback para busca de objeto JSON:', e);
                         jsonMatch = null; // forçar fallback
@@ -4511,6 +4546,8 @@
                             const newJson = JSON.stringify(data);
                             // substituir o objeto JSON encontrado
                             newBody = issue.body.replace(/\{[\s\S]*\}/, newJson);
+                            // Atualizar também a seção de Resumo
+                            newBody = updateSummarySection(newBody, suggestions);
                         } catch (e) {
                             console.error('Falha ao parsear JSON no fallback:', e);
                             return { success: false, error: 'JSON inválido no corpo da issue' };
