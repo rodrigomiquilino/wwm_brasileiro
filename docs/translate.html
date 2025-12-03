@@ -1001,15 +1001,6 @@
             overflow: hidden;
         }
         
-        .admin-suggestion-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 0.75rem;
-            background: rgba(201, 162, 39, 0.1);
-            border-bottom: 1px solid rgba(201, 162, 39, 0.15);
-        }
-        
         .admin-suggestion-id {
             font-family: monospace;
             font-size: 0.7rem;
@@ -1023,6 +1014,26 @@
             font-size: 0.65rem;
             color: var(--text-muted);
             font-weight: 600;
+        }
+        
+        .admin-suggestion-file {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 600;
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+        }
+        
+        .admin-suggestion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            background: rgba(201, 162, 39, 0.1);
+            border-bottom: 1px solid rgba(201, 162, 39, 0.15);
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
         
         .admin-suggestion-body {
@@ -2801,10 +2812,10 @@
                 const suggestions = parseIssueSuggestions(issue.body);
                 
                 // Buscar dados originais do arquivo TSV para comparação
+                // Passa as sugestões completas para saber de qual arquivo cada uma veio
                 let originalData = [];
                 if (suggestions.length > 0) {
-                    const suggestionIds = suggestions.map(s => s.id);
-                    originalData = await fetchOriginalTexts(suggestionIds);
+                    originalData = await fetchOriginalTexts(suggestions);
                 }
                 
                 const created = new Date(issue.created_at).toLocaleString('pt-BR');
@@ -2847,9 +2858,12 @@
                                 </div>
                                 <div class="admin-suggestions-list" id="admin-suggestions-list">
                                     ${suggestions.map((sug, idx) => {
-                                        const orig = originalData.find(o => o.id === sug.id);
+                                        // Buscar pelo ID E arquivo para evitar conflito de IDs duplicados
+                                        const orig = originalData.find(o => o.id === sug.id && o.file === sug.file)
+                                                  || originalData.find(o => o.id === sug.id); // fallback
                                         const originalText = orig?.originalText || '(não encontrado)';
                                         const currentTranslation = orig?.translatedText || '';
+                                        const sourceFile = sug.file === 'translate_words_map_en_diff.tsv' ? 'Diff' : 'Main';
                                         
                                         // Só mostra "Tradução Atual" se for DIFERENTE do original (já foi traduzido)
                                         const hasCurrentTranslation = currentTranslation && 
@@ -2857,9 +2871,10 @@
                                             currentTranslation !== originalText;
                                         
                                         return `
-                                            <div class="admin-suggestion-item" data-index="${idx}">
+                                            <div class="admin-suggestion-item" data-index="${idx}" data-file="${sug.file}">
                                                 <div class="admin-suggestion-header">
                                                     <span class="admin-suggestion-id"><i class="fas fa-fingerprint"></i> ${sug.id}</span>
+                                                    <span class="admin-suggestion-file" title="Arquivo: ${sug.file}"><i class="fas fa-file-alt"></i> ${sourceFile}</span>
                                                     <span class="admin-suggestion-index">#${idx + 1} de ${suggestions.length}</span>
                                                 </div>
                                                 <div class="admin-suggestion-body">
@@ -2917,41 +2932,62 @@
             }
         }
         
-        // Busca textos originais para comparação (de mainData E diffData)
-        async function fetchOriginalTexts(ids) {
+        // Busca textos originais para comparação - CONSIDERA O ARQUIVO DE ORIGEM
+        // Recebe array de sugestões (com campo 'file') para buscar no array correto
+        async function fetchOriginalTexts(suggestions) {
             const results = [];
             
             // Se os dados não foram carregados ainda, aguardar carregamento
             if (mainData.length === 0 && diffData.length === 0) {
-                // Tentar carregar agora
                 await loadTranslationsIfNeeded();
             }
             
-            // Buscar em AMBOS os arrays (main e diff)
-            // pois a sugestão pode vir de qualquer arquivo
-            const allLoadedData = [...mainData, ...diffData];
+            // Mapear nome do arquivo para array de dados
+            const fileNameToData = {
+                'translate_words_map_en.tsv': mainData,
+                'translate_words_map_en_diff.tsv': diffData
+            };
             
-            if (allLoadedData.length > 0) {
-                ids.forEach(id => {
-                    const found = allLoadedData.find(item => item.id === id);
-                    if (found) {
+            suggestions.forEach(sug => {
+                const id = sug.id;
+                const fileName = sug.file;
+                
+                // Determinar em qual array buscar baseado no arquivo da sugestão
+                let targetData = fileNameToData[fileName];
+                
+                // Fallback: se não encontrar ou arquivo não especificado, busca em ambos
+                if (!targetData || targetData.length === 0) {
+                    targetData = [...mainData, ...diffData];
+                }
+                
+                const found = targetData.find(item => item.id === id);
+                if (found) {
+                    results.push({
+                        id: found.id,
+                        file: fileName,
+                        originalText: found.originalText,
+                        translatedText: found.translatedText
+                    });
+                } else {
+                    // Não encontrado no arquivo específico - tentar no outro como fallback
+                    const allData = [...mainData, ...diffData];
+                    const fallbackFound = allData.find(item => item.id === id);
+                    if (fallbackFound) {
                         results.push({
-                            id: found.id,
-                            originalText: found.originalText,
-                            translatedText: found.translatedText
+                            id: fallbackFound.id,
+                            file: fileName,
+                            originalText: fallbackFound.originalText,
+                            translatedText: fallbackFound.translatedText
+                        });
+                    } else {
+                        // Realmente não encontrado
+                        results.push({
+                            id: id,
+                            file: fileName,
+                            originalText: '(não encontrado)',
+                            translatedText: ''
                         });
                     }
-                });
-            }
-            
-            // Se ainda não encontrou, retornar placeholders
-            ids.forEach(id => {
-                if (!results.find(r => r.id === id)) {
-                    results.push({
-                        id: id,
-                        originalText: '(carregando...)',
-                        translatedText: ''
-                    });
                 }
             });
             
