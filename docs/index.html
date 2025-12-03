@@ -858,6 +858,201 @@
             font-style: italic;
         }
         
+        /* ========== RECENT TRANSLATIONS SECTION ========== */
+        .recent-translations-section {
+            padding: 4rem 2rem;
+            background: var(--bg-dark);
+            text-align: center;
+            position: relative;
+        }
+        
+        .recent-translations-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--gradient-gold);
+            border-radius: 2px;
+        }
+        
+        .recent-translations-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--gold-light);
+        }
+        
+        .recent-translations-section > p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .recent-translations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .recent-translation-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.15);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: left;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .recent-translation-card:hover {
+            border-color: var(--gold-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .recent-translation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .recent-translation-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .recent-translation-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .recent-translation-count {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: var(--bg-dark);
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        
+        .recent-translation-text {
+            background: var(--bg-medium);
+            border-radius: 8px;
+            padding: 0.75rem;
+            border-left: 3px solid var(--gold-primary);
+        }
+        
+        .recent-translation-original {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-style: italic;
+        }
+        
+        .recent-translation-result {
+            font-size: 0.9rem;
+            color: var(--gold-light);
+            line-height: 1.4;
+        }
+        
+        .recent-translation-credits {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .recent-translation-author,
+        .recent-translation-reviewer {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+        }
+        
+        .recent-translation-author img,
+        .recent-translation-reviewer img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--gold-primary);
+        }
+        
+        .recent-translation-author span {
+            color: var(--success);
+        }
+        
+        .recent-translation-author span::before {
+            content: '✍️ ';
+        }
+        
+        .recent-translation-reviewer span {
+            color: #60a5fa;
+        }
+        
+        .recent-translation-reviewer span::before {
+            content: '✅ ';
+        }
+        
+        .recent-translation-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .recent-translations-empty {
+            color: var(--text-muted);
+            padding: 3rem;
+            font-style: italic;
+        }
+        
+        .recent-translations-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            border: 2px solid var(--gold-primary);
+            color: var(--gold-primary);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .recent-translations-cta:hover {
+            background: var(--gold-primary);
+            color: var(--bg-dark);
+        }
+        
+        @media (max-width: 768px) {
+            .recent-translations-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .recent-translation-credits {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
         /* ========== SUPPORT/DONATION SECTION ========== */
         .support-section {
             padding: 4rem 2rem;
@@ -1905,6 +2100,23 @@
         </a>
     </section>
     
+    <!-- Recent Translations Section -->
+    <section class="recent-translations-section" id="traducoes-recentes">
+        <h2><i class="fas fa-scroll"></i> Traduções Recentes</h2>
+        <p>Últimas contribuições aprovadas pela comunidade</p>
+        
+        <div class="recent-translations-grid" id="recent-translations-grid">
+            <div class="recent-translations-empty">
+                <i class="fas fa-spinner fa-spin"></i> Carregando traduções recentes...
+            </div>
+        </div>
+        
+        <a href="translate" class="recent-translations-cta">
+            <i class="fas fa-eye"></i>
+            Ver Todas as Traduções
+        </a>
+    </section>
+    
     <!-- Support/Donation Section -->
     <section class="support-section" id="apoiar">
         <h2><i class="fas fa-heart"></i> Apoie o Projeto</h2>
@@ -2213,11 +2425,142 @@
             }
         }
         
+        // Load Recent Translations (Issues com label "applied")
+        async function loadRecentTranslations() {
+            const grid = document.getElementById('recent-translations-grid');
+            if (!grid) return;
+            
+            try {
+                // Buscar issues fechadas com label "applied"
+                const response = await fetch(
+                    'https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues?state=closed&labels=applied&per_page=6&sort=updated&direction=desc'
+                );
+                
+                if (!response.ok) throw new Error('Failed to fetch');
+                
+                const issues = await response.json();
+                
+                if (!issues || issues.length === 0) {
+                    grid.innerHTML = '<div class="recent-translations-empty"><i class="fas fa-inbox"></i> Nenhuma tradução aprovada ainda. Seja o primeiro!</div>';
+                    return;
+                }
+                
+                // Processar cada issue para extrair dados
+                const cards = await Promise.all(issues.slice(0, 6).map(async issue => {
+                    // Extrair JSON do corpo da issue
+                    let suggestions = [];
+                    let firstSuggestion = null;
+                    
+                    try {
+                        const jsonMatch = issue.body?.match(/```json\s*\n([\s\S]*?)\n```/);
+                        if (jsonMatch) {
+                            const data = JSON.parse(jsonMatch[1].trim());
+                            suggestions = data.suggestions || [];
+                            firstSuggestion = suggestions[0];
+                        }
+                    } catch (e) {
+                        console.warn('Erro ao parsear JSON da issue:', issue.number);
+                    }
+                    
+                    // Buscar quem aprovou (último evento de label)
+                    let reviewer = null;
+                    try {
+                        const eventsResp = await fetch(
+                            `https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues/${issue.number}/events?per_page=20`
+                        );
+                        if (eventsResp.ok) {
+                            const events = await eventsResp.json();
+                            // Procurar evento de adição da label "approved"
+                            const approvalEvent = events.find(e => 
+                                e.event === 'labeled' && e.label?.name === 'approved'
+                            );
+                            if (approvalEvent && approvalEvent.actor) {
+                                reviewer = approvalEvent.actor;
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Erro ao buscar eventos:', issue.number);
+                    }
+                    
+                    const closedDate = new Date(issue.closed_at);
+                    const dateStr = closedDate.toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                    });
+                    
+                    // Extrair uma amostra de tradução
+                    let sampleOriginal = '';
+                    let sampleTranslation = '';
+                    
+                    if (firstSuggestion) {
+                        sampleOriginal = firstSuggestion.id?.substring(0, 12) + '...';
+                        sampleTranslation = firstSuggestion.suggestion?.substring(0, 80) + (firstSuggestion.suggestion?.length > 80 ? '...' : '');
+                    } else {
+                        // Fallback: tentar extrair do resumo
+                        const summaryMatch = issue.body?.match(/\d+\.\s*`([^`]+)`\s*→\s*([^\n]+)/);
+                        if (summaryMatch) {
+                            sampleOriginal = summaryMatch[1].substring(0, 12) + '...';
+                            sampleTranslation = summaryMatch[2].substring(0, 80);
+                        }
+                    }
+                    
+                    return `
+                        <div class="recent-translation-card">
+                            <div class="recent-translation-header">
+                                <div class="recent-translation-meta">
+                                    <span class="recent-translation-date">
+                                        <i class="fas fa-calendar-check"></i> ${dateStr}
+                                    </span>
+                                </div>
+                                <span class="recent-translation-count">
+                                    <i class="fas fa-language"></i> ${suggestions.length || '?'} tradução${suggestions.length !== 1 ? 'ões' : ''}
+                                </span>
+                            </div>
+                            
+                            ${sampleTranslation ? `
+                                <div class="recent-translation-text">
+                                    <div class="recent-translation-original">
+                                        <i class="fas fa-quote-left" style="opacity: 0.5;"></i> ID: ${sampleOriginal}
+                                    </div>
+                                    <div class="recent-translation-result">
+                                        "${sampleTranslation}"
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="recent-translation-credits">
+                                <div class="recent-translation-author">
+                                    <span class="recent-translation-label">Tradutor</span>
+                                    <img src="${issue.user?.avatar_url || ''}" alt="${issue.user?.login || 'user'}">
+                                    <span>@${issue.user?.login || 'anônimo'}</span>
+                                </div>
+                                ${reviewer ? `
+                                    <div class="recent-translation-reviewer">
+                                        <span class="recent-translation-label">Revisor</span>
+                                        <img src="${reviewer.avatar_url || ''}" alt="${reviewer.login || 'revisor'}">
+                                        <span>@${reviewer.login}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }));
+                
+                grid.innerHTML = cards.join('');
+                
+            } catch (error) {
+                console.error('Error loading recent translations:', error);
+                grid.innerHTML = '<div class="recent-translations-empty"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar traduções recentes</div>';
+            }
+        }
+        
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             fetchReleases();
             fetchCommits();
             loadContributors();
+            loadRecentTranslations();
         });
         
         // Smooth scroll for navigation
