@@ -805,19 +805,38 @@
             transition: all 0.3s;
         }
         
+        .contributor a {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .contributor-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            font-size: 1rem;
+            background: var(--bg-dark);
+            border-radius: 50%;
+            padding: 3px;
+            line-height: 1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
         .contributor:hover img {
             border-color: var(--gold-light);
             box-shadow: 0 6px 25px rgba(201, 162, 39, 0.5);
         }
         
-        .contributor span {
+        .contributor > span,
+        .contributor span:not(.contributor-badge) {
             margin-top: 0.5rem;
             font-size: 0.8rem;
             color: var(--text-secondary);
             font-weight: 500;
+            display: block;
         }
         
-        .contributor:hover span {
+        .contributor:hover > span {
             color: var(--gold-primary);
         }
         
@@ -2391,18 +2410,80 @@
             }
         }
         
-        // Load Contributors
+        // Load Contributors (repo contributors + issue authors)
         async function loadContributors() {
             const orbit = document.getElementById('contributors-orbit');
             if (!orbit) return;
             
             try {
-                const response = await fetch('https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/contributors?per_page=10');
-                if (!response.ok) throw new Error('Failed to fetch');
+                // Buscar em paralelo: contributors do repo + autores de issues aprovadas
+                const [contributorsResp, issuesResp] = await Promise.all([
+                    fetch('https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/contributors?per_page=15'),
+                    fetch('https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues?state=closed&labels=applied&per_page=50')
+                ]);
                 
-                const contributors = await response.json();
-                const displayContributors = contributors
+                // Processar contributors do repo (commits)
+                let repoContributors = [];
+                if (contributorsResp.ok) {
+                    repoContributors = await contributorsResp.json();
+                }
+                
+                // Processar autores de issues aprovadas (traduções via site)
+                let issueAuthors = [];
+                if (issuesResp.ok) {
+                    const issues = await issuesResp.json();
+                    const authorCounts = {};
+                    issues.forEach(issue => {
+                        if (issue.user && issue.user.type === 'User') {
+                            const login = issue.user.login;
+                            if (!authorCounts[login]) {
+                                authorCounts[login] = {
+                                    login: login,
+                                    avatar_url: issue.user.avatar_url,
+                                    html_url: issue.user.html_url,
+                                    contributions: 0,
+                                    source: 'issues'
+                                };
+                            }
+                            try {
+                                const jsonMatch = issue.body?.match(/"total"\s*:\s*(\d+)/);
+                                const count = jsonMatch ? parseInt(jsonMatch[1]) : 1;
+                                authorCounts[login].contributions += count;
+                            } catch (e) {
+                                authorCounts[login].contributions += 1;
+                            }
+                        }
+                    });
+                    issueAuthors = Object.values(authorCounts);
+                }
+                
+                // Combinar e mesclar
+                const allContributors = new Map();
+                
+                repoContributors
                     .filter(c => c.type === 'User')
+                    .forEach(c => {
+                        allContributors.set(c.login, {
+                            login: c.login,
+                            avatar_url: c.avatar_url,
+                            html_url: c.html_url,
+                            contributions: c.contributions,
+                            source: 'commits'
+                        });
+                    });
+                
+                issueAuthors.forEach(author => {
+                    if (allContributors.has(author.login)) {
+                        const existing = allContributors.get(author.login);
+                        existing.contributions += author.contributions;
+                        existing.source = 'both';
+                    } else {
+                        allContributors.set(author.login, author);
+                    }
+                });
+                
+                const displayContributors = Array.from(allContributors.values())
+                    .sort((a, b) => b.contributions - a.contributions)
                     .slice(0, 7);
                 
                 if (displayContributors.length === 0) {
@@ -2410,14 +2491,22 @@
                     return;
                 }
                 
-                orbit.innerHTML = displayContributors.map((contributor, index) => `
-                    <div class="contributor" style="animation-delay: ${index * 0.4}s;">
-                        <a href="${contributor.html_url}" target="_blank" rel="noopener" title="${contributor.login} - ${contributor.contributions} contribuições">
-                            <img src="${contributor.avatar_url}" alt="${contributor.login}" loading="lazy">
-                        </a>
-                        <span>@${contributor.login}</span>
-                    </div>
-                `).join('');
+                orbit.innerHTML = displayContributors.map((contributor, index) => {
+                    const badgeIcon = contributor.source === 'issues' ? '💬' : 
+                                      contributor.source === 'both' ? '⭐' : '💻';
+                    const badgeTitle = contributor.source === 'issues' ? 'Tradutor via site' : 
+                                       contributor.source === 'both' ? 'Tradutor + Desenvolvedor' : 'Desenvolvedor';
+                    
+                    return `
+                        <div class="contributor" style="animation-delay: ${index * 0.4}s;">
+                            <a href="${contributor.html_url}" target="_blank" rel="noopener" title="${contributor.login} - ${contributor.contributions} contribuições (${badgeTitle})">
+                                <img src="${contributor.avatar_url}" alt="${contributor.login}" loading="lazy">
+                                <span class="contributor-badge" title="${badgeTitle}">${badgeIcon}</span>
+                            </a>
+                            <span>@${contributor.login}</span>
+                        </div>
+                    `;
+                }).join('');
                 
             } catch (error) {
                 console.error('Error loading contributors:', error);
