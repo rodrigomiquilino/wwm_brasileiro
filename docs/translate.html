@@ -2850,7 +2850,11 @@
                                         const orig = originalData.find(o => o.id === sug.id);
                                         const originalText = orig?.originalText || '(não encontrado)';
                                         const currentTranslation = orig?.translatedText || '';
-                                        const hasCurrentTranslation = currentTranslation && currentTranslation.trim() !== '';
+                                        
+                                        // Só mostra "Tradução Atual" se for DIFERENTE do original (já foi traduzido)
+                                        const hasCurrentTranslation = currentTranslation && 
+                                            currentTranslation.trim() !== '' && 
+                                            currentTranslation !== originalText;
                                         
                                         return `
                                             <div class="admin-suggestion-item" data-index="${idx}">
@@ -2865,12 +2869,12 @@
                                                     </div>
                                                     ${hasCurrentTranslation ? `
                                                         <div class="admin-text-row">
-                                                            <div class="admin-text-label"><i class="fas fa-language"></i> Tradução Atual</div>
+                                                            <div class="admin-text-label"><i class="fas fa-language"></i> Tradução Existente (PT-BR)</div>
                                                             <div class="admin-text-content current">${escapeHtml(currentTranslation)}</div>
                                                         </div>
                                                     ` : ''}
                                                     <div class="admin-text-row">
-                                                        <div class="admin-text-label"><i class="fas fa-lightbulb"></i> Sugestão</div>
+                                                        <div class="admin-text-label"><i class="fas fa-lightbulb"></i> Nova Sugestão</div>
                                                         <textarea class="admin-edit-suggestion" data-sug-id="${sug.id}" data-sug-idx="${idx}">${escapeHtml(sug.suggestion)}</textarea>
                                                     </div>
                                                 </div>
