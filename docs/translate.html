@@ -777,6 +777,372 @@
             margin-bottom: 1rem;
         }
         
+        /* ========== Admin Panel Styles ========== */
+        .admin-issues-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .admin-issue-card {
+            background: var(--bg-dark);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .admin-issue-card:hover {
+            border-color: var(--gold-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        
+        .admin-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .admin-issue-number {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: var(--bg-dark);
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        
+        .admin-issue-title {
+            flex: 1;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.3;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .admin-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .admin-meta-author {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        
+        .admin-meta-author img {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid var(--gold-primary);
+        }
+        
+        .admin-meta-author span {
+            font-size: 0.8rem;
+            color: var(--gold-light);
+            font-weight: 500;
+        }
+        
+        .admin-meta-date, .admin-meta-count {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .admin-meta-count {
+            background: rgba(46, 125, 50, 0.2);
+            color: #69db7c;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .admin-card-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .admin-card-actions button {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+        
+        .admin-btn-view {
+            background: rgba(201, 162, 39, 0.15);
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
+        }
+        
+        .admin-btn-view:hover {
+            background: var(--gold-primary);
+            color: var(--bg-dark);
+        }
+        
+        .admin-btn-approve {
+            background: rgba(46, 125, 50, 0.15);
+            border: 1px solid var(--success);
+            color: #69db7c;
+        }
+        
+        .admin-btn-approve:hover {
+            background: var(--success);
+            color: white;
+        }
+        
+        .admin-btn-reject {
+            background: rgba(139, 38, 53, 0.15);
+            border: 1px solid var(--red-primary);
+            color: #ff6b6b;
+        }
+        
+        .admin-btn-reject:hover {
+            background: var(--red-primary);
+            color: white;
+        }
+        
+        /* Admin Review Modal */
+        .admin-review-modal {
+            max-width: 900px !important;
+        }
+        
+        .admin-modal-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-dark);
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .admin-info-item {
+            text-align: center;
+        }
+        
+        .admin-info-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.3rem;
+        }
+        
+        .admin-info-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .admin-info-value a {
+            color: var(--gold-primary);
+            text-decoration: none;
+        }
+        
+        .admin-info-value a:hover {
+            text-decoration: underline;
+        }
+        
+        .admin-suggestions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 50vh;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+        
+        .admin-suggestion-item {
+            background: var(--bg-dark);
+            border: 1px solid rgba(201, 162, 39, 0.15);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .admin-suggestion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(201, 162, 39, 0.1);
+            border-bottom: 1px solid rgba(201, 162, 39, 0.15);
+        }
+        
+        .admin-suggestion-id {
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--gold-primary);
+            background: var(--bg-dark);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .admin-suggestion-index {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        
+        .admin-suggestion-body {
+            padding: 1rem;
+        }
+        
+        .admin-text-row {
+            margin-bottom: 0.75rem;
+        }
+        
+        .admin-text-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .admin-text-label {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.3rem;
+        }
+        
+        .admin-text-label i {
+            font-size: 0.65rem;
+        }
+        
+        .admin-text-content {
+            background: var(--bg-medium);
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+        
+        .admin-text-content.original {
+            color: var(--text-secondary);
+            border-left: 3px solid #6366f1;
+        }
+        
+        .admin-text-content.current {
+            color: #fbbf24;
+            border-left: 3px solid #fbbf24;
+        }
+        
+        .admin-text-content.suggestion {
+            color: #34d399;
+            border-left: 3px solid #34d399;
+        }
+        
+        .admin-text-content.empty {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+        
+        .admin-edit-suggestion {
+            width: 100%;
+            min-height: 60px;
+            padding: 0.6rem 0.8rem;
+            background: var(--bg-medium);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            border-left: 3px solid #34d399;
+            border-radius: 6px;
+            color: #34d399;
+            font-size: 0.85rem;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        .admin-edit-suggestion:focus {
+            outline: none;
+            border-color: #34d399;
+        }
+        
+        .admin-modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+        
+        .admin-empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+        }
+        
+        .admin-empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--gold-primary);
+            opacity: 0.5;
+        }
+        
+        .admin-empty-state p {
+            font-size: 1rem;
+        }
+        
+        /* Scrollbar para lista de sugestões */
+        .admin-suggestions-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .admin-suggestions-list::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+            border-radius: 3px;
+        }
+        
+        .admin-suggestions-list::-webkit-scrollbar-thumb {
+            background: var(--gold-dark);
+            border-radius: 3px;
+        }
+        
+        .admin-suggestions-list::-webkit-scrollbar-thumb:hover {
+            background: var(--gold-primary);
+        }
+        
+        /* Admin Panel Container */
+        #admin-panel {
+            margin-top: 1.5rem;
+        }
+        
+        .admin-panel-container {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.15);
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .nav-container {
@@ -1347,8 +1713,8 @@
             </div>
             
             <!-- Painel Administrativo (visível apenas para o dono do repositório) -->
-            <div id="admin-panel" class="hidden" style="margin-top:1.5rem;">
-                <div class="contributors-section" style="background:var(--bg-card); border:1px solid rgba(201,162,39,0.15);">
+            <div id="admin-panel" class="hidden">
+                <div class="contributors-section admin-panel-container">
                     <h2><i class="fas fa-user-shield"></i> Painel Admin — Issues de Tradução</h2>
                     <p class="contributors-subtitle">Apenas visível para o dono do projeto. Aqui você pode revisar, editar e aprovar/rejeitar issues.</p>
                     <div id="admin-loading" class="loading hidden">
@@ -1708,8 +2074,9 @@
         
         // Escape HTML
         function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
             const div = document.createElement('div');
-            div.textContent = text;
+            div.textContent = String(text);
             return div.innerHTML.replace(/\n/g, '<br>');
         }
         
@@ -2285,11 +2652,7 @@
                 let issues = await resp.json();
                 
                 // Filtrar issues que parecem ser de tradução:
-                // - Título contém "[Tradução]" ou "tradução" ou "translation"
-                // - OU corpo contém bloco JSON com "suggestions"
-                // - OU tem labels translation/batch-suggestion
                 issues = issues.filter(issue => {
-                    // Ignorar pull requests (API de issues inclui PRs)
                     if (issue.pull_request) return false;
                     
                     const title = (issue.title || '').toLowerCase();
@@ -2298,13 +2661,11 @@
                         l.name === 'translation' || l.name === 'batch-suggestion'
                     );
                     
-                    // Verificar se já foi aprovada/rejeitada
                     const wasProcessed = issue.labels && issue.labels.some(l => 
                         l.name === 'approved' || l.name === 'rejected'
                     );
                     if (wasProcessed) return false;
                     
-                    // Critérios para considerar issue de tradução
                     const titleMatch = title.includes('[tradução]') || 
                                        title.includes('tradução') || 
                                        title.includes('translation') ||
@@ -2318,70 +2679,213 @@
                 });
 
                 if (!issues || issues.length === 0) {
-                    adminList.innerHTML = '<div class="cart-empty">Nenhuma issue de tradução aberta encontrada.</div>';
+                    adminList.innerHTML = `
+                        <div class="admin-empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>Nenhuma issue de tradução pendente</p>
+                        </div>
+                    `;
                     return;
                 }
 
-                // Render list
-                adminList.innerHTML = issues.map(issue => {
-                    const created = new Date(issue.created_at).toLocaleString();
+                // Render cards grid
+                adminList.innerHTML = `<div class="admin-issues-grid">${issues.map(issue => {
+                    const created = new Date(issue.created_at);
+                    const dateStr = created.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+                    const timeStr = created.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    
+                    // Tentar extrair contagem de sugestões do corpo
+                    let suggestionCount = 0;
+                    const totalMatch = issue.body?.match(/\*\*Total:\*\*\s*(\d+)/);
+                    if (totalMatch) suggestionCount = parseInt(totalMatch[1]);
+                    else {
+                        const jsonMatch = issue.body?.match(/"total"\s*:\s*(\d+)/);
+                        if (jsonMatch) suggestionCount = parseInt(jsonMatch[1]);
+                    }
+                    
+                    // Título mais curto
+                    let shortTitle = issue.title || 'Sem título';
+                    if (shortTitle.startsWith('[Tradução]')) shortTitle = shortTitle.replace('[Tradução]', '').trim();
+                    if (shortTitle.length > 50) shortTitle = shortTitle.substring(0, 47) + '...';
+                    
                     return `
-                        <div class="cart-item" style="margin-bottom:0.6rem;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;">
-                                <div style="font-weight:700">#${issue.number} — ${escapeHtml(issue.title || '')}</div>
-                                <div style="color:var(--text-muted);font-size:0.85rem">${created}</div>
+                        <div class="admin-issue-card">
+                            <div class="admin-card-header">
+                                <span class="admin-issue-number"><i class="fas fa-hashtag"></i> ${issue.number}</span>
+                                <span class="admin-issue-title">${escapeHtml(shortTitle)}</span>
                             </div>
-                            <div style="margin-top:0.5rem;color:var(--text-secondary);">${escapeHtml(issue.body ? issue.body.substring(0,400) : '')} ${issue.body && issue.body.length>400? '...' : ''}</div>
-                            <div style="margin-top:0.6rem;display:flex;gap:8px;justify-content:flex-end;">
-                                <button class="btn-edit" onclick="openAdminIssueModal(${issue.number})"><i class="fas fa-eye"></i> Ver / Revisar</button>
-                                <button class="btn-cancel" onclick="rejectIssue(${issue.number})"><i class="fas fa-times"></i> Rejeitar</button>
-                                <button class="btn-submit" onclick="approveIssue(${issue.number})"><i class="fas fa-check"></i> Aprovar</button>
+                            <div class="admin-card-meta">
+                                <div class="admin-meta-author">
+                                    <img src="${issue.user?.avatar_url || ''}" alt="${issue.user?.login || 'user'}">
+                                    <span>@${issue.user?.login || 'anônimo'}</span>
+                                </div>
+                                <div class="admin-meta-date">
+                                    <i class="fas fa-calendar-alt"></i> ${dateStr} ${timeStr}
+                                </div>
+                                ${suggestionCount > 0 ? `
+                                    <div class="admin-meta-count">
+                                        <i class="fas fa-list"></i> ${suggestionCount} sugestão${suggestionCount > 1 ? 'ões' : ''}
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="admin-card-actions">
+                                <button class="admin-btn-view" onclick="openAdminIssueModal(${issue.number})">
+                                    <i class="fas fa-eye"></i> Revisar
+                                </button>
+                                <button class="admin-btn-reject" onclick="rejectIssue(${issue.number})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <button class="admin-btn-approve" onclick="approveIssue(${issue.number})">
+                                    <i class="fas fa-check"></i>
+                                </button>
                             </div>
                         </div>
                     `;
-                }).join('');
+                }).join('')}</div>`;
 
             } catch (e) {
                 console.error(e);
-                adminList.innerHTML = `<div class="cart-empty">Erro ao carregar issues: ${e.message}</div>`;
+                adminList.innerHTML = `<div class="admin-empty-state"><i class="fas fa-exclamation-triangle"></i><p>Erro: ${e.message}</p></div>`;
             } finally {
                 adminLoading.classList.add('hidden');
             }
         }
 
-        // Abre modal com detalhes da issue e permite editar o corpo antes de aprovar
+        // Parse sugestões do corpo da issue
+        function parseIssueSuggestions(body) {
+            if (!body) return [];
+            
+            // Tentar extrair JSON do bloco ```json ... ```
+            const jsonMatch = body.match(/```json\s*\n([\s\S]*?)\n```/);
+            if (!jsonMatch) return [];
+            
+            try {
+                const data = JSON.parse(jsonMatch[1].trim());
+                if (data.suggestions && Array.isArray(data.suggestions)) {
+                    return data.suggestions;
+                }
+            } catch (e) {
+                console.error('Erro ao parsear JSON da issue:', e);
+            }
+            return [];
+        }
+
+        // Abre modal com detalhes da issue - versão melhorada
         async function openAdminIssueModal(issueNumber) {
             try {
+                showLoadingModal('Carregando detalhes...');
+                
                 const headers = { 'Accept': 'application/vnd.github.v3+json' };
                 if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
                 const resp = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}`, { headers });
                 if (!resp.ok) throw new Error('Falha ao buscar issue');
                 const issue = await resp.json();
-
+                
+                closeLoadingModal();
+                
+                // Extrair sugestões do corpo
+                const suggestions = parseIssueSuggestions(issue.body);
+                
+                // Buscar dados originais do arquivo TSV para comparação
+                let originalData = [];
+                if (suggestions.length > 0) {
+                    const suggestionIds = suggestions.map(s => s.id);
+                    originalData = await fetchOriginalTexts(suggestionIds);
+                }
+                
+                const created = new Date(issue.created_at).toLocaleString('pt-BR');
+                
                 const modal = document.createElement('div');
                 modal.className = 'modal';
                 modal.id = 'admin-issue-modal';
                 modal.innerHTML = `
-                    <div class="modal-content" style="max-width:800px;">
+                    <div class="modal-content admin-review-modal">
                         <div class="modal-header">
-                            <h3>Issue #${issue.number} — ${escapeHtml(issue.title)}</h3>
+                            <h3><i class="fas fa-clipboard-check"></i> Revisão da Issue #${issue.number}</h3>
                             <button class="modal-close" onclick="document.getElementById('admin-issue-modal').remove()">&times;</button>
                         </div>
                         <div class="modal-body">
-                            <div class="form-group">
-                                <label>ID / Link</label>
-                                <div><a href="${issue.html_url}" target="_blank">Abrir no GitHub</a></div>
+                            <div class="admin-modal-info">
+                                <div class="admin-info-item">
+                                    <div class="admin-info-label">Autor</div>
+                                    <div class="admin-info-value">
+                                        <img src="${issue.user?.avatar_url || ''}" style="width:18px;height:18px;border-radius:50%;vertical-align:middle;margin-right:4px;">
+                                        @${issue.user?.login || 'anônimo'}
+                                    </div>
+                                </div>
+                                <div class="admin-info-item">
+                                    <div class="admin-info-label">Data</div>
+                                    <div class="admin-info-value">${created}</div>
+                                </div>
+                                <div class="admin-info-item">
+                                    <div class="admin-info-label">Sugestões</div>
+                                    <div class="admin-info-value">${suggestions.length}</div>
+                                </div>
+                                <div class="admin-info-item">
+                                    <div class="admin-info-label">GitHub</div>
+                                    <div class="admin-info-value"><a href="${issue.html_url}" target="_blank"><i class="fas fa-external-link-alt"></i> Abrir</a></div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Corpo da Issue (JSON / Sugestões)</label>
-                                <textarea id="admin-issue-body" class="form-control" style="min-height:200px;">${issue.body ? issue.body.replace(/`/g,'`') : ''}</textarea>
-                            </div>
+                            
+                            ${suggestions.length > 0 ? `
+                                <div class="form-group">
+                                    <label><i class="fas fa-list-alt"></i> Sugestões de Tradução</label>
+                                </div>
+                                <div class="admin-suggestions-list" id="admin-suggestions-list">
+                                    ${suggestions.map((sug, idx) => {
+                                        const orig = originalData.find(o => o.id === sug.id);
+                                        const originalText = orig?.originalText || '(não encontrado)';
+                                        const currentTranslation = orig?.translatedText || '';
+                                        const hasCurrentTranslation = currentTranslation && currentTranslation.trim() !== '';
+                                        
+                                        return `
+                                            <div class="admin-suggestion-item" data-index="${idx}">
+                                                <div class="admin-suggestion-header">
+                                                    <span class="admin-suggestion-id"><i class="fas fa-fingerprint"></i> ${sug.id}</span>
+                                                    <span class="admin-suggestion-index">#${idx + 1} de ${suggestions.length}</span>
+                                                </div>
+                                                <div class="admin-suggestion-body">
+                                                    <div class="admin-text-row">
+                                                        <div class="admin-text-label"><i class="fas fa-globe"></i> Original (EN)</div>
+                                                        <div class="admin-text-content original">${escapeHtml(originalText)}</div>
+                                                    </div>
+                                                    ${hasCurrentTranslation ? `
+                                                        <div class="admin-text-row">
+                                                            <div class="admin-text-label"><i class="fas fa-language"></i> Tradução Atual</div>
+                                                            <div class="admin-text-content current">${escapeHtml(currentTranslation)}</div>
+                                                        </div>
+                                                    ` : ''}
+                                                    <div class="admin-text-row">
+                                                        <div class="admin-text-label"><i class="fas fa-lightbulb"></i> Sugestão</div>
+                                                        <textarea class="admin-edit-suggestion" data-sug-id="${sug.id}" data-sug-idx="${idx}">${escapeHtml(sug.suggestion)}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            ` : `
+                                <div class="admin-empty-state">
+                                    <i class="fas fa-question-circle"></i>
+                                    <p>Não foi possível extrair sugestões do corpo da issue.<br>Verifique manualmente no GitHub.</p>
+                                </div>
+                            `}
                         </div>
-                        <div class="modal-footer">
-                            <button class="btn-cancel" onclick="document.getElementById('admin-issue-modal').remove()">Fechar</button>
-                            <button class="btn-cancel" onclick="rejectIssue(${issue.number})">Rejeitar</button>
-                            <button class="btn-submit" onclick="editIssueBody(${issue.number})">Salvar</button>
-                            <button class="btn-submit" onclick="approveIssue(${issue.number})">Aprovar</button>
+                        <div class="modal-footer admin-modal-actions">
+                            <button class="btn-cancel" onclick="document.getElementById('admin-issue-modal').remove()">
+                                <i class="fas fa-times"></i> Fechar
+                            </button>
+                            ${suggestions.length > 0 ? `
+                                <button class="btn-cancel" onclick="saveAdminEdits(${issue.number})" style="border-color: var(--gold-primary); color: var(--gold-primary);">
+                                    <i class="fas fa-save"></i> Salvar Edições
+                                </button>
+                            ` : ''}
+                            <button class="btn-cancel" onclick="rejectIssue(${issue.number})" style="border-color: var(--red-primary); color: #ff6b6b;">
+                                <i class="fas fa-ban"></i> Rejeitar
+                            </button>
+                            <button class="btn-submit" onclick="approveIssue(${issue.number})">
+                                <i class="fas fa-check-circle"></i> Aprovar
+                            </button>
                         </div>
                     </div>
                 `;
@@ -2389,8 +2893,91 @@
                 modal.style.display = 'flex';
 
             } catch (e) {
+                closeLoadingModal();
                 console.error(e);
-                showToast('Erro ao abrir a issue', 'error');
+                showToast('Erro ao abrir a issue: ' + e.message, 'error');
+            }
+        }
+        
+        // Busca textos originais para comparação
+        async function fetchOriginalTexts(ids) {
+            const results = [];
+            
+            // Usar os dados já carregados se disponíveis
+            if (allData.length > 0) {
+                ids.forEach(id => {
+                    const found = allData.find(item => item.id === id);
+                    if (found) {
+                        results.push({
+                            id: found.id,
+                            originalText: found.originalText,
+                            translatedText: found.translatedText
+                        });
+                    }
+                });
+            }
+            
+            return results;
+        }
+        
+        // Salva edições feitas nas sugestões
+        async function saveAdminEdits(issueNumber) {
+            try {
+                const headers = { 'Accept': 'application/vnd.github.v3+json' };
+                if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
+                
+                // Buscar issue atual
+                const resp = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}`, { headers });
+                if (!resp.ok) throw new Error('Falha ao buscar issue');
+                const issue = await resp.json();
+                
+                // Extrair sugestões atuais
+                const suggestions = parseIssueSuggestions(issue.body);
+                if (suggestions.length === 0) {
+                    showToast('Não há sugestões para editar', 'warning');
+                    return;
+                }
+                
+                // Coletar valores editados dos textareas
+                const textareas = document.querySelectorAll('.admin-edit-suggestion');
+                textareas.forEach(ta => {
+                    const idx = parseInt(ta.dataset.sugIdx);
+                    if (suggestions[idx]) {
+                        suggestions[idx].suggestion = ta.value;
+                    }
+                });
+                
+                // Reconstruir o JSON
+                const jsonMatch = issue.body.match(/```json\s*\n([\s\S]*?)\n```/);
+                if (!jsonMatch) {
+                    showToast('Formato de issue inválido', 'error');
+                    return;
+                }
+                
+                let data = JSON.parse(jsonMatch[1].trim());
+                data.suggestions = suggestions;
+                
+                // Reconstruir corpo da issue com JSON atualizado
+                const newJson = JSON.stringify(data);
+                const newBody = issue.body.replace(/```json\s*\n[\s\S]*?\n```/, '```json\n' + newJson + '\n```');
+                
+                if (!confirm('Salvar as edições na issue?')) return;
+                
+                // Atualizar issue
+                const updateResp = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}`, {
+                    method: 'PATCH',
+                    headers: { ...headers, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ body: newBody })
+                });
+                
+                if (!updateResp.ok) throw new Error('Falha ao salvar');
+                
+                showToast('Edições salvas com sucesso!', 'success');
+                loadAdminIssues();
+                
+            } catch (e) {
+                console.error(e);
+                showToast('Erro ao salvar: ' + e.message, 'error');
             }
         }
 
@@ -2436,28 +3023,6 @@
             } catch (e) {
                 console.error(e);
                 showToast('Erro ao rejeitar issue: ' + e.message, 'error');
-            }
-        }
-
-        // Edita o corpo da issue (salva alterações)
-        async function editIssueBody(issueNumber) {
-            const textarea = document.getElementById('admin-issue-body');
-            if (!textarea) return;
-            const newBody = textarea.value;
-            if (!confirm('Salvar alterações no corpo da issue?')) return;
-            try {
-                const headers = { 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
-                if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
-                const resp = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}`, {
-                    method: 'PATCH', headers, body: JSON.stringify({ body: newBody })
-                });
-                if (!resp.ok) throw new Error('Falha ao salvar corpo da issue');
-                showToast('Issue atualizada com sucesso.', 'success');
-                loadAdminIssues();
-                const m = document.getElementById('admin-issue-modal'); if (m) m.remove();
-            } catch (e) {
-                console.error(e);
-                showToast('Erro ao atualizar issue: ' + e.message, 'error');
             }
         }
         
