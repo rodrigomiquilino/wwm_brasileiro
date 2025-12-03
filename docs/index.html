@@ -2642,6 +2642,15 @@
             }
         }
         
+        // ========== SECURITY ==========
+        // Escape HTML para prevenir XSS
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
+            const div = document.createElement('div');
+            div.textContent = String(text);
+            return div.innerHTML;
+        }
+        
         // ========== STATE ==========
         // Armazena as versões encontradas
         let latestLauncher = null;
@@ -2995,18 +3004,22 @@
                                     const position = index + 1;
                                     const roleName = contributor.source === 'issues' ? 'Tradutor' : 
                                                      contributor.source === 'both' ? 'Tradutor & Dev' : 'Contributor';
+                                    // Sanitizar dados do usuário para prevenir XSS
+                                    const safeLogin = escapeHtml(contributor.login);
+                                    const safeHtmlUrl = escapeHtml(contributor.html_url);
+                                    const safeAvatarUrl = escapeHtml(contributor.avatar_url);
                                     
                                     return `
                                         <div class="ranking-item">
                                             <div class="ranking-position">${position}º</div>
                                             <div class="ranking-avatar">
-                                                <a href="${contributor.html_url}" target="_blank">
-                                                    <img src="${contributor.avatar_url}" alt="${contributor.login}" loading="lazy">
+                                                <a href="${safeHtmlUrl}" target="_blank">
+                                                    <img src="${safeAvatarUrl}" alt="${safeLogin}" loading="lazy">
                                                 </a>
                                             </div>
                                             <div class="ranking-info">
                                                 <div class="ranking-name">
-                                                    <a href="${contributor.html_url}" target="_blank">@${contributor.login}</a>
+                                                    <a href="${safeHtmlUrl}" target="_blank">@${safeLogin}</a>
                                                 </div>
                                                 <div class="ranking-role">${roleName}</div>
                                             </div>
@@ -3130,10 +3143,10 @@
                             ${sampleTranslation ? `
                                 <div class="recent-translation-text">
                                     <div class="recent-translation-original">
-                                        <i class="fas fa-quote-left" style="opacity: 0.5;"></i> ID: ${sampleOriginal}${wasEdited ? ' <span style="color: #60a5fa;" title="Editada pelo revisor">✏️</span>' : ''}
+                                        <i class="fas fa-quote-left" style="opacity: 0.5;"></i> ID: ${escapeHtml(sampleOriginal)}${wasEdited ? ' <span style="color: #60a5fa;" title="Editada pelo revisor">✏️</span>' : ''}
                                     </div>
                                     <div class="recent-translation-result">
-                                        "${sampleTranslation}"
+                                        "${escapeHtml(sampleTranslation)}"
                                     </div>
                                 </div>
                             ` : ''}
@@ -3141,8 +3154,8 @@
                             <div class="recent-translation-credits">
                                 <div class="recent-translation-author">
                                     <span class="recent-translation-label">Tradutor</span>
-                                    <img src="${issue.user?.avatar_url || ''}" alt="${issue.user?.login || 'user'}">
-                                    <span>@${issue.user?.login || 'anônimo'}</span>
+                                    <img src="${escapeHtml(issue.user?.avatar_url || '')}" alt="${escapeHtml(issue.user?.login || 'user')}">
+                                    <span>@${escapeHtml(issue.user?.login || 'anônimo')}</span>
                                 </div>
                             </div>
                         </div>

@@ -1666,6 +1666,47 @@
             border: 1px solid rgba(201, 162, 39, 0.15);
             border-radius: 10px;
             overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-suggestion-item.rejected {
+            opacity: 0.5;
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .admin-suggestion-item.rejected .admin-suggestion-header {
+            background: rgba(239, 68, 68, 0.15);
+        }
+        
+        .admin-suggestion-item.rejected .admin-edit-suggestion {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        
+        .admin-reject-line-btn {
+            background: transparent;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #ef4444;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .admin-reject-line-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+        }
+        
+        .admin-reject-line-btn.active {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
         }
         
         .admin-suggestion-id {
@@ -3220,18 +3261,22 @@
                                     const position = index + 1;
                                     const roleName = contributor.source === 'issues' ? 'Tradutor' : 
                                                      contributor.source === 'both' ? 'Tradutor & Dev' : 'Contributor';
+                                    // Sanitizar dados do usuário para prevenir XSS
+                                    const safeLogin = escapeHtml(contributor.login);
+                                    const safeHtmlUrl = escapeHtml(contributor.html_url);
+                                    const safeAvatarUrl = escapeHtml(contributor.avatar_url);
                                     
                                     return `
                                         <div class="ranking-item">
                                             <div class="ranking-position">${position}º</div>
                                             <div class="ranking-avatar">
-                                                <a href="${contributor.html_url}" target="_blank">
-                                                    <img src="${contributor.avatar_url}" alt="${contributor.login}">
+                                                <a href="${safeHtmlUrl}" target="_blank">
+                                                    <img src="${safeAvatarUrl}" alt="${safeLogin}">
                                                 </a>
                                             </div>
                                             <div class="ranking-info">
                                                 <div class="ranking-name">
-                                                    <a href="${contributor.html_url}" target="_blank">@${contributor.login}</a>
+                                                    <a href="${safeHtmlUrl}" target="_blank">@${safeLogin}</a>
                                                 </div>
                                                 <div class="ranking-role">${roleName}</div>
                                             </div>
@@ -3611,9 +3656,12 @@
             
             if (githubUser) {
                 btn.classList.add('logged-in');
+                // Sanitizar dados do usuário para prevenir XSS
+                const safeLogin = escapeHtml(githubUser.login);
+                const safeAvatarUrl = escapeHtml(githubUser.avatar_url);
                 btn.innerHTML = `
-                    <img src="${githubUser.avatar_url}" class="avatar" alt="${githubUser.login}">
-                    ${githubUser.login}
+                    <img src="${safeAvatarUrl}" class="avatar" alt="${safeLogin}">
+                    ${safeLogin}
                     <i class="fas fa-sign-out-alt logout-icon" onclick="event.stopPropagation(); logout();" title="Sair"></i></i>
                 `;
             } else {
@@ -3635,9 +3683,12 @@
         
         // Menu do usuário
         async function showUserMenu() {
+            // Sanitizar dados do usuário para prevenir XSS
+            const safeLogin = escapeHtml(githubUser?.login || 'usuário');
+            
             // Por simplicidade, só faz logout
             const confirmed = await showConfirm(
-                `Você está logado como <strong>${githubUser.login}</strong>.<br><br>Deseja sair da conta?`,
+                `Você está logado como <strong>${safeLogin}</strong>.<br><br>Deseja sair da conta?`,
                 {
                     title: 'Conta GitHub',
                     type: 'info',
@@ -3982,6 +4033,10 @@
                     if (shortTitle.startsWith('[Tradução]')) shortTitle = shortTitle.replace('[Tradução]', '').trim();
                     if (shortTitle.length > 50) shortTitle = shortTitle.substring(0, 47) + '...';
                     
+                    // Sanitizar dados do usuário para prevenir XSS
+                    const safeUserLogin = escapeHtml(issue.user?.login || 'anônimo');
+                    const safeUserAvatar = escapeHtml(issue.user?.avatar_url || '');
+                    
                     return `
                         <div class="admin-issue-card" data-issue="${issue.number}">
                             <div class="admin-card-header">
@@ -3990,8 +4045,8 @@
                             </div>
                             <div class="admin-card-meta">
                                 <div class="admin-meta-author">
-                                    <img src="${issue.user?.avatar_url || ''}" alt="${issue.user?.login || 'user'}">
-                                    <span>@${issue.user?.login || 'anônimo'}</span>
+                                    <img src="${safeUserAvatar}" alt="${safeUserLogin}">
+                                    <span>@${safeUserLogin}</span>
                                 </div>
                                 <div class="admin-meta-date">
                                     <i class="fas fa-calendar-alt"></i> ${dateStr} ${timeStr}
@@ -4072,6 +4127,11 @@
                 
                 const created = new Date(issue.created_at).toLocaleString('pt-BR');
                 
+                // Sanitizar dados do usuário para prevenir XSS
+                const safeUserLogin = escapeHtml(issue.user?.login || 'anônimo');
+                const safeUserAvatar = escapeHtml(issue.user?.avatar_url || '');
+                const safeHtmlUrl = escapeHtml(issue.html_url || '');
+                
                 const modal = document.createElement('div');
                 modal.className = 'modal';
                 modal.id = 'admin-issue-modal';
@@ -4086,8 +4146,8 @@
                                 <div class="admin-info-item">
                                     <div class="admin-info-label">Autor</div>
                                     <div class="admin-info-value">
-                                        <img src="${issue.user?.avatar_url || ''}" style="width:18px;height:18px;border-radius:50%;vertical-align:middle;margin-right:4px;">
-                                        @${issue.user?.login || 'anônimo'}
+                                        <img src="${safeUserAvatar}" style="width:18px;height:18px;border-radius:50%;vertical-align:middle;margin-right:4px;">
+                                        @${safeUserLogin}
                                     </div>
                                 </div>
                                 <div class="admin-info-item">
@@ -4100,7 +4160,7 @@
                                 </div>
                                 <div class="admin-info-item">
                                     <div class="admin-info-label">GitHub</div>
-                                    <div class="admin-info-value"><a href="${issue.html_url}" target="_blank"><i class="fas fa-external-link-alt"></i> Abrir</a></div>
+                                    <div class="admin-info-value"><a href="${safeHtmlUrl}" target="_blank"><i class="fas fa-external-link-alt"></i> Abrir</a></div>
                                 </div>
                             </div>
                             
@@ -4123,11 +4183,14 @@
                                             currentTranslation !== originalText;
                                         
                                         return `
-                                            <div class="admin-suggestion-item" data-index="${idx}" data-file="${sug.file}">
+                                            <div class="admin-suggestion-item" data-index="${idx}" data-file="${escapeHtml(sug.file)}" data-rejected="false">
                                                 <div class="admin-suggestion-header">
-                                                    <span class="admin-suggestion-id"><i class="fas fa-fingerprint"></i> ${sug.id}</span>
-                                                    <span class="admin-suggestion-file" title="Arquivo: ${sug.file}"><i class="fas fa-file-alt"></i> ${sourceFile}</span>
+                                                    <span class="admin-suggestion-id"><i class="fas fa-fingerprint"></i> ${escapeHtml(sug.id)}</span>
+                                                    <span class="admin-suggestion-file" title="Arquivo: ${escapeHtml(sug.file)}"><i class="fas fa-file-alt"></i> ${escapeHtml(sourceFile)}</span>
                                                     <span class="admin-suggestion-index">#${idx + 1} de ${suggestions.length}</span>
+                                                    <button type="button" class="admin-reject-line-btn" onclick="toggleRejectSuggestion(${idx})" title="Rejeitar esta sugestão">
+                                                        <i class="fas fa-times"></i> Rejeitar
+                                                    </button>
                                                 </div>
                                                 <div class="admin-suggestion-body">
                                                     <div class="admin-text-row">
@@ -4136,13 +4199,16 @@
                                                     </div>
                                                     ${hasCurrentTranslation ? `
                                                         <div class="admin-text-row">
-                                                            <div class="admin-text-label"><i class="fas fa-language"></i> Tradução Existente (PT-BR)</div>
+                                                            <div class="admin-text-label"><i class="fas fa-check-circle" style="color: var(--success);"></i> Já Traduzido (PT-BR)</div>
                                                             <div class="admin-text-content current">${escapeHtml(currentTranslation)}</div>
+                                                        </div>
+                                                        <div class="admin-already-translated-notice">
+                                                            <i class="fas fa-info-circle"></i> Esta linha já possui tradução aprovada. A nova sugestão substituirá a existente se aprovada.
                                                         </div>
                                                     ` : ''}
                                                     <div class="admin-text-row">
                                                         <div class="admin-text-label"><i class="fas fa-lightbulb"></i> Nova Sugestão</div>
-                                                        <textarea class="admin-edit-suggestion" data-sug-id="${sug.id}" data-sug-idx="${idx}">${escapeHtml(sug.suggestion)}</textarea>
+                                                        <textarea class="admin-edit-suggestion" data-sug-id="${escapeHtml(sug.id)}" data-sug-idx="${idx}">${escapeHtml(sug.suggestion)}</textarea>
                                                     </div>
                                                 </div>
                                             </div>
@@ -4342,6 +4408,13 @@
 
         // Aprova issue: adiciona label 'approved'
         async function approveIssue(issueNumber) {
+            // 🚨 VALIDAÇÃO DE SEGURANÇA: Verificar se é admin antes de prosseguir
+            const isOwner = await isAuthenticatedOwner();
+            if (!isOwner) {
+                showToast('❌ Acesso negado: você não tem permissão para aprovar issues.', 'error');
+                return;
+            }
+            
             const confirmed = await showConfirm(
                 'Tem certeza que deseja <strong>aprovar</strong> esta issue?<br><br>' +
                 '<small style="color: var(--text-muted);">Isso acionará a automação que aplicará as traduções no repositório.</small>',
@@ -4377,6 +4450,13 @@
 
         // Rejeitar issue: aplica label 'rejected', fecha issue e adiciona comentário
         async function rejectIssue(issueNumber) {
+            // 🚨 VALIDAÇÃO DE SEGURANÇA: Verificar se é admin antes de prosseguir
+            const isOwner = await isAuthenticatedOwner();
+            if (!isOwner) {
+                showToast('❌ Acesso negado: você não tem permissão para rejeitar issues.', 'error');
+                return;
+            }
+            
             const reason = await showPrompt(
                 'Digite o motivo da rejeição. Isso será postado como comentário na Issue.',
                 {
@@ -4421,23 +4501,85 @@
         
         // ========== FUNÇÕES COMBINADAS: EDITAR + APROVAR/REJEITAR ==========
         
-        // Coleta edições dos textareas do modal
+        // Coleta edições dos textareas do modal (inclui status de rejeitado)
         function collectEditsFromModal() {
-            const textareas = document.querySelectorAll('.admin-edit-suggestion');
+            const items = document.querySelectorAll('.admin-suggestion-item');
             const edits = [];
-            textareas.forEach(ta => {
-                edits.push({
-                    idx: parseInt(ta.dataset.sugIdx),
-                    id: ta.dataset.sugId,
-                    value: ta.value
-                });
+            items.forEach(item => {
+                const textarea = item.querySelector('.admin-edit-suggestion');
+                if (textarea) {
+                    edits.push({
+                        idx: parseInt(textarea.dataset.sugIdx),
+                        id: textarea.dataset.sugId,
+                        value: textarea.value,
+                        rejected: item.dataset.rejected === 'true'
+                    });
+                }
             });
             return edits;
         }
         
-        // Verifica se houve edições comparando com os valores originais
-        function hasEdits(suggestions, edits) {
+        // Toggle rejeitar/aceitar uma sugestão individual
+        function toggleRejectSuggestion(idx) {
+            const item = document.querySelector(`.admin-suggestion-item[data-index="${idx}"]`);
+            if (!item) return;
+            
+            const isRejected = item.dataset.rejected === 'true';
+            const btn = item.querySelector('.admin-reject-line-btn');
+            
+            if (isRejected) {
+                // Desfazer rejeição
+                item.dataset.rejected = 'false';
+                item.classList.remove('rejected');
+                if (btn) btn.innerHTML = '<i class="fas fa-times"></i> Rejeitar';
+            } else {
+                // Rejeitar
+                item.dataset.rejected = 'true';
+                item.classList.add('rejected');
+                if (btn) btn.innerHTML = '<i class="fas fa-undo"></i> Desfazer';
+            }
+            
+            // Atualizar contador no header do modal
+            updateRejectedCounter();
+        }
+        
+        // Atualiza contador de rejeitados no modal
+        function updateRejectedCounter() {
+            const total = document.querySelectorAll('.admin-suggestion-item').length;
+            const rejected = document.querySelectorAll('.admin-suggestion-item.rejected').length;
+            const approved = total - rejected;
+            
+            // Atualizar o header do modal se existir
+            let counter = document.getElementById('admin-suggestion-counter');
+            if (!counter) {
+                const header = document.querySelector('.admin-modal-info');
+                if (header) {
+                    const counterDiv = document.createElement('div');
+                    counterDiv.className = 'admin-info-item';
+                    counterDiv.innerHTML = `
+                        <div class="admin-info-label">Status</div>
+                        <div class="admin-info-value" id="admin-suggestion-counter"></div>
+                    `;
+                    header.appendChild(counterDiv);
+                    counter = document.getElementById('admin-suggestion-counter');
+                }
+            }
+            
+            if (counter) {
+                if (rejected > 0) {
+                    counter.innerHTML = `<span style="color: var(--success);">${approved} ✓</span> / <span style="color: #ef4444;">${rejected} ✗</span>`;
+                } else {
+                    counter.innerHTML = `<span style="color: var(--success);">${approved} aprovadas</span>`;
+                }
+            }
+        }
+        
+        // Verifica se houve edições ou rejeições comparando com os valores originais
+        function hasChanges(suggestions, edits) {
             for (const edit of edits) {
+                // Se algum foi rejeitado, há mudança
+                if (edit.rejected) return true;
+                // Se o texto foi editado, há mudança
                 if (suggestions[edit.idx] && suggestions[edit.idx].suggestion !== edit.value) {
                     return true;
                 }
@@ -4445,20 +4587,30 @@
             return false;
         }
         
-        // Atualiza a seção de Resumo no corpo da issue para refletir as edições
-        function updateSummarySection(body, suggestions) {
-            // Gerar novo resumo com indicação de edições
+        // Atualiza a seção de Resumo no corpo da issue para refletir as edições e rejeições
+        function updateSummarySection(body, suggestions, rejectedIds = []) {
+            // Gerar novo resumo com indicação de edições e rejeições
             const newSummary = suggestions.map((item, i) => {
                 const text = item.suggestion.substring(0, 50);
                 const edited = item.editedByReviewer ? ' ✏️' : '';
                 return `${i+1}. \`${item.id}\`${edited} → ${text}...`;
             }).join('\n');
             
-            // Adicionar nota sobre edições do revisor
+            // Adicionar notas sobre edições e rejeições
             const editedCount = suggestions.filter(s => s.editedByReviewer).length;
-            let reviewerNote = '';
+            const rejectedCount = rejectedIds.length;
+            
+            let reviewerNotes = [];
             if (editedCount > 0) {
-                reviewerNote = `\n\n> ✏️ **${editedCount} tradução(ões) editada(s) pelo revisor** antes da aprovação.`;
+                reviewerNotes.push(`✏️ **${editedCount} tradução(ões) editada(s)** pelo revisor`);
+            }
+            if (rejectedCount > 0) {
+                reviewerNotes.push(`❌ **${rejectedCount} tradução(ões) rejeitada(s)** pelo revisor: \`${rejectedIds.join('`, `')}\``);
+            }
+            
+            let reviewerNote = '';
+            if (reviewerNotes.length > 0) {
+                reviewerNote = '\n\n> ' + reviewerNotes.join('\n> ');
             }
             
             // Substituir a seção de resumo existente
@@ -4474,8 +4626,9 @@
             return body;
         }
         
-        // Salva edições na issue (retorna true se sucesso ou se não havia edições)
+        // Salva edições na issue (retorna objeto com resultado)
         // IMPORTANTE: edits deve ser passado como parâmetro (coletado ANTES de fechar o modal)
+        // Retorna: { success, hadEdits, hadRejections, approvedCount, rejectedCount, rejectedIds }
         async function saveEditsIfNeeded(issueNumber, edits = null) {
             const headers = { 'Accept': 'application/vnd.github.v3+json' };
             if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
@@ -4489,31 +4642,75 @@
                 // Se ainda não tem edições, não há o que salvar
                 if (!edits || edits.length === 0) {
                     console.warn('saveEditsIfNeeded: Nenhuma edição para salvar');
-                    return { success: true, hadEdits: false };
+                    return { success: true, hadEdits: false, hadRejections: false, approvedCount: 0, rejectedCount: 0, editedCount: 0, rejectedIds: [] };
                 }
+                
+                // Separar aprovados e rejeitados
+                const approvedEdits = edits.filter(e => !e.rejected);
+                const rejectedEdits = edits.filter(e => e.rejected);
+                const rejectedIds = rejectedEdits.map(e => e.id);
+                
+                console.log(`saveEditsIfNeeded: ${approvedEdits.length} aprovadas, ${rejectedEdits.length} rejeitadas`);
 
                 // Buscar issue atual
                 const resp = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issueNumber}`, { headers });
                 if (!resp.ok) throw new Error('Falha ao buscar issue');
                 const issue = await resp.json();
 
-                // Extrair sugestões
-                const suggestions = parseIssueSuggestions(issue.body);
-                if (suggestions.length === 0) return { success: true, hadEdits: false };
-
-                // Verificar se houve mudanças
-                if (!hasEdits(suggestions, edits)) {
-                    console.log('saveEditsIfNeeded: Sem mudanças detectadas');
-                    return { success: true, hadEdits: false };
+                // Extrair sugestões originais
+                const originalSuggestions = parseIssueSuggestions(issue.body);
+                if (originalSuggestions.length === 0) {
+                    return { success: true, hadEdits: false, hadRejections: false, approvedCount: 0, rejectedCount: 0, editedCount: 0, rejectedIds: [] };
                 }
 
-                // Aplicar edições localmente
+                // Verificar se houve mudanças (edições ou rejeições)
+                if (!hasChanges(originalSuggestions, edits)) {
+                    console.log('saveEditsIfNeeded: Sem mudanças detectadas');
+                    return { success: true, hadEdits: false, hadRejections: false, approvedCount: approvedEdits.length, rejectedCount: 0, editedCount: 0, rejectedIds: [] };
+                }
+
+                // Aplicar edições e filtrar rejeitados
+                // IMPORTANTE: Aplicar edições primeiro, depois filtrar
+                const finalSuggestions = [];
+                let hadTextEdits = false;
+                let editedCount = 0;
+                
                 edits.forEach(edit => {
-                    if (suggestions[edit.idx]) {
-                        suggestions[edit.idx].suggestion = edit.value;
-                        suggestions[edit.idx].editedByReviewer = true; // Marcar como editado
+                    const original = originalSuggestions[edit.idx];
+                    if (!original) return;
+                    
+                    if (edit.rejected) {
+                        // Sugestão rejeitada - não incluir no array final
+                        console.log(`Rejeitando sugestão ${edit.id}`);
+                        return;
+                    }
+                    
+                    // Verificar se texto foi editado
+                    if (original.suggestion !== edit.value) {
+                        hadTextEdits = true;
+                        editedCount++;
+                        finalSuggestions.push({
+                            ...original,
+                            suggestion: edit.value,
+                            editedByReviewer: true
+                        });
+                    } else {
+                        finalSuggestions.push(original);
                     }
                 });
+                
+                console.log(`Final: ${finalSuggestions.length} sugestões aprovadas, ${rejectedIds.length} rejeitadas, ${editedCount} editadas`);
+                
+                // 🚨 VALIDAÇÃO CRÍTICA: Se todas as sugestões foram rejeitadas, não podemos salvar
+                // O bot falharia com lista vazia
+                if (finalSuggestions.length === 0) {
+                    console.error('ERRO: Todas as sugestões foram rejeitadas!');
+                    return { 
+                        success: false, 
+                        error: 'Não é possível aprovar: todas as sugestões foram rejeitadas. Use "Rejeitar" para rejeitar a issue inteira.',
+                        allRejected: true
+                    };
+                }
 
                 // Tentar localizar bloco JSON com mais tolerância
                 // 1) procurar fence ```json ... ``` (case-insensitive)
@@ -4522,14 +4719,15 @@
                 if (jsonMatch) {
                     try {
                         let data = JSON.parse(jsonMatch[1].trim());
-                        data.suggestions = suggestions;
+                        data.suggestions = finalSuggestions;
+                        data.total = finalSuggestions.length;
                         const newJson = JSON.stringify(data);
                         
                         // Atualizar o bloco JSON
                         newBody = issue.body.replace(/```(?:json)?\s*\n[\s\S]*?\n```/i, '```json\n' + newJson + '\n```');
                         
-                        // Atualizar também a seção de Resumo para refletir as edições
-                        newBody = updateSummarySection(newBody, suggestions);
+                        // Atualizar também a seção de Resumo para refletir as edições e rejeições
+                        newBody = updateSummarySection(newBody, finalSuggestions, rejectedIds);
                     } catch (e) {
                         console.warn('JSON existente inválido, fallback para busca de objeto JSON:', e);
                         jsonMatch = null; // forçar fallback
@@ -4542,19 +4740,20 @@
                     if (objMatch) {
                         try {
                             let data = JSON.parse(objMatch[0]);
-                            data.suggestions = suggestions;
+                            data.suggestions = finalSuggestions;
+                            data.total = finalSuggestions.length;
                             const newJson = JSON.stringify(data);
                             // substituir o objeto JSON encontrado
                             newBody = issue.body.replace(/\{[\s\S]*\}/, newJson);
                             // Atualizar também a seção de Resumo
-                            newBody = updateSummarySection(newBody, suggestions);
+                            newBody = updateSummarySection(newBody, finalSuggestions, rejectedIds);
                         } catch (e) {
                             console.error('Falha ao parsear JSON no fallback:', e);
                             return { success: false, error: 'JSON inválido no corpo da issue' };
                         }
                     } else {
                         // Não encontrou JSON; vamos anexar um bloco JSON ao final
-                        const payload = { suggestions };
+                        const payload = { suggestions: finalSuggestions, total: finalSuggestions.length };
                         const newJson = JSON.stringify(payload);
                         newBody = issue.body + '\n\n```json\n' + newJson + '\n```';
                     }
@@ -4572,7 +4771,15 @@
                     throw new Error('Falha ao salvar edições: ' + updateResp.status + ' ' + errText);
                 }
 
-                return { success: true, hadEdits: true };
+                return { 
+                    success: true, 
+                    hadEdits: hadTextEdits, 
+                    hadRejections: rejectedIds.length > 0,
+                    approvedCount: finalSuggestions.length,
+                    rejectedCount: rejectedIds.length,
+                    editedCount: editedCount,
+                    rejectedIds: rejectedIds
+                };
             } catch (e) {
                 console.error('Erro ao salvar edições:', e);
                 return { success: false, error: e.message };
@@ -4581,23 +4788,51 @@
         
         // APROVAR COM EDIÇÕES - Salva edições automaticamente e aprova
         async function approveIssueWithEdits(issueNumber) {
+            // 🚨 VALIDAÇÃO DE SEGURANÇA: Verificar se é admin antes de prosseguir
+            const isOwner = await isAuthenticatedOwner();
+            if (!isOwner) {
+                showToast('❌ Acesso negado: você não tem permissão para aprovar issues.', 'error');
+                console.error('Tentativa de aprovar sem permissão de admin');
+                return;
+            }
+            
             // ⚠️ CRÍTICO: Coletar edições ANTES de qualquer confirmação ou fechamento do modal!
             const editsBeforeClose = collectEditsFromModal();
             console.log('approveIssueWithEdits: Edições coletadas:', editsBeforeClose);
             
-            const confirmed = await showConfirm(
-                '<strong>Aprovar esta tradução?</strong><br><br>' +
-                '<small style="color: var(--text-muted);">' +
+            // Contar aprovados e rejeitados para mostrar na confirmação
+            const approvedCount = editsBeforeClose.filter(e => !e.rejected).length;
+            const rejectedCount = editsBeforeClose.filter(e => e.rejected).length;
+            
+            // 🚨 VALIDAÇÃO: Se todas as sugestões foram rejeitadas, não permitir aprovar
+            if (approvedCount === 0) {
+                showToast('⚠️ Todas as sugestões foram rejeitadas. Use "Rejeitar" para rejeitar a issue inteira.', 'warning');
+                return;
+            }
+            
+            // Mensagem de confirmação dinâmica
+            let confirmMessage = '<strong>Aprovar esta tradução?</strong><br><br>';
+            if (rejectedCount > 0) {
+                confirmMessage += `<div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 0.75rem; margin-bottom: 1rem;">
+                    <strong style="color: #ef4444;"><i class="fas fa-exclamation-triangle"></i> Atenção:</strong><br>
+                    <span style="color: var(--text-secondary);">
+                        ✅ ${approvedCount} sugestão(ões) será(ão) aprovada(s)<br>
+                        ❌ ${rejectedCount} sugestão(ões) será(ão) removida(s) do lote
+                    </span>
+                </div>`;
+            }
+            confirmMessage += '<small style="color: var(--text-muted);">' +
                 'Se você fez edições nas sugestões, elas serão salvas automaticamente.<br>' +
                 'A automação será acionada para aplicar as traduções no repositório.' +
-                '</small>',
-                {
-                    title: 'Aprovar Tradução',
-                    type: 'success',
-                    confirmText: 'Aprovar',
+                '</small>';
+            
+            const confirmed = await showConfirm(confirmMessage, {
+                    title: rejectedCount > 0 ? 'Aprovar com Rejeições' : 'Aprovar Tradução',
+                    type: rejectedCount > 0 ? 'warning' : 'success',
+                    confirmText: rejectedCount > 0 ? `Aprovar ${approvedCount} / Rejeitar ${rejectedCount}` : 'Aprovar',
                     cancelText: 'Cancelar',
                     confirmClass: 'custom-modal-btn-success',
-                    icon: 'fa-check-circle'
+                    icon: rejectedCount > 0 ? 'fa-tasks' : 'fa-check-circle'
                 }
             );
             if (!confirmed) return;
@@ -4612,7 +4847,7 @@
                 card.style.transition = 'all 0.3s ease';
                 card.style.opacity = '0.5';
                 card.style.transform = 'scale(0.95)';
-                card.innerHTML = `<div style="text-align:center;padding:1rem;"><i class="fas fa-spinner fa-spin"></i> Aprovando...</div>`;
+                card.innerHTML = `<div style="text-align:center;padding:1rem;"><i class="fas fa-spinner fa-spin"></i> Processando...</div>`;
             }
             
             try {
@@ -4622,16 +4857,25 @@
                 // 1. Salvar edições PRIMEIRO (passando as edições coletadas)
                 const saveResult = await saveEditsIfNeeded(issueNumber, editsBeforeClose);
                 if (!saveResult.success) {
-                    showToast('Erro ao salvar edições: ' + saveResult.error, 'error');
-                    if (card) card.remove();
+                    // Tratamento especial para todas rejeitadas
+                    if (saveResult.allRejected) {
+                        showToast('⚠️ Todas as sugestões foram rejeitadas. Use "Rejeitar" para rejeitar a issue inteira.', 'warning');
+                    } else {
+                        showToast('Erro ao salvar edições: ' + saveResult.error, 'error');
+                    }
+                    if (card) {
+                        card.style.opacity = '1';
+                        card.style.transform = 'scale(1)';
+                    }
                     loadAdminIssues(); // Recarregar em caso de erro
                     return;
                 }
                 
                 // 2. Pequeno delay para garantir que o GitHub processou o PATCH antes de disparar o workflow
                 // Isso evita race condition onde o workflow pega o body antigo
-                if (saveResult.hadEdits) {
-                    console.log('Aguardando 1.5s para GitHub processar as edições...');
+                // IMPORTANTE: delay deve acontecer se houve QUALQUER modificação (edições OU rejeições)
+                if (saveResult.hadEdits || saveResult.hadRejections) {
+                    console.log('Aguardando 1.5s para GitHub processar as modificações...');
                     await new Promise(resolve => setTimeout(resolve, 1500));
                 }
                 
@@ -4651,9 +4895,19 @@
                     setTimeout(() => card.remove(), 300);
                 }
                 
-                const message = saveResult.hadEdits 
-                    ? '✅ Edições salvas e aprovada!' 
-                    : '✅ Issue aprovada!';
+                // Mensagem de sucesso detalhada
+                let message = '✅ ';
+                const parts = [];
+                if (saveResult.approvedCount > 0) {
+                    parts.push(`${saveResult.approvedCount} aprovada(s)`);
+                }
+                if (saveResult.editedCount > 0) {
+                    parts.push(`${saveResult.editedCount} editada(s)`);
+                }
+                if (saveResult.hadRejections) {
+                    parts.push(`${saveResult.rejectedCount} rejeitada(s)`);
+                }
+                message += parts.length > 0 ? parts.join(', ') : 'Issue aprovada!';
                 showToast(message, 'success');
                 
                 // Limpa cache (para próximo reload)
@@ -4673,6 +4927,14 @@
         
         // REJEITAR COM EDIÇÕES - Pergunta motivo e rejeita (edições são descartadas)
         async function rejectIssueWithEdits(issueNumber) {
+            // 🚨 VALIDAÇÃO DE SEGURANÇA: Verificar se é admin antes de prosseguir
+            const isOwner = await isAuthenticatedOwner();
+            if (!isOwner) {
+                showToast('❌ Acesso negado: você não tem permissão para rejeitar issues.', 'error');
+                console.error('Tentativa de rejeitar sem permissão de admin');
+                return;
+            }
+            
             const reason = await showPrompt(
                 'Digite o motivo da rejeição.<br><small style="color: var(--text-muted);">Será postado como comentário na Issue.</small>',
                 {
