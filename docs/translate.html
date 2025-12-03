@@ -2261,7 +2261,7 @@
             }
         }
 
-        // Carrega Issues abertas com label 'translation' ou 'batch-suggestion'
+        // Carrega Issues abertas (todas, filtrando por título/conteúdo de tradução)
         async function loadAdminIssues() {
             const adminPanel = document.getElementById('admin-panel');
             const adminList = document.getElementById('admin-list');
@@ -2272,13 +2272,50 @@
             adminList.innerHTML = '';
 
             try {
-                let url = `https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues?state=open&per_page=100&labels=translation,batch-suggestion`;
                 const headers = { 'Accept': 'application/vnd.github.v3+json' };
                 if (githubToken) headers['Authorization'] = `Bearer ${githubToken}`;
-
-                const resp = await fetch(url, { headers });
+                
+                // Buscar TODAS as issues abertas (usuários não podem aplicar labels)
+                const resp = await fetch(
+                    `https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues?state=open&per_page=100&sort=created&direction=desc`,
+                    { headers }
+                );
+                
                 if (!resp.ok) throw new Error('Falha ao buscar issues: ' + resp.status);
-                const issues = await resp.json();
+                let issues = await resp.json();
+                
+                // Filtrar issues que parecem ser de tradução:
+                // - Título contém "[Tradução]" ou "tradução" ou "translation"
+                // - OU corpo contém bloco JSON com "suggestions"
+                // - OU tem labels translation/batch-suggestion
+                issues = issues.filter(issue => {
+                    // Ignorar pull requests (API de issues inclui PRs)
+                    if (issue.pull_request) return false;
+                    
+                    const title = (issue.title || '').toLowerCase();
+                    const body = (issue.body || '').toLowerCase();
+                    const hasTranslationLabel = issue.labels && issue.labels.some(l => 
+                        l.name === 'translation' || l.name === 'batch-suggestion'
+                    );
+                    
+                    // Verificar se já foi aprovada/rejeitada
+                    const wasProcessed = issue.labels && issue.labels.some(l => 
+                        l.name === 'approved' || l.name === 'rejected'
+                    );
+                    if (wasProcessed) return false;
+                    
+                    // Critérios para considerar issue de tradução
+                    const titleMatch = title.includes('[tradução]') || 
+                                       title.includes('tradução') || 
+                                       title.includes('translation') ||
+                                       title.includes('sugestão') ||
+                                       title.includes('sugestões');
+                    const bodyMatch = body.includes('"suggestions"') || 
+                                      body.includes('```json') ||
+                                      body.includes('sugestão de tradução');
+                    
+                    return hasTranslationLabel || titleMatch || bodyMatch;
+                });
 
                 if (!issues || issues.length === 0) {
                     adminList.innerHTML = '<div class="cart-empty">Nenhuma issue de tradução aberta encontrada.</div>';
