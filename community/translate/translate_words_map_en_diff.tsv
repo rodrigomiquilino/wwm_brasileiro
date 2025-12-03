@@ -234,7 +234,7 @@ fe8ccd8c22b450ac	Doutor Tian da Clínica Cuidado Eterno é um velho amigo de Han
 7df90934878bc8e0	"Malaria, also known as ""the shakes,"" is caused by malaria parasites, toxic air, or slight fever, cold, heat, or dampness. It's most common in the summer and fall."
 1fb6835cdf2bffef	Always Online
 e3514c7f3f707228	Scenario Appearance: #%s[%s]#E×%d Unlock!
-63d10d8c4d658742	You ask so nicely, how can I say no? After all, you get up before dawn to train, study at sunrise, and pay respects to your parents before breakfast—
+63d10d8c4d658742	Você pede com tanta gentileza, como posso dizer não? Afinal, você se levanta antes do amanhecer para treinar, estuda ao nascer do sol e presta homenagem aos seus pais antes do café da manhã.
 d987d2f407fe8d19	Okay, fire away!
 4ff2b06c43cce546	Adept II
 417cb3c2fd1224d8	"A leste dos confins de Qinghe jazem ruínas que se estendem por milhas. Este foi outrora o antigo território do Voto do Norte da dinastia anterior. Naqueles dias, quando os Khitan invadiram o Reino do Meio, o Voto do Norte recuou para cá. \nVelhas histórias contam que os guerreiros do Voto do Norte juraram o Juramento Yanyun: ""Prometo proteger esta terra com minha vida"". Agora, ao contemplar estas cidades arruinadas e terras selvagens, quão profundamente isso comove o coração com temor solene."
@@ -327,12 +327,12 @@ d40b568a5064d6b5	"""Balsa da Pétala Voadora"""
 75a093becd314cea	Alcance o Nv.3 e complete Qinghe Lost Chapter - Another New Wing
 e2fbcbf0d6799a2c	Marionete de Sombras - Chamada de Cortina
 72e906fa6ac6cf36	Ouvi dos outros no Covil dos Ratos que o Gee tem estado muito em poções ultimamente. Não me diga que ele realmente tomou o veneno — aff, esqueça o que eu disse! Mau presságio!
-08fa439f1e39401a	Invite to Partnership
+08fa439f1e39401a	Convite para Parceria
 23c1275f4d50a3da	Long ago, the Vast Spring surged boundless to the sky.\nBefore the Xia ruled the land, rivers and mountains had already been claimed. \nThe Yellow River was drawn from Jishi, carved through the Loong Gate. Diverted by the pillars, and guided along its silted banks. \nWhere did loongs come from? They were raised by men. Where did loongs go? They were slain by men. \nWhat was diverted should not have been, what was dammed should not have held. The eight great plains were dredged, and the waters disappeared. \nAt Huzi Stream, the waters murmured, and songs rose from Xuanfang. To the River Deity who governs the current, we plead you to hold the river in your hand.
 e6622a1cb0b8d1dc	Vitality is required to cast Mystic Skills. Certain recovery actions have a #Y50%#E chance to grant #Y1#E bonus Vitality. No bonus Vitality is rewarded when you gain Vitality by attacking, taking a hit, or successfully deflecting an attack.
 db6c71c3b5950613	Pay attention in class, and stop thinking about learning to lead troops like your father, understand?
 ed529de147695a9b	I see it now. If you go against them, they'll lock you up. Period.
-3fbd0bd6cd4f1025	Random Set and Inner Way Tome
+3fbd0bd6cd4f1025	Conjunto Aleatório e Tomo do Caminho Interior
 2892c78aca6dc546	Red moves first. Capture the opponent's General to win.
 d8706f5c1f10f411	Requer Nível 32 e conclusão do Capítulo Perdido [Partindo]
 08abaa0c0a4bc002	A chance de {} resistir a Língua Afiada aumentou muito! (3 acúmulos)
@@ -3403,7 +3403,7 @@ a0e5c2be690a5b7e	Fraudulent Content
 f73c40660e8ec04e	Exploration Reward
 c77f44fda4096fb4	Track Target - {}
 031250f9173ac289	Hold on. Elder Xue,
-763239586f0de81c	Red moves first.
+763239586f0de81c	O jogador vermelho joga primeiro.
 c7df1dcfa6c37a2b	No previous Partnership.
 8871cb443bc2066b	Weighing your bond...
 0000000000000000	
@@ -3483,7 +3483,7 @@ d15e60f2e8d232b8	Você conseguiu ver bem o que aquele cara estava carregando? É
 32ee34f6c1296732	Conteúdo Prejudicial
 8466237cac4d3236	Esta Arte Mística não atingiu o nível máximo deste Tier. Por favor, atualize primeiro.
 74e36032318fe46c	O Serviço Imperial está atrás dele todos os dias! Sem tempo para lidar conosco, espadachins.
-8abac16e019508a1	Mystic Skill interface is locked.
+8abac16e019508a1	A interface da Habilidade Mística está bloqueada.
 0240f768fd0103ee	Negotiated Sever Partnership
 be843a7897852722	Tales of Qinghe - Yanyun Northward XI
 4cecd920405e3e9c	If HP is below #8c582330%#E, both damage dealt and taken are increased by #8c582320%#E for #8c582310#E min.\n\nOnly one Talisman effect can be active at a time. Ineffective during Trials.
