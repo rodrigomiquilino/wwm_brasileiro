@@ -827,198 +827,312 @@
             to { transform: rotate(360deg); }
         }
         
-        /* Contributors Section */
+        /* Contributors Section - Leaderboard Style */
         .contributors-section {
             margin-top: 3rem;
             padding: 2rem;
-            background: var(--bg-card);
-            border: 1px solid rgba(201, 162, 39, 0.2);
-            border-radius: 12px;
-            text-align: center;
+            background: linear-gradient(180deg, var(--bg-card) 0%, rgba(10, 10, 15, 0.95) 100%);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .contributors-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
         }
         
         .contributors-section h2 {
             font-family: 'Cinzel', serif;
             color: var(--gold-primary);
-            margin-bottom: 1rem;
-        }
-        
-        .contributors-orbit {
-            position: relative;
-            height: 200px;
-            margin: 2rem 0;
-        }
-        
-        .contributor {
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        .contributor img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: 2px solid var(--gold-primary);
-            background: var(--bg-dark);
-        }
-        
-        .contributor a {
-            position: relative;
-            display: inline-block;
-        }
-        
-        .contributor-badge {
-            position: absolute;
-            bottom: -2px;
-            right: -2px;
-            font-size: 0.8rem;
-            background: var(--bg-dark);
-            border-radius: 50%;
-            padding: 2px;
-            line-height: 1;
-        }
-        
-        .contributor span:not(.contributor-badge) {
-            margin-top: 0.3rem;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            display: block;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-        
-        .contributor:nth-child(1) { left: 10%; top: 30%; animation-delay: 0s; }
-        .contributor:nth-child(2) { left: 30%; top: 10%; animation-delay: 0.5s; }
-        .contributor:nth-child(3) { left: 50%; top: 40%; animation-delay: 1s; }
-        .contributor:nth-child(4) { left: 70%; top: 15%; animation-delay: 1.5s; }
-        .contributor:nth-child(5) { left: 85%; top: 35%; animation-delay: 2s; }
-        
-        .no-contributors {
-            color: var(--text-muted);
-            padding: 2rem;
-        }
-        
-        /* Recent Translations Section */
-        .recent-translations-section {
-            margin-top: 2rem;
-            padding: 2rem;
-            background: var(--bg-card);
-            border: 1px solid rgba(201, 162, 39, 0.2);
-            border-radius: 12px;
-        }
-        
-        .recent-translations-section h2 {
-            font-family: 'Cinzel', serif;
-            color: var(--gold-primary);
             margin-bottom: 0.5rem;
             text-align: center;
+            font-size: 1.5rem;
+            text-shadow: 0 0 20px rgba(201, 162, 39, 0.3);
         }
         
-        .recent-translations-section > p {
+        .contributors-subtitle {
             text-align: center;
             color: var(--text-secondary);
             margin-bottom: 1.5rem;
             font-size: 0.9rem;
         }
         
-        .recent-translations-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1rem;
+        /* Leaderboard Container */
+        .leaderboard-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
         }
         
-        .recent-translation-card {
+        .leaderboard-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .leaderboard-container::-webkit-scrollbar-track {
             background: var(--bg-dark);
-            border: 1px solid rgba(201, 162, 39, 0.1);
-            border-radius: 10px;
-            padding: 1rem;
-            transition: all 0.3s;
+            border-radius: 3px;
+        }
+        
+        .leaderboard-container::-webkit-scrollbar-thumb {
+            background: var(--gold-dark);
+            border-radius: 3px;
+        }
+        
+        .leaderboard-loading {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 2rem;
+        }
+        
+        /* Leaderboard List */
+        .leaderboard-list {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
+            gap: 0.5rem;
         }
         
-        .recent-translation-card:hover {
+        /* Leaderboard Item */
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-dark);
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .leaderboard-item:hover {
             border-color: var(--gold-primary);
-            transform: translateY(-2px);
+            transform: translateX(5px);
+            box-shadow: 0 0 20px rgba(201, 162, 39, 0.15);
         }
         
-        .recent-translation-header {
+        /* Top 3 Special Styles */
+        .leaderboard-item.rank-1 {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%);
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+        
+        .leaderboard-item.rank-2 {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.12) 0%, rgba(192, 192, 192, 0.04) 100%);
+            border-color: rgba(192, 192, 192, 0.3);
+        }
+        
+        .leaderboard-item.rank-3 {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.12) 0%, rgba(205, 127, 50, 0.04) 100%);
+            border-color: rgba(205, 127, 50, 0.3);
+        }
+        
+        /* Rank Badge */
+        .leaderboard-rank {
+            width: 36px;
+            height: 36px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .recent-translation-date {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-        
-        .recent-translation-count {
-            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
-            color: var(--bg-dark);
-            padding: 0.2rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.65rem;
-            font-weight: 700;
-        }
-        
-        .recent-translation-text {
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+            border-radius: 8px;
             background: var(--bg-medium);
-            border-radius: 6px;
-            padding: 0.6rem;
-            border-left: 2px solid var(--gold-primary);
+            color: var(--text-muted);
+            flex-shrink: 0;
         }
         
-        .recent-translation-original {
+        .rank-1 .leaderboard-rank {
+            background: linear-gradient(135deg, #ffd700, #ffb800);
+            color: #1a1a1a;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+        
+        .rank-2 .leaderboard-rank {
+            background: linear-gradient(135deg, #c0c0c0, #a8a8a8);
+            color: #1a1a1a;
+            box-shadow: 0 0 10px rgba(192, 192, 192, 0.3);
+        }
+        
+        .rank-3 .leaderboard-rank {
+            background: linear-gradient(135deg, #cd7f32, #b8722d);
+            color: #1a1a1a;
+            box-shadow: 0 0 10px rgba(205, 127, 50, 0.3);
+        }
+        
+        /* Avatar */
+        .leaderboard-avatar {
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .leaderboard-avatar img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-medium);
+            transition: all 0.3s;
+        }
+        
+        .rank-1 .leaderboard-avatar img {
+            border-color: #ffd700;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+        }
+        
+        .rank-2 .leaderboard-avatar img {
+            border-color: #c0c0c0;
+        }
+        
+        .rank-3 .leaderboard-avatar img {
+            border-color: #cd7f32;
+        }
+        
+        .leaderboard-item:hover .leaderboard-avatar img {
+            border-color: var(--gold-primary);
+            transform: scale(1.05);
+        }
+        
+        .leaderboard-type-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            font-size: 0.7rem;
+            background: var(--bg-dark);
+            border-radius: 50%;
+            padding: 2px 4px;
+            line-height: 1;
+        }
+        
+        /* User Info */
+        .leaderboard-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .leaderboard-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .leaderboard-name a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .leaderboard-name a:hover {
+            color: var(--gold-primary);
+        }
+        
+        .rank-1 .leaderboard-name {
+            color: #ffd700;
+        }
+        
+        .leaderboard-role {
             font-size: 0.7rem;
             color: var(--text-muted);
-            margin-bottom: 0.3rem;
+            margin-top: 0.15rem;
         }
         
-        .recent-translation-result {
-            font-size: 0.8rem;
-            color: var(--gold-light);
-            line-height: 1.3;
-        }
-        
-        .recent-translation-credits {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            padding-top: 0.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .recent-translation-author,
-        .recent-translation-reviewer {
+        /* Stats */
+        .leaderboard-stats {
             display: flex;
             align-items: center;
-            gap: 0.3rem;
-            font-size: 0.7rem;
+            gap: 0.75rem;
+            flex-shrink: 0;
         }
         
-        .recent-translation-author img,
-        .recent-translation-reviewer img {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 1px solid var(--gold-primary);
+        .leaderboard-stat {
+            text-align: center;
+            padding: 0.4rem 0.6rem;
+            background: rgba(201, 162, 39, 0.1);
+            border-radius: 6px;
+            min-width: 60px;
         }
         
-        .recent-translation-author span { color: #69db7c; }
-        .recent-translation-reviewer span { color: #60a5fa; }
+        .leaderboard-stat-value {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--gold-primary);
+            font-family: 'Courier New', monospace;
+        }
         
-        .recent-translation-label {
+        .rank-1 .leaderboard-stat-value {
+            color: #ffd700;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+        }
+        
+        .leaderboard-stat-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* XP Bar (visual flair) */
+        .leaderboard-xp-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold-primary), var(--gold-light));
+            opacity: 0.6;
+            transition: width 0.5s ease;
+        }
+        
+        /* Empty State */
+        .leaderboard-empty {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 3rem;
+        }
+        
+        .leaderboard-empty i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--gold-dark);
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .leaderboard-item {
+                padding: 0.6rem 0.75rem;
+                gap: 0.75rem;
+            }
+            
+            .leaderboard-rank {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+            }
+            
+            .leaderboard-avatar img {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .leaderboard-stats {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+            
+            .leaderboard-stat {
+                min-width: 50px;
+                padding: 0.25rem 0.4rem;
+            }
+        }
+        
+        /* How to Help */        .recent-translation-label {
             font-size: 0.6rem;
             color: var(--text-muted);
             text-transform: uppercase;
@@ -2060,21 +2174,10 @@
             </div>
 
             <div class="contributors-section">
-                <h2><i class="fas fa-medal"></i> Heróis da Tradução</h2>
-                <p class="contributors-subtitle">Agradecemos a todos que contribuíram com a tradução!</p>
-                <div class="contributors-orbit" id="contributors-orbit">
-                    <div class="no-contributors">Carregando contribuidores...</div>
-                </div>
-            </div>
-            
-            <!-- Recent Translations Section -->
-            <div class="recent-translations-section">
-                <h2><i class="fas fa-scroll"></i> Traduções Recentes</h2>
-                <p>Últimas contribuições aprovadas pela comunidade</p>
-                <div class="recent-translations-grid" id="recent-translations-grid">
-                    <div class="recent-translations-empty">
-                        <i class="fas fa-spinner fa-spin"></i> Carregando...
-                    </div>
+                <h2><i class="fas fa-trophy"></i> Hall da Fama</h2>
+                <p class="contributors-subtitle">Os guerreiros que estão traduzindo Where Winds Meet</p>
+                <div class="leaderboard-container" id="leaderboard-container">
+                    <div class="leaderboard-loading"><i class="fas fa-spinner fa-spin"></i> Carregando ranking...</div>
                 </div>
             </div>
         </div>
@@ -2483,14 +2586,16 @@
         
         // Load contributors from GitHub + Issue authors
         async function loadContributors() {
-            const orbit = document.getElementById('contributors-orbit');
-            if (!orbit) return;
+            const container = document.getElementById('leaderboard-container');
+            if (!container) return;
             
             try {
+                container.innerHTML = '<div class="leaderboard-loading"><i class="fas fa-spinner fa-spin"></i> Carregando ranking...</div>';
+                
                 // Buscar em paralelo: contributors do repo + autores de issues aprovadas
                 const [contributorsResp, issuesResp] = await Promise.all([
-                    fetch(`https://api.github.com/repos/${CONFIG.GITHUB_REPO}/contributors?per_page=15`),
-                    fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues?state=closed&labels=applied&per_page=50`)
+                    fetch(`https://api.github.com/repos/${CONFIG.GITHUB_REPO}/contributors?per_page=50`),
+                    fetch(`https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues?state=closed&labels=applied&per_page=100`)
                 ]);
                 
                 // Processar contributors do repo (commits)
@@ -2560,130 +2665,83 @@
                     }
                 });
                 
-                // Ordenar por contribuições e pegar top 8
+                // Ordenar por contribuições
                 const displayContributors = Array.from(allContributors.values())
-                    .sort((a, b) => b.contributions - a.contributions)
-                    .slice(0, 8);
+                    .sort((a, b) => b.contributions - a.contributions);
+                
+                // Calcular contribuição máxima para barra XP
+                const maxContrib = displayContributors.length > 0 ? displayContributors[0].contributions : 1;
                 
                 if (displayContributors.length === 0) {
-                    orbit.innerHTML = '<div class="no-contributors">Seja o primeiro a contribuir!</div>';
+                    container.innerHTML = `
+                        <div class="leaderboard-empty">
+                            <i class="fas fa-users"></i>
+                            <p>Seja o primeiro a entrar no ranking!</p>
+                        </div>
+                    `;
                     return;
                 }
                 
-                orbit.innerHTML = displayContributors.map((contributor, index) => {
-                    // Ícone baseado no tipo de contribuição
-                    const badgeIcon = contributor.source === 'issues' ? '💬' : 
-                                      contributor.source === 'both' ? '⭐' : '💻';
-                    const badgeTitle = contributor.source === 'issues' ? 'Tradutor via site' : 
-                                       contributor.source === 'both' ? 'Tradutor + Desenvolvedor' : 'Desenvolvedor';
-                    
-                    return `
-                        <div class="contributor" style="animation-delay: ${index * 0.3}s; left: ${10 + (index * 12)}%; top: ${15 + Math.sin(index) * 25}%;">
-                            <a href="${contributor.html_url}" target="_blank" rel="noopener" title="${contributor.login} - ${contributor.contributions} contribuições (${badgeTitle})">
-                                <img src="${contributor.avatar_url}" alt="${contributor.login}">
-                                <span class="contributor-badge" title="${badgeTitle}">${badgeIcon}</span>
-                            </a>
-                            <span>@${contributor.login}</span>
-                        </div>
-                    `;
-                }).join('');
+                container.innerHTML = `
+                    <div class="leaderboard-list">
+                        ${displayContributors.map((contributor, index) => {
+                            const rank = index + 1;
+                            const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                            
+                            // Ícone e título baseado no tipo
+                            const badgeIcon = contributor.source === 'issues' ? '💬' : 
+                                              contributor.source === 'both' ? '⭐' : '💻';
+                            const badgeTitle = contributor.source === 'issues' ? 'Tradutor via site' : 
+                                               contributor.source === 'both' ? 'Tradutor + Desenvolvedor' : 'Desenvolvedor';
+                            const roleName = contributor.source === 'issues' ? 'Tradutor' : 
+                                             contributor.source === 'both' ? 'Tradutor & Dev' : 'Desenvolvedor';
+                            
+                            // Largura da barra XP (proporcional)
+                            const xpWidth = (contributor.contributions / maxContrib) * 100;
+                            
+                            // Ícone do rank
+                            const rankIcon = rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
+                            
+                            return `
+                                <div class="leaderboard-item ${rankClass}">
+                                    <div class="leaderboard-rank">${rankIcon}</div>
+                                    <div class="leaderboard-avatar">
+                                        <a href="${contributor.html_url}" target="_blank" rel="noopener">
+                                            <img src="${contributor.avatar_url}" alt="${contributor.login}">
+                                        </a>
+                                        <span class="leaderboard-type-badge" title="${badgeTitle}">${badgeIcon}</span>
+                                    </div>
+                                    <div class="leaderboard-info">
+                                        <div class="leaderboard-name">
+                                            <a href="${contributor.html_url}" target="_blank" rel="noopener">@${contributor.login}</a>
+                                        </div>
+                                        <div class="leaderboard-role">${roleName}</div>
+                                    </div>
+                                    <div class="leaderboard-stats">
+                                        <div class="leaderboard-stat">
+                                            <div class="leaderboard-stat-value">${contributor.contributions}</div>
+                                            <div class="leaderboard-stat-label">Contrib.</div>
+                                        </div>
+                                    </div>
+                                    <div class="leaderboard-xp-bar" style="width: ${xpWidth}%"></div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
                 
             } catch (error) {
                 console.error('Error loading contributors:', error);
-                orbit.innerHTML = '<div class="no-contributors">Seja o primeiro a contribuir!</div>';
+                container.innerHTML = `
+                    <div class="leaderboard-empty">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Erro ao carregar ranking</p>
+                    </div>
+                `;
             }
         }
         
         // Load Recent Translations (Issues com label "applied")
-        async function loadRecentTranslations() {
-            const grid = document.getElementById('recent-translations-grid');
-            if (!grid) return;
-            
-            try {
-                const response = await fetch(
-                    `https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues?state=closed&labels=applied&per_page=4&sort=updated&direction=desc`
-                );
-                
-                if (!response.ok) throw new Error('Failed to fetch');
-                
-                const issues = await response.json();
-                
-                if (!issues || issues.length === 0) {
-                    grid.innerHTML = '<div class="recent-translations-empty"><i class="fas fa-inbox"></i> Nenhuma tradução aprovada ainda</div>';
-                    return;
-                }
-                
-                const cards = await Promise.all(issues.map(async issue => {
-                    let suggestions = [];
-                    let firstSuggestion = null;
-                    
-                    try {
-                        const jsonMatch = issue.body?.match(/```json\s*\n([\s\S]*?)\n```/);
-                        if (jsonMatch) {
-                            const data = JSON.parse(jsonMatch[1].trim());
-                            suggestions = data.suggestions || [];
-                            firstSuggestion = suggestions[0];
-                        }
-                    } catch (e) {}
-                    
-                    // Buscar quem aprovou
-                    let reviewer = null;
-                    try {
-                        const eventsResp = await fetch(
-                            `https://api.github.com/repos/${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}/issues/${issue.number}/events?per_page=15`
-                        );
-                        if (eventsResp.ok) {
-                            const events = await eventsResp.json();
-                            const approvalEvent = events.find(e => 
-                                e.event === 'labeled' && e.label?.name === 'approved'
-                            );
-                            if (approvalEvent?.actor) reviewer = approvalEvent.actor;
-                        }
-                    } catch (e) {}
-                    
-                    const closedDate = new Date(issue.closed_at);
-                    const dateStr = closedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
-                    
-                    let sampleTranslation = '';
-                    if (firstSuggestion?.suggestion) {
-                        sampleTranslation = firstSuggestion.suggestion.substring(0, 60) + (firstSuggestion.suggestion.length > 60 ? '...' : '');
-                    }
-                    
-                    return `
-                        <div class="recent-translation-card">
-                            <div class="recent-translation-header">
-                                <span class="recent-translation-date"><i class="fas fa-check-circle" style="color: var(--success);"></i> ${dateStr}</span>
-                                <span class="recent-translation-count">${suggestions.length || '?'} trad.</span>
-                            </div>
-                            ${sampleTranslation ? `
-                                <div class="recent-translation-text">
-                                    <div class="recent-translation-result">"${escapeHtml(sampleTranslation)}"</div>
-                                </div>
-                            ` : ''}
-                            <div class="recent-translation-credits">
-                                <div class="recent-translation-author">
-                                    <img src="${issue.user?.avatar_url || ''}" alt="">
-                                    <span>@${issue.user?.login || '?'}</span>
-                                </div>
-                                ${reviewer ? `
-                                    <div class="recent-translation-reviewer">
-                                        <img src="${reviewer.avatar_url || ''}" alt="">
-                                        <span>@${reviewer.login}</span>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                    `;
-                }));
-                
-                grid.innerHTML = cards.join('');
-                
-            } catch (error) {
-                console.error('Error loading recent translations:', error);
-                grid.innerHTML = '<div class="recent-translations-empty"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar</div>';
-            }
-        }
-        
         // Event Listeners
         document.getElementById('search-input').addEventListener('input', debounce(applyFilter, 300));
         
@@ -4178,7 +4236,6 @@ ${suggestionCart.map((item, i) => `${i+1}. \`${item.id}\` → ${item.suggestion.
             loadCartFromStorage(); // Restaurar carrinho salvo
             loadTranslations();
             loadContributors();
-            loadRecentTranslations();
         });
     </script>
 </body>

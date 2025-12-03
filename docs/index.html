@@ -739,7 +739,7 @@
             font-size: 0.875rem;
         }
         
-        /* ========== CONTRIBUTORS SECTION ========== */
+        /* ========== CONTRIBUTORS SECTION - LEADERBOARD ========== */
         .contributors-section {
             padding: 4rem 2rem;
             background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
@@ -754,8 +754,8 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--gold-dark), transparent);
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
         }
         
         .contributors-section h2 {
@@ -763,6 +763,7 @@
             font-size: 2rem;
             color: var(--gold-primary);
             margin-bottom: 0.5rem;
+            text-shadow: 0 0 30px rgba(201, 162, 39, 0.3);
         }
         
         .contributors-section > p {
@@ -770,88 +771,240 @@
             margin-bottom: 2rem;
         }
         
-        .contributors-orbit {
-            position: relative;
-            height: 220px;
-            max-width: 900px;
+        /* Leaderboard Container */
+        .leaderboard-wrapper {
+            max-width: 800px;
             margin: 0 auto 2rem;
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
         }
         
-        .contributor {
-            position: absolute;
+        .leaderboard-container {
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+        
+        .leaderboard-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .leaderboard-container::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+            border-radius: 3px;
+        }
+        
+        .leaderboard-container::-webkit-scrollbar-thumb {
+            background: var(--gold-dark);
+            border-radius: 3px;
+        }
+        
+        .leaderboard-loading {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 2rem;
+        }
+        
+        .leaderboard-list {
             display: flex;
             flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .leaderboard-item {
+            display: flex;
             align-items: center;
-            animation: contributorFloat 4s ease-in-out infinite;
-            transition: transform 0.3s;
-        }
-        
-        .contributor:hover {
-            transform: scale(1.1);
-            z-index: 10;
-        }
-        
-        .contributor a {
-            text-decoration: none;
-        }
-        
-        .contributor img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 3px solid var(--gold-primary);
+            gap: 1rem;
+            padding: 0.75rem 1rem;
             background: var(--bg-dark);
-            box-shadow: 0 4px 15px rgba(201, 162, 39, 0.3);
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-align: left;
+        }
+        
+        .leaderboard-item:hover {
+            border-color: var(--gold-primary);
+            transform: translateX(5px);
+            box-shadow: 0 0 20px rgba(201, 162, 39, 0.15);
+        }
+        
+        /* Top 3 */
+        .leaderboard-item.rank-1 {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%);
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+        
+        .leaderboard-item.rank-2 {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.12) 0%, rgba(192, 192, 192, 0.04) 100%);
+            border-color: rgba(192, 192, 192, 0.3);
+        }
+        
+        .leaderboard-item.rank-3 {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.12) 0%, rgba(205, 127, 50, 0.04) 100%);
+            border-color: rgba(205, 127, 50, 0.3);
+        }
+        
+        .leaderboard-rank {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+            border-radius: 10px;
+            background: var(--bg-medium);
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+        
+        .rank-1 .leaderboard-rank {
+            background: linear-gradient(135deg, #ffd700, #ffb800);
+            color: #1a1a1a;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+        
+        .rank-2 .leaderboard-rank {
+            background: linear-gradient(135deg, #c0c0c0, #a8a8a8);
+            color: #1a1a1a;
+        }
+        
+        .rank-3 .leaderboard-rank {
+            background: linear-gradient(135deg, #cd7f32, #b8722d);
+            color: #1a1a1a;
+        }
+        
+        .leaderboard-avatar {
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .leaderboard-avatar img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-medium);
             transition: all 0.3s;
         }
         
-        .contributor a {
-            position: relative;
-            display: inline-block;
+        .rank-1 .leaderboard-avatar img {
+            border-color: #ffd700;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
         }
         
-        .contributor-badge {
+        .rank-2 .leaderboard-avatar img {
+            border-color: #c0c0c0;
+        }
+        
+        .rank-3 .leaderboard-avatar img {
+            border-color: #cd7f32;
+        }
+        
+        .leaderboard-type-badge {
             position: absolute;
-            bottom: 0;
-            right: 0;
-            font-size: 1rem;
+            bottom: -2px;
+            right: -2px;
+            font-size: 0.8rem;
             background: var(--bg-dark);
             border-radius: 50%;
             padding: 3px;
             line-height: 1;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
         
-        .contributor:hover img {
-            border-color: var(--gold-light);
-            box-shadow: 0 6px 25px rgba(201, 162, 39, 0.5);
+        .leaderboard-info {
+            flex: 1;
+            min-width: 0;
         }
         
-        .contributor > span,
-        .contributor span:not(.contributor-badge) {
-            margin-top: 0.5rem;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-            display: block;
+        .leaderboard-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
-        .contributor:hover > span {
+        .leaderboard-name a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .leaderboard-name a:hover {
             color: var(--gold-primary);
         }
         
-        @keyframes contributorFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
+        .rank-1 .leaderboard-name {
+            color: #ffd700;
         }
         
-        .contributor:nth-child(1) { left: 5%; top: 35%; animation-delay: 0s; }
-        .contributor:nth-child(2) { left: 18%; top: 10%; animation-delay: 0.4s; }
-        .contributor:nth-child(3) { left: 35%; top: 50%; animation-delay: 0.8s; }
-        .contributor:nth-child(4) { left: 50%; top: 20%; animation-delay: 1.2s; }
-        .contributor:nth-child(5) { left: 65%; top: 55%; animation-delay: 1.6s; }
-        .contributor:nth-child(6) { left: 78%; top: 15%; animation-delay: 2s; }
-        .contributor:nth-child(7) { left: 90%; top: 40%; animation-delay: 2.4s; }
+        .leaderboard-role {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+        }
+        
+        .leaderboard-stats {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-shrink: 0;
+        }
+        
+        .leaderboard-stat {
+            text-align: center;
+            padding: 0.4rem 0.6rem;
+            background: rgba(201, 162, 39, 0.1);
+            border-radius: 6px;
+            min-width: 65px;
+        }
+        
+        .leaderboard-stat-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--gold-primary);
+            font-family: 'Courier New', monospace;
+        }
+        
+        .rank-1 .leaderboard-stat-value {
+            color: #ffd700;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+        }
+        
+        .leaderboard-stat-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .leaderboard-xp-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold-primary), var(--gold-light));
+            opacity: 0.6;
+            transition: width 0.5s ease;
+        }
+        
+        .leaderboard-empty {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 3rem;
+        }
+        
+        .leaderboard-empty i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--gold-dark);
+            display: block;
+        }
         
         .contributors-cta {
             display: inline-flex;
@@ -871,10 +1024,32 @@
             box-shadow: 0 6px 20px rgba(201, 162, 39, 0.4);
         }
         
-        .no-contributors {
-            color: var(--text-muted);
-            padding: 3rem;
-            font-style: italic;
+        @media (max-width: 600px) {
+            .leaderboard-item {
+                padding: 0.6rem 0.75rem;
+                gap: 0.75rem;
+            }
+            
+            .leaderboard-rank {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+            }
+            
+            .leaderboard-avatar img {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .leaderboard-stats {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+            
+            .leaderboard-stat {
+                min-width: 50px;
+                padding: 0.25rem 0.4rem;
+            }
         }
         
         /* ========== RECENT TRANSLATIONS SECTION ========== */
@@ -2104,18 +2279,20 @@
         </div>
     </div>
     
-    <!-- Contributors Section -->
+    <!-- Contributors Section - Leaderboard -->
     <section class="contributors-section">
-        <h2><i class="fas fa-medal"></i> Heróis da Tradução</h2>
-        <p>Agradecemos a todos que contribuíram com a tradução PT-BR!</p>
+        <h2><i class="fas fa-trophy"></i> Hall da Fama dos Tradutores</h2>
+        <p>Os guerreiros que estão traduzindo Where Winds Meet!</p>
         
-        <div class="contributors-orbit" id="contributors-orbit">
-            <div class="no-contributors">Carregando contribuidores...</div>
+        <div class="leaderboard-wrapper">
+            <div class="leaderboard-container" id="leaderboard-container">
+                <div class="leaderboard-loading"><i class="fas fa-spinner fa-spin"></i> Carregando ranking...</div>
+            </div>
         </div>
         
         <a href="translate" class="contributors-cta">
             <i class="fas fa-hands-helping"></i>
-            Quero Ajudar a Traduzir!
+            Quero Entrar no Ranking!
         </a>
     </section>
     
@@ -2410,16 +2587,18 @@
             }
         }
         
-        // Load Contributors (repo contributors + issue authors)
+        // Load Contributors - Leaderboard Style
         async function loadContributors() {
-            const orbit = document.getElementById('contributors-orbit');
-            if (!orbit) return;
+            const container = document.getElementById('leaderboard-container');
+            if (!container) return;
             
             try {
+                container.innerHTML = '<div class="leaderboard-loading"><i class="fas fa-spinner fa-spin"></i> Carregando ranking...</div>';
+                
                 // Buscar em paralelo: contributors do repo + autores de issues aprovadas
                 const [contributorsResp, issuesResp] = await Promise.all([
-                    fetch('https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/contributors?per_page=15'),
-                    fetch('https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues?state=closed&labels=applied&per_page=50')
+                    fetch('https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/contributors?per_page=50'),
+                    fetch('https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues?state=closed&labels=applied&per_page=100')
                 ]);
                 
                 // Processar contributors do repo (commits)
@@ -2482,35 +2661,75 @@
                     }
                 });
                 
+                // Ordenar por contribuições (sem limite)
                 const displayContributors = Array.from(allContributors.values())
-                    .sort((a, b) => b.contributions - a.contributions)
-                    .slice(0, 7);
+                    .sort((a, b) => b.contributions - a.contributions);
+                
+                // Calcular máximo para barra XP
+                const maxContrib = displayContributors.length > 0 ? displayContributors[0].contributions : 1;
                 
                 if (displayContributors.length === 0) {
-                    orbit.innerHTML = '<div class="no-contributors">Seja o primeiro a contribuir!</div>';
+                    container.innerHTML = `
+                        <div class="leaderboard-empty">
+                            <i class="fas fa-users"></i>
+                            <p>Seja o primeiro a entrar no ranking!</p>
+                        </div>
+                    `;
                     return;
                 }
                 
-                orbit.innerHTML = displayContributors.map((contributor, index) => {
-                    const badgeIcon = contributor.source === 'issues' ? '💬' : 
-                                      contributor.source === 'both' ? '⭐' : '💻';
-                    const badgeTitle = contributor.source === 'issues' ? 'Tradutor via site' : 
-                                       contributor.source === 'both' ? 'Tradutor + Desenvolvedor' : 'Desenvolvedor';
-                    
-                    return `
-                        <div class="contributor" style="animation-delay: ${index * 0.4}s;">
-                            <a href="${contributor.html_url}" target="_blank" rel="noopener" title="${contributor.login} - ${contributor.contributions} contribuições (${badgeTitle})">
-                                <img src="${contributor.avatar_url}" alt="${contributor.login}" loading="lazy">
-                                <span class="contributor-badge" title="${badgeTitle}">${badgeIcon}</span>
-                            </a>
-                            <span>@${contributor.login}</span>
-                        </div>
-                    `;
-                }).join('');
+                container.innerHTML = `
+                    <div class="leaderboard-list">
+                        ${displayContributors.map((contributor, index) => {
+                            const rank = index + 1;
+                            const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                            
+                            const badgeIcon = contributor.source === 'issues' ? '💬' : 
+                                              contributor.source === 'both' ? '⭐' : '💻';
+                            const badgeTitle = contributor.source === 'issues' ? 'Tradutor via site' : 
+                                               contributor.source === 'both' ? 'Tradutor + Desenvolvedor' : 'Desenvolvedor';
+                            const roleName = contributor.source === 'issues' ? 'Tradutor' : 
+                                             contributor.source === 'both' ? 'Tradutor & Dev' : 'Desenvolvedor';
+                            
+                            const xpWidth = (contributor.contributions / maxContrib) * 100;
+                            const rankIcon = rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
+                            
+                            return `
+                                <div class="leaderboard-item ${rankClass}">
+                                    <div class="leaderboard-rank">${rankIcon}</div>
+                                    <div class="leaderboard-avatar">
+                                        <a href="${contributor.html_url}" target="_blank" rel="noopener">
+                                            <img src="${contributor.avatar_url}" alt="${contributor.login}" loading="lazy">
+                                        </a>
+                                        <span class="leaderboard-type-badge" title="${badgeTitle}">${badgeIcon}</span>
+                                    </div>
+                                    <div class="leaderboard-info">
+                                        <div class="leaderboard-name">
+                                            <a href="${contributor.html_url}" target="_blank" rel="noopener">@${contributor.login}</a>
+                                        </div>
+                                        <div class="leaderboard-role">${roleName}</div>
+                                    </div>
+                                    <div class="leaderboard-stats">
+                                        <div class="leaderboard-stat">
+                                            <div class="leaderboard-stat-value">${contributor.contributions}</div>
+                                            <div class="leaderboard-stat-label">Contrib.</div>
+                                        </div>
+                                    </div>
+                                    <div class="leaderboard-xp-bar" style="width: ${xpWidth}%"></div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
                 
             } catch (error) {
                 console.error('Error loading contributors:', error);
-                orbit.innerHTML = '<div class="no-contributors">Seja o primeiro a contribuir!</div>';
+                container.innerHTML = `
+                    <div class="leaderboard-empty">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Erro ao carregar ranking</p>
+                    </div>
+                `;
             }
         }
         
