@@ -92,7 +92,7 @@
 <tr>
 <td width="60%">
 
-**Where Winds Meet** (逆水寒) é um RPG de ação-aventura em mundo aberto no gênero **Wuxia**, ambientado na China do século X durante a **Dinastia Song**. 
+**Where Winds Meet** (燕云十六声) é um RPG de ação-aventura em mundo aberto no gênero **Wuxia**, ambientado na China do século X durante a **Dinastia Song**. 
 
 O jogo é **gratuito** e disponível em:
 - 🎮 **Steam**
