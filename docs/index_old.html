@@ -1,0 +1,3369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tradução PT-BR para Where Winds Meet - Projeto Open Source da Comunidade Brasileira">
+    <meta name="keywords" content="Where Winds Meet, WWM, tradução, português, Brasil, PT-BR, wuxia, RPG">
+    <meta name="author" content="rodrigomiquilino">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="https://rodrigomiquilino.github.io/wwm_brasileiro/assets/og-image.png">
+    
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rodrigomiquilino.github.io/wwm_brasileiro/">
+    <meta property="og:site_name" content="WWM Brasileiro ⚔️">
+    <meta property="og:title" content="WWM Brasileiro • Tradução PT-BR">
+    <meta property="og:description" content="🎮 Jogue Where Winds Meet em Português! Tradução completa para Steam, Epic Games e Standalone. Instalação automática em 1 clique.">
+    <meta property="og:image" content="https://rodrigomiquilino.github.io/wwm_brasileiro/assets/og-image.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="WWM Brasileiro - Tradução PT-BR para Where Winds Meet">
+    <meta property="og:locale" content="pt_BR">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="WWM Brasileiro • Tradução PT-BR">
+    <meta name="twitter:description" content="🎮 Jogue Where Winds Meet em Português! Instalação automática.">
+    <meta name="twitter:image" content="https://rodrigomiquilino.github.io/wwm_brasileiro/assets/og-image.png">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#c9a227">
+    
+    <title>WWM Brasileiro | Tradução PT-BR para Where Winds Meet</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-medium: #12121a;
+            --bg-light: #1a1a24;
+            --bg-card: #1e1e2a;
+            
+            --gold-primary: #c9a227;
+            --gold-light: #e6c355;
+            --gold-dark: #8b7019;
+            
+            --red-primary: #8b2635;
+            --red-light: #a63446;
+            
+            --text-primary: #e8e6e3;
+            --text-secondary: #9d9d9d;
+            --text-muted: #5a5a5a;
+            
+            --success: #2e7d32;
+            --gradient-gold: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* ========== NAVIGATION ========== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.95);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+            padding: 1rem 0;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-logo i {
+            font-size: 1.2rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--gold-primary);
+        }
+        
+        .nav-links a.nav-highlight {
+            color: var(--gold-primary);
+            background: rgba(201, 162, 39, 0.15);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            border: 1px solid rgba(201, 162, 39, 0.3);
+        }
+        
+        .nav-links a.nav-highlight:hover {
+            background: rgba(201, 162, 39, 0.25);
+        }
+        
+        .nav-github {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-light);
+            border: 1px solid var(--gold-dark);
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .nav-github:hover {
+            background: var(--gold-dark);
+            color: var(--bg-dark);
+        }
+        
+        /* ========== HERO ========== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: 
+                radial-gradient(ellipse at top, rgba(201, 162, 39, 0.1), transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(139, 38, 53, 0.1), transparent 50%),
+                var(--bg-dark);
+            padding: 6rem 2rem 4rem;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="80" fill="rgba(201,162,39,0.03)">⚔</text></svg>') repeat;
+            background-size: 200px;
+            opacity: 0.5;
+        }
+        
+        .hero-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(201, 162, 39, 0.1);
+            border: 1px solid var(--gold-dark);
+            border-radius: 50px;
+            font-size: 0.875rem;
+            color: var(--gold-primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero-badge i {
+            font-size: 0.75rem;
+        }
+        
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero h2 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 400;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-gold);
+            color: var(--bg-dark);
+            box-shadow: 0 4px 20px rgba(201, 162, 39, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(201, 162, 39, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-primary);
+            border: 1px solid var(--gold-dark);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--gold-primary);
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+            padding-top: 3rem;
+            border-top: 1px solid rgba(201, 162, 39, 0.2);
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            font-family: 'Cinzel', serif;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+        
+        /* ========== SECTIONS ========== */
+        section {
+            padding: 5rem 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-header h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: var(--gold-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-header p {
+            color: var(--text-secondary);
+        }
+        
+        /* ========== DOWNLOAD SECTION ========== */
+        #download {
+            background: var(--bg-medium);
+        }
+        
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        
+        .download-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .download-card:hover {
+            border-color: var(--gold-primary);
+            transform: translateY(-4px);
+        }
+        
+        .download-card.featured {
+            border-color: var(--gold-primary);
+        }
+        
+        .download-card.featured::before {
+            content: 'RECOMENDADO';
+            position: absolute;
+            top: 2rem;
+            right: -2rem;
+            background: var(--gradient-gold);
+            color: var(--bg-dark);
+            padding: 0.25rem 2rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            transform: rotate(45deg);
+        }
+        
+        .download-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(201, 162, 39, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--gold-primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .download-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .download-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .download-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        .download-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .download-features li i {
+            color: var(--success);
+            font-size: 0.8rem;
+        }
+        
+        /* ========== FEATURES ========== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            border-color: var(--gold-dark);
+        }
+        
+        .feature-card i {
+            font-size: 1.5rem;
+            color: var(--gold-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        /* ========== INSTALLATION ========== */
+        #instalacao {
+            background: var(--bg-medium);
+        }
+        
+        .install-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .install-step {
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(201, 162, 39, 0.1);
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--bg-dark);
+            margin: 0 auto 1rem;
+        }
+        
+        .install-step h3 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .install-step p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* ========== RELEASES ========== */
+        .releases-container {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .releases-header {
+            background: rgba(201, 162, 39, 0.1);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+        }
+        
+        .releases-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .releases-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .release-item {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .release-item:hover {
+            background: rgba(201, 162, 39, 0.05);
+        }
+        
+        .release-item:last-child {
+            border-bottom: none;
+        }
+        
+        .release-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(201, 162, 39, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold-primary);
+        }
+        
+        .release-info {
+            flex: 1;
+        }
+        
+        .release-version {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .release-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .release-tag {
+            padding: 0.25rem 0.75rem;
+            background: rgba(46, 125, 50, 0.2);
+            color: var(--success);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .release-tag.latest {
+            background: rgba(201, 162, 39, 0.2);
+            color: var(--gold-primary);
+        }
+        
+        .release-tag.launcher {
+            background: rgba(21, 101, 192, 0.2);
+            color: #42a5f5;
+        }
+        
+        /* ========== COMMITS ========== */
+        #atualizacoes {
+            background: var(--bg-medium);
+        }
+        
+        .commits-container {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .commits-header {
+            background: rgba(201, 162, 39, 0.1);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+        }
+        
+        .commits-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .commit-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .commit-item:last-child {
+            border-bottom: none;
+        }
+        
+        .commit-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--bg-dark);
+            flex-shrink: 0;
+        }
+        
+        .commit-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .commit-message {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .commit-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .commit-sha {
+            font-family: monospace;
+            color: var(--gold-dark);
+        }
+        
+        /* ========== OPEN SOURCE ========== */
+        .opensource-banner {
+            background: linear-gradient(135deg, rgba(201, 162, 39, 0.1), rgba(139, 38, 53, 0.1));
+            border: 1px solid var(--gold-dark);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        
+        .opensource-banner h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--gold-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .opensource-banner p {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .opensource-banner p.small {
+            font-size: 0.875rem;
+        }
+        
+        /* Code block específico do opensource-banner (fora dos modais) */
+        .opensource-banner > code,
+        #instalacao .opensource-banner code {
+            display: block;
+            background: var(--bg-dark);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 0.5rem auto;
+            max-width: 600px;
+            color: var(--gold-primary);
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            text-align: left;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            line-height: 1.6;
+        }
+        
+        .opensource-banner.mt-3 {
+            margin-top: 3rem;
+        }
+        
+        .opensource-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Botões full width para download cards */
+        .download-card .btn {
+            width: 100%;
+        }
+        
+        /* Botões pequenos para headers */
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        /* ========== HALL DA FAMA - TWO COLUMN LAYOUT ========== */
+        .contributors-section {
+            padding: 4rem 2rem;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .contributors-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+        }
+        
+        .contributors-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: var(--gold-primary);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 30px rgba(201, 162, 39, 0.4);
+        }
+        
+        .contributors-section > p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        /* Hall Container */
+        .hall-wrapper {
+            max-width: 1000px;
+            margin: 0 auto 2rem;
+        }
+        
+        .hall-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+            text-align: left;
+        }
+        
+        /* ===== LEFT COLUMN - DEVELOPERS CASTLE ===== */
+        .devs-castle {
+            background: linear-gradient(180deg, rgba(30, 25, 15, 0.6) 0%, rgba(20, 15, 10, 0.8) 100%);
+            border: 2px solid rgba(201, 162, 39, 0.4);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .devs-castle::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.05) 0%, transparent 70%);
+            animation: castleGlow 4s ease-in-out infinite;
+        }
+        
+        @keyframes castleGlow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+        
+        .castle-title {
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            color: var(--gold-light);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .castle-title i {
+            margin-right: 0.5rem;
+            color: #ffd700;
+        }
+        
+        /* Developer Cards */
+        .dev-card {
+            position: relative;
+            z-index: 1;
+            padding: 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .dev-card:last-child {
+            margin-bottom: 0;
+        }
+        
+        .dev-card.lead {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 180, 0, 0.08) 50%, rgba(255, 215, 0, 0.15) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 
+                0 0 30px rgba(255, 215, 0, 0.2),
+                inset 0 0 30px rgba(255, 215, 0, 0.05);
+            animation: goldPulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes goldPulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.2), inset 0 0 30px rgba(255, 215, 0, 0.05); }
+            50% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.35), inset 0 0 40px rgba(255, 215, 0, 0.1); }
+        }
+        
+        .dev-card.secondary {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.12) 0%, rgba(160, 160, 170, 0.06) 50%, rgba(192, 192, 192, 0.12) 100%);
+            border: 2px solid rgba(192, 192, 192, 0.4);
+            box-shadow: 0 0 20px rgba(192, 192, 192, 0.15);
+        }
+        
+        .dev-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .dev-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .dev-rank-badge {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+        
+        .dev-card.lead .dev-rank-badge {
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+            animation: crownFloat 2s ease-in-out infinite;
+        }
+        
+        @keyframes crownFloat {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-5px) rotate(5deg); }
+        }
+        
+        .dev-avatar {
+            position: relative;
+        }
+        
+        .dev-avatar img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        
+        .dev-card.lead .dev-avatar img {
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .dev-card.secondary .dev-avatar img {
+            border: 3px solid #c0c0c0;
+            box-shadow: 0 0 15px rgba(192, 192, 192, 0.4);
+        }
+        
+        .dev-avatar-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            z-index: -1;
+        }
+        
+        .dev-card.lead .dev-avatar-glow {
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes glowPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+        }
+        
+        .dev-info {
+            flex: 1;
+        }
+        
+        .dev-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .dev-card.lead .dev-name {
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .dev-card.secondary .dev-name {
+            color: #e0e0e0;
+        }
+        
+        .dev-name a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .dev-name a:hover {
+            text-decoration: underline;
+        }
+        
+        .dev-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .dev-card.lead .dev-title {
+            color: rgba(255, 215, 0, 0.8);
+        }
+        
+        .dev-card.secondary .dev-title {
+            color: rgba(192, 192, 192, 0.8);
+        }
+        
+        .dev-stats {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .dev-stat {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 70px;
+        }
+        
+        .dev-card.lead .dev-stat {
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .dev-card.secondary .dev-stat {
+            border: 1px solid rgba(192, 192, 192, 0.3);
+        }
+        
+        .dev-stat-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .dev-card.lead .dev-stat-value {
+            color: #ffd700;
+        }
+        
+        .dev-card.secondary .dev-stat-value {
+            color: #c0c0c0;
+        }
+        
+        .dev-stat-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* ===== RIGHT COLUMN - COMMUNITY RANKING ===== */
+        .community-ranking {
+            background: linear-gradient(180deg, rgba(25, 20, 15, 0.6) 0%, rgba(15, 12, 10, 0.8) 100%);
+            border: 2px solid rgba(205, 127, 50, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+        }
+        
+        .ranking-title {
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            color: #cd7f32;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .ranking-title i {
+            margin-right: 0.5rem;
+        }
+        
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(205, 127, 50, 0.08);
+            border-radius: 8px;
+            border: 1px solid rgba(205, 127, 50, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .ranking-item:hover {
+            background: rgba(205, 127, 50, 0.15);
+            border-color: rgba(205, 127, 50, 0.4);
+            transform: translateX(5px);
+        }
+        
+        .ranking-position {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #cd7f32, #b8722d);
+            color: #1a1a1a;
+            font-weight: 800;
+            font-size: 0.75rem;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        
+        .ranking-item:first-child .ranking-position {
+            background: linear-gradient(135deg, #cd7f32, #a0522d);
+            box-shadow: 0 0 10px rgba(205, 127, 50, 0.4);
+        }
+        
+        .ranking-avatar img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(205, 127, 50, 0.5);
+        }
+        
+        .ranking-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .ranking-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .ranking-name a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .ranking-name a:hover {
+            color: #cd7f32;
+        }
+        
+        .ranking-role {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+        }
+        
+        .ranking-score {
+            text-align: right;
+            flex-shrink: 0;
+        }
+        
+        .ranking-score-value {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #cd7f32;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .ranking-score-label {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        
+        .ranking-empty {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 2rem;
+            font-style: italic;
+        }
+        
+        /* Hall Loading */
+        .hall-loading {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 3rem;
+            grid-column: 1 / -1;
+        }
+        
+        .contributors-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: var(--bg-dark);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .contributors-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(201, 162, 39, 0.4);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hall-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .dev-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .dev-stats {
+                justify-content: center;
+            }
+            
+            .dev-avatar img {
+                width: 60px;
+                height: 60px;
+            }
+        }
+        
+        /* ========== RECENT TRANSLATIONS SECTION ========== */
+        .recent-translations-section {
+            padding: 4rem 2rem;
+            background: var(--bg-dark);
+            text-align: center;
+            position: relative;
+        }
+        
+        .recent-translations-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--gradient-gold);
+            border-radius: 2px;
+        }
+        
+        .recent-translations-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--gold-light);
+        }
+        
+        .recent-translations-section > p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .recent-translations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .recent-translation-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.15);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: left;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .recent-translation-card:hover {
+            border-color: var(--gold-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .recent-translation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .recent-translation-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .recent-translation-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .recent-translation-edited {
+            font-size: 0.7rem;
+            color: #60a5fa;
+            background: rgba(96, 165, 250, 0.15);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .recent-translation-edited i {
+            font-size: 0.65rem;
+        }
+        
+        .recent-translation-count {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: var(--bg-dark);
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        
+        .recent-translation-text {
+            background: var(--bg-medium);
+            border-radius: 8px;
+            padding: 0.75rem;
+            border-left: 3px solid var(--gold-primary);
+        }
+        
+        .recent-translation-original {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-style: italic;
+        }
+        
+        .recent-translation-result {
+            font-size: 0.9rem;
+            color: var(--gold-light);
+            line-height: 1.4;
+        }
+        
+        .recent-translation-credits {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .recent-translation-author,
+        .recent-translation-reviewer {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+        }
+        
+        .recent-translation-author img,
+        .recent-translation-reviewer img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--gold-primary);
+        }
+        
+        .recent-translation-author span {
+            color: var(--success);
+        }
+        
+        .recent-translation-author span::before {
+            content: '✍️ ';
+        }
+        
+        .recent-translation-reviewer span {
+            color: #60a5fa;
+        }
+        
+        .recent-translation-reviewer span::before {
+            content: '✅ ';
+        }
+        
+        .recent-translation-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .recent-translations-empty {
+            color: var(--text-muted);
+            padding: 3rem;
+            font-style: italic;
+        }
+        
+        .recent-translations-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            border: 2px solid var(--gold-primary);
+            color: var(--gold-primary);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .recent-translations-cta:hover {
+            background: var(--gold-primary);
+            color: var(--bg-dark);
+        }
+        
+        @media (max-width: 768px) {
+            .recent-translations-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .recent-translation-credits {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* ========== SUPPORT/DONATION SECTION ========== */
+        .support-section {
+            padding: 4rem 2rem;
+            background: var(--bg-medium);
+            text-align: center;
+        }
+        
+        .support-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: var(--gold-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .support-section > p {
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .support-options {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .support-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 280px;
+            transition: all 0.3s;
+        }
+        
+        .support-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold-primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .support-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .support-card h3 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .support-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .pix-qrcode {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        .pix-qrcode img, .pix-qrcode svg, .pix-qrcode canvas {
+            width: 150px;
+            height: 150px;
+            display: block;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        #pix-qrcode-img {
+            width: 150px;
+            height: 150px;
+            background: white;
+            padding: 8px;
+            border-radius: 8px;
+        }
+        
+        .pix-key {
+            background: var(--bg-dark);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            word-break: break-all;
+            margin-bottom: 1rem;
+        }
+        
+        .support-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: var(--bg-dark);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .support-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(201, 162, 39, 0.4);
+        }
+        
+        .support-btn.livepix {
+            background: linear-gradient(135deg, #00d4aa, #00a88a);
+        }
+        
+        .support-btn.livepix:hover {
+            box-shadow: 0 4px 15px rgba(0, 212, 170, 0.4);
+        }
+        
+        .copy-pix-btn {
+            background: var(--bg-light);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+        
+        .copy-pix-btn:hover {
+            border-color: var(--gold-primary);
+            color: var(--gold-primary);
+        }
+        
+        .copy-pix-btn.copied {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        
+        .support-note {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(201, 162, 39, 0.1);
+            border-radius: 8px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .support-note p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+        
+        .livepix-icon-container {
+            padding: 2rem 0;
+        }
+        
+        .livepix-icon {
+            font-size: 4rem;
+            color: #00d4aa;
+        }
+        
+        .support-note i {
+            color: var(--gold-primary);
+        }
+        
+        /* ========== FOOTER ========== */
+        footer {
+            background: var(--bg-dark);
+            border-top: 1px solid rgba(201, 162, 39, 0.2);
+            padding: 3rem 2rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-brand h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-brand p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .footer-links h4 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .footer-links a {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.25rem 0;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--gold-primary);
+        }
+        
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        .footer-bottom a {
+            color: var(--gold-primary);
+            text-decoration: none;
+        }
+        
+        /* ========== LOADING ========== */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+        
+        .loading i {
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+            
+            /* Fix path-box overflow on mobile */
+            .path-box {
+                padding: 0.75rem;
+                text-align: left;
+            }
+            
+            .path-box code {
+                font-size: 0.7rem;
+                word-break: break-all;
+                overflow-wrap: anywhere;
+                white-space: normal;
+                text-align: left;
+            }
+            
+            .modal-body {
+                padding: 1rem;
+            }
+            
+            .modal-section h3 {
+                font-size: 1rem;
+            }
+            
+            .opensource-banner code {
+                font-size: 0.75rem;
+                word-break: break-all;
+                overflow-wrap: anywhere;
+                white-space: pre-wrap;
+            }
+            
+            .install-steps {
+                gap: 1rem;
+            }
+            
+            .install-step {
+                padding: 1.5rem 1rem;
+            }
+        }
+        
+        /* ========== SCROLLBAR ========== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold-dark);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold-primary);
+        }
+        
+        /* ========== MODAL ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 16px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-header h2 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-primary);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: color 0.3s;
+        }
+        
+        .modal-close:hover {
+            color: var(--gold-primary);
+        }
+        
+        .modal-body {
+            padding: 2rem;
+            text-align: left;
+        }
+        
+        .modal-section {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        
+        .modal-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .modal-section h3 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .modal-section h3 i {
+            color: var(--gold-primary);
+        }
+        
+        .path-box {
+            background: var(--bg-dark);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            text-align: left;
+        }
+        
+        .path-box .platform-name {
+            color: var(--gold-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .path-box code {
+            display: block;
+            color: var(--text-secondary);
+            font-family: 'Consolas', monospace;
+            font-size: 0.8rem;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            white-space: normal;
+            line-height: 1.8;
+            text-align: left;
+        }
+        
+        .path-box code strong {
+            color: var(--gold-light);
+        }
+        
+        .modal-tip {
+            background: rgba(201, 162, 39, 0.1);
+            border-left: 3px solid var(--gold-primary);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin-top: 1rem;
+        }
+        
+        .modal-tip p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .modal-tip strong {
+            color: var(--gold-primary);
+        }
+        
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(201, 162, 39, 0.2);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        .modal-footer .btn {
+            min-width: 150px;
+            justify-content: center;
+        }
+        
+        .step-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .step-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .step-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .step-list .step-num {
+            background: var(--gold-primary);
+            color: var(--bg-dark);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+        
+        .step-list .step-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .step-list .step-text strong {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <i class="fas fa-torii-gate"></i>
+                WWM Brasileiro
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="#download">Download</a></li>
+                <li><a href="#instalacao">Instalação</a></li>
+                <li><a href="#versoes">Versões</a></li>
+                <li><a href="#atualizacoes">Atualizações</a></li>
+                <li><a href="translate" class="nav-highlight"><i class="fas fa-language"></i> Ajudar a Traduzir</a></li>
+            </ul>
+            
+            <a href="https://github.com/rodrigomiquilino/wwm_brasileiro" target="_blank" rel="noopener" class="nav-github">
+                <i class="fab fa-github"></i>
+                GitHub
+            </a>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-code-branch"></i>
+                Open Source • MIT License
+            </div>
+            
+            <h1>WWM Brasileiro</h1>
+            <h2>Where Winds Meet em Português</h2>
+            
+            <p>
+                Tradução não-oficial da comunidade brasileira para Where Winds Meet.
+                Jogue o RPG Wuxia em mundo aberto completamente em PT-BR.
+            </p>
+            
+            <div class="hero-buttons">
+                <button id="hero-launcher-btn" type="button" class="btn btn-primary" data-modal="modal-launcher">
+                    <i class="fas fa-download"></i>
+                    <span id="hero-launcher-text">Baixar Launcher</span>
+                </button>
+                <button id="hero-translation-btn" type="button" class="btn btn-secondary" data-modal="modal-manual">
+                    <i class="fas fa-file-archive"></i>
+                    <span id="hero-translation-text">Download Tradução</span>
+                </button>
+            </div>
+            
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-value" id="stat-downloads">—</div>
+                    <div class="stat-label">Downloads</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="stat-strings">50k+</div>
+                    <div class="stat-label">Strings Traduzidas</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="stat-version">—</div>
+                    <div class="stat-label">Versão Atual</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Download Section -->
+    <section id="download">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-download"></i> Downloads</h2>
+                <p>Escolha a melhor opção para você</p>
+            </div>
+            
+            <div class="download-grid">
+                <!-- Launcher -->
+                <div class="download-card featured">
+                    <div class="download-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>WWM Tradutor PT-BR</h3>
+                    <p>Instalador automático com interface gráfica moderna. Instala e atualiza a tradução com um clique. <strong>~40MB</strong></p>
+                    
+                    <ul class="download-features">
+                        <li><i class="fas fa-check"></i> Suporte a Steam, Epic e Standalone</li>
+                        <li><i class="fas fa-check"></i> Detecção automática da plataforma</li>
+                        <li><i class="fas fa-check"></i> Instalação com 1 clique</li>
+                        <li><i class="fas fa-check"></i> Backup e restauração de originais</li>
+                        <li><i class="fas fa-check"></i> Solicita admin quando necessário</li>
+                        <li><i class="fas fa-check"></i> Suporte a escalas de DPI</li>
+                    </ul>
+                    
+                    <button id="download-launcher-btn" type="button" class="btn btn-primary" data-modal="modal-launcher">
+                        <i class="fas fa-download"></i>
+                        <span id="download-launcher-text">Baixar Launcher (.exe)</span>
+                    </button>
+                </div>
+                
+                <!-- Manual -->
+                <div class="download-card">
+                    <div class="download-icon">
+                        <i class="fas fa-file-archive"></i>
+                    </div>
+                    <h3>Arquivos de Tradução</h3>
+                    <p>Faça a instalação manual se preferir ter controle total sobre os arquivos.</p>
+                    
+                    <ul class="download-features">
+                        <li><i class="fas fa-check"></i> translate_words_map_en (~30k)</li>
+                        <li><i class="fas fa-check"></i> translate_words_map_en_diff (~20k)</li>
+                        <li><i class="fas fa-check"></i> Sem dependências</li>
+                        <li><i class="fas fa-check"></i> Portátil</li>
+                    </ul>
+                    
+                    <button id="download-translation-btn" type="button" class="btn btn-secondary" data-modal="modal-manual">
+                        <i class="fas fa-file-archive"></i>
+                        <span id="download-translation-text">Baixar Tradução (.zip)</span>
+                    </button>
+                </div>
+                
+                <!-- Source -->
+                <div class="download-card">
+                    <div class="download-icon">
+                        <i class="fab fa-github"></i>
+                    </div>
+                    <h3>Código Fonte</h3>
+                    <p>Acesse o repositório completo, contribua com melhorias ou faça sua própria versão.</p>
+                    
+                    <ul class="download-features">
+                        <li><i class="fas fa-check"></i> Ferramentas de tradução</li>
+                        <li><i class="fas fa-check"></i> Documentação completa</li>
+                        <li><i class="fas fa-check"></i> Licença MIT</li>
+                        <li><i class="fas fa-check"></i> Issues & Pull Requests</li>
+                    </ul>
+                    
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro" target="_blank" rel="noopener" class="btn btn-secondary">
+                        <i class="fab fa-github"></i>
+                        Ver no GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features -->
+    <section id="recursos">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-star"></i> O que está Traduzido</h2>
+                <p>Tradução completa de todos os textos do jogo</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-comments"></i>
+                    <h3>Diálogos</h3>
+                    <p>Todos os diálogos de NPCs, missões e história traduzidos</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-window-maximize"></i>
+                    <h3>Interface</h3>
+                    <p>Menus, botões e toda a UI em português</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-book"></i>
+                    <h3>Itens</h3>
+                    <p>Nomes e descrições de equipamentos e consumíveis</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Habilidades</h3>
+                    <p>Skills, talentos e sistemas de combate</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h3>Localizações</h3>
+                    <p>Nomes de regiões, cidades e pontos de interesse</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-scroll"></i>
+                    <h3>Lore</h3>
+                    <p>Textos de história e ambientação Wuxia</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Installation -->
+    <section id="instalacao">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-cogs"></i> Instalação</h2>
+                <p>Siga os passos abaixo para instalar a tradução</p>
+            </div>
+            
+            <div class="install-steps">
+                <div class="install-step">
+                    <div class="step-number">1</div>
+                    <h3>Baixe o Launcher</h3>
+                    <p>Clique no botão de download acima para baixar o instalador</p>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">2</div>
+                    <h3>Execute</h3>
+                    <p>Abra o arquivo WWM_Tradutor_PTBR.exe</p>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">3</div>
+                    <h3>Selecione o Jogo</h3>
+                    <p>Clique em "Selecionar" e escolha o wwm.exe do seu jogo (Steam, Epic ou Standalone)</p>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">4</div>
+                    <h3>Instale e Jogue!</h3>
+                    <p>Clique em Instalar e depois inicie o jogo pelo launcher</p>
+                </div>
+            </div>
+            
+            <!-- Manual Installation -->
+            <div class="opensource-banner mt-3">
+                <h3><i class="fas fa-wrench"></i> Instalação Manual</h3>
+                <p>
+                    Se preferir instalar manualmente, baixe o arquivo ZIP e extraia os arquivos para a pasta de locale do seu jogo:
+                </p>
+                <code>
+                    <strong>Steam/Epic:</strong> ...\Where Winds Meet\Package\HD\oversea\locale\<br>
+                    <strong>Standalone:</strong> ...\wwm_standard\LocalData\Patch\HD\oversea\locale\
+                </code>
+                <p class="small">
+                    Substitua os arquivos <strong>translate_words_map_en</strong> e <strong>translate_words_map_en_diff</strong>
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Releases -->
+    <section id="versoes">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-tags"></i> Versões</h2>
+                <p>Histórico de releases do projeto</p>
+            </div>
+            
+            <div class="releases-container">
+                <div class="releases-header">
+                    <h3><i class="fas fa-tag"></i> Releases</h3>
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">
+                        Ver todas
+                    </a>
+                </div>
+                <div class="releases-list" id="releases-list">
+                    <div class="loading">
+                        <i class="fas fa-spinner"></i>
+                        Carregando releases...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Commits / Updates -->
+    <section id="atualizacoes">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-code-commit"></i> Atualizações</h2>
+                <p>Últimas alterações no projeto</p>
+            </div>
+            
+            <div class="commits-container">
+                <div class="commits-header">
+                    <h3><i class="fas fa-history"></i> Commits Recentes</h3>
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/commits/main" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">
+                        Ver todos
+                    </a>
+                </div>
+                <div class="commits-list" id="commits-list">
+                    <div class="loading">
+                        <i class="fas fa-spinner"></i>
+                        Carregando commits...
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Open Source Banner -->
+            <div class="opensource-banner">
+                <h3><i class="fas fa-heart"></i> Projeto Open Source</h3>
+                <p>
+                    Este projeto é totalmente gratuito e de código aberto sob a licença MIT.
+                    Qualquer pessoa pode contribuir, modificar ou distribuir.
+                </p>
+                <div class="opensource-links">
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/issues" target="_blank" rel="noopener" class="btn btn-secondary">
+                        <i class="fas fa-bug"></i>
+                        Reportar Bug
+                    </a>
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/pulls" target="_blank" rel="noopener" class="btn btn-secondary">
+                        <i class="fas fa-code-pull-request"></i>
+                        Contribuir
+                    </a>
+                    <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/stargazers" target="_blank" rel="noopener" class="btn btn-primary">
+                        <i class="fas fa-star"></i>
+                        Dar uma Estrela
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Modal: Launcher -->
+    <div id="modal-launcher" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-rocket"></i> Como usar o Launcher</h2>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3><i class="fas fa-download"></i> Passo a Passo</h3>
+                    <ol class="step-list">
+                        <li>
+                            <span class="step-num">1</span>
+                            <span class="step-text">Baixe e execute o <strong>WWM_Tradutor_PTBR.exe</strong> (não precisa instalar)</span>
+                        </li>
+                        <li>
+                            <span class="step-num">2</span>
+                            <span class="step-text">Clique em <strong>"Selecionar"</strong> e encontre o arquivo <strong>wwm.exe</strong> do seu jogo (veja como abaixo)</span>
+                        </li>
+                        <li>
+                            <span class="step-num">3</span>
+                            <span class="step-text">Clique em <strong>"Instalar Tradução"</strong> e aguarde o download</span>
+                        </li>
+                        <li>
+                            <span class="step-num">4</span>
+                            <span class="step-text">Pronto! Clique em <strong>"Jogar"</strong> para iniciar o jogo traduzido</span>
+                        </li>
+                    </ol>
+                </div>
+                
+                <div class="modal-section">
+                    <h3><i class="fas fa-folder-open"></i> Como encontrar o wwm.exe</h3>
+                    
+                    <div class="path-box">
+                        <div class="platform-name"><i class="fab fa-steam"></i> Steam</div>
+                        <code>
+                            <strong>Método rápido:</strong> Biblioteca Steam → Clique direito no jogo → Gerenciar → Navegar arquivos locais<br><br>
+                            <strong>Caminho:</strong> Abra a pasta do jogo, depois navegue até:<br>
+                            📁 Engine → 📁 Binaries → 📁 Win64r → 📄 <strong>wwm.exe</strong><br><br>
+                            <strong>Caminho completo:</strong><br>
+                            C:\Program Files (x86)\Steam\steamapps\common\Where Winds Meet\Engine\Binaries\Win64r\<strong>wwm.exe</strong>
+                        </code>
+                    </div>
+                    
+                    <div class="path-box">
+                        <div class="platform-name"><i class="fas fa-gamepad"></i> Epic Games</div>
+                        <code>
+                            <strong>Método rápido:</strong> Epic Games → Biblioteca → Clique nos 3 pontos (...) → Gerenciar → Abrir pasta de instalação<br><br>
+                            <strong>Caminho:</strong> Abra a pasta do jogo, depois navegue até:<br>
+                            📁 Engine → 📁 Binaries → 📁 Win64r → 📄 <strong>wwm.exe</strong><br><br>
+                            <strong>Caminho completo:</strong><br>
+                            C:\Program Files\Epic Games\WhereWindsMeet\Engine\Binaries\Win64r\<strong>wwm.exe</strong>
+                        </code>
+                    </div>
+                    
+                    <div class="path-box">
+                        <div class="platform-name"><i class="fas fa-desktop"></i> Standalone (Standard ou Lite)</div>
+                        <code>
+                            <strong>Localização padrão:</strong> O jogo standalone é instalado na pasta que você escolheu<br><br>
+                            <strong>Caminho:</strong> Abra a pasta wwm_standard (ou wwm_lite), depois navegue até:<br>
+                            📁 Engine → 📁 Binaries → 📁 Win64r → 📄 <strong>wwm.exe</strong><br><br>
+                            <strong>Caminho comum:</strong><br>
+                            C:\Program Files\wwm\wwm_standard\Engine\Binaries\Win64r\<strong>wwm.exe</strong><br>
+                            C:\Program Files\wwm\wwm_lite\Engine\Binaries\Win64r\<strong>wwm.exe</strong>
+                        </code>
+                    </div>
+                </div>
+                
+                <div class="modal-tip">
+                    <p><strong>💡 Dica:</strong> O launcher detecta automaticamente a plataforma e cria backup dos arquivos originais. Você pode restaurar a qualquer momento!</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary">Fechar</button>
+                <a id="modal-launcher-download" href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases" target="_blank" rel="noopener" class="btn btn-primary">
+                    <i class="fas fa-download"></i>
+                    Baixar Launcher
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal: Instalação Manual -->
+    <div id="modal-manual" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-wrench"></i> Instalação Manual</h2>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3><i class="fas fa-download"></i> Passo a Passo</h3>
+                    <ol class="step-list">
+                        <li>
+                            <span class="step-num">1</span>
+                            <span class="step-text">Baixe o arquivo <strong>traducao_ptbr.zip</strong></span>
+                        </li>
+                        <li>
+                            <span class="step-num">2</span>
+                            <span class="step-text">Extraia o conteúdo do ZIP (dois arquivos)</span>
+                        </li>
+                        <li>
+                            <span class="step-num">3</span>
+                            <span class="step-text">Navegue até a <strong>pasta de tradução</strong> do seu jogo (veja como abaixo)</span>
+                        </li>
+                        <li>
+                            <span class="step-num">4</span>
+                            <span class="step-text">Cole os arquivos e <strong>substitua</strong> quando perguntado</span>
+                        </li>
+                    </ol>
+                </div>
+                
+                <div class="modal-section">
+                    <h3><i class="fas fa-file"></i> Arquivos incluídos no ZIP</h3>
+                    <div class="path-box">
+                        <div class="platform-name"><i class="fas fa-file-alt"></i> Arquivos de Tradução</div>
+                        <code>
+                            • <strong>translate_words_map_en</strong> (~30.000 strings)<br>
+                            • <strong>translate_words_map_en_diff</strong> (~20.000 strings)
+                        </code>
+                    </div>
+                </div>
+                
+                <div class="modal-section">
+                    <h3><i class="fas fa-folder-open"></i> Como chegar na pasta de tradução</h3>
+                    
+                    <div class="path-box">
+                        <div class="platform-name"><i class="fab fa-steam"></i> Steam</div>
+                        <code>
+                            <strong>Método rápido:</strong> Biblioteca Steam → Clique direito no jogo → Gerenciar → Navegar arquivos locais<br><br>
+                            <strong>Caminho:</strong> Abra a pasta do jogo, depois navegue até:<br>
+                            📁 Package → 📁 HD → 📁 oversea → 📁 <strong>locale</strong><br><br>
+                            <strong>Caminho completo:</strong><br>
+                            C:\Program Files (x86)\Steam\steamapps\common\Where Winds Meet\<strong>Package\HD\oversea\locale\</strong>
+                        </code>
+                    </div>
+                    
+                    <div class="path-box">
+                        <div class="platform-name"><i class="fas fa-gamepad"></i> Epic Games</div>
+                        <code>
+                            <strong>Método rápido:</strong> Epic Games → Biblioteca → Clique nos 3 pontos (...) → Gerenciar → Abrir pasta de instalação<br><br>
+                            <strong>Caminho:</strong> Abra a pasta do jogo, depois navegue até:<br>
+                            📁 Package → 📁 HD → 📁 oversea → 📁 <strong>locale</strong><br><br>
+                            <strong>Caminho completo:</strong><br>
+                            C:\Program Files\Epic Games\WhereWindsMeet\<strong>Package\HD\oversea\locale\</strong>
+                        </code>
+                    </div>
+                    
+                    <div class="path-box">
+                        <div class="platform-name"><i class="fas fa-desktop"></i> Standalone (Standard ou Lite)</div>
+                        <code>
+                            <strong>Localização padrão:</strong> O jogo standalone é instalado na pasta que você escolheu<br><br>
+                            <strong>Caminho:</strong> Abra a pasta wwm_standard (ou wwm_lite), depois navegue até:<br>
+                            📁 LocalData → 📁 Patch → 📁 HD → 📁 oversea → 📁 <strong>locale</strong><br><br>
+                            <strong>Caminho comum:</strong><br>
+                            C:\Program Files\wwm\wwm_standard\<strong>LocalData\Patch\HD\oversea\locale\</strong><br>
+                            C:\Program Files\wwm\wwm_lite\<strong>LocalData\Patch\HD\oversea\locale\</strong>
+                        </code>
+                    </div>
+                </div>
+                
+                <div class="modal-tip">
+                    <p><strong>💡 Dica:</strong> Faça backup dos arquivos originais antes de substituir! Renomeie-os para <strong>.backup</strong> assim você pode restaurar caso precise.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary">Fechar</button>
+                <a id="modal-manual-download" href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases" target="_blank" rel="noopener" class="btn btn-primary">
+                    <i class="fas fa-file-archive"></i>
+                    Baixar Tradução (.zip)
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hall da Fama - Two Column Layout -->
+    <section class="contributors-section">
+        <h2><i class="fas fa-trophy"></i> Hall da Fama</h2>
+        <p>Os guerreiros que estão traduzindo Where Winds Meet!</p>
+        
+        <div class="hall-wrapper">
+            <div class="hall-container" id="hall-container">
+                <div class="hall-loading"><i class="fas fa-spinner fa-spin"></i> Carregando Hall da Fama...</div>
+            </div>
+        </div>
+        
+        <a href="translate" class="contributors-cta">
+            <i class="fas fa-hands-helping"></i>
+            Quero Entrar no Ranking!
+        </a>
+    </section>
+    
+    <!-- Recent Translations Section -->
+    <section class="recent-translations-section" id="traducoes-recentes">
+        <h2><i class="fas fa-scroll"></i> Traduções Recentes</h2>
+        <p>Últimas contribuições aprovadas pela comunidade</p>
+        
+        <div class="recent-translations-grid" id="recent-translations-grid">
+            <div class="recent-translations-empty">
+                <i class="fas fa-spinner fa-spin"></i> Carregando traduções recentes...
+            </div>
+        </div>
+        
+        <a href="translate" class="recent-translations-cta">
+            <i class="fas fa-eye"></i>
+            Ver Todas as Traduções
+        </a>
+    </section>
+    
+    <!-- Support/Donation Section -->
+    <section class="support-section" id="apoiar">
+        <h2><i class="fas fa-heart"></i> Apoie o Projeto</h2>
+        <p>Este projeto é 100% gratuito e feito com dedicação pela comunidade. Se você gostou e quer ajudar a manter o projeto ativo, considere fazer uma doação!</p>
+        
+        <div class="support-options">
+            <!-- PIX Card -->
+            <div class="support-card">
+                <div class="support-card-icon">🇧🇷</div>
+                <h3>PIX</h3>
+                <p>Transferência instantânea sem taxas</p>
+                
+                <div class="pix-qrcode" id="pix-qrcode-container">
+                    <!-- QR Code PIX gerado via API -->
+                    <img id="pix-qrcode-img" alt="QR Code PIX">
+                </div>
+                
+                <div class="pix-key">5d92c454-726c-4f54-81fd-5129a76a8ed7</div>
+                
+                <button class="copy-pix-btn" onclick="copyPixKey(this)">
+                    <i class="fas fa-copy"></i> Copiar Chave PIX
+                </button>
+            </div>
+            
+            <!-- LivePix Card -->
+            <div class="support-card">
+                <div class="support-card-icon">💚</div>
+                <h3>LivePix</h3>
+                <p>Doe qualquer valor de forma rápida e segura</p>
+                
+                <div class="livepix-icon-container">
+                    <i class="fas fa-bolt livepix-icon"></i>
+                </div>
+                
+                <a href="https://livepix.gg/rodrigomiquilino" target="_blank" rel="noopener" class="support-btn livepix">
+                    <i class="fas fa-external-link-alt"></i>
+                    Doar via LivePix
+                </a>
+            </div>
+        </div>
+        
+        <div class="support-note">
+            <p><i class="fas fa-info-circle"></i> Sua doação ajuda a manter o projeto atualizado e incentiva a comunidade a continuar traduzindo. Obrigado pelo apoio! 🙏</p>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3><i class="fas fa-torii-gate"></i> WWM Brasileiro</h3>
+                <p>Tradução não-oficial da comunidade brasileira para Where Winds Meet.</p>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Downloads</h4>
+                <a id="footer-launcher-link" href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases">Launcher (.exe)</a>
+                <a id="footer-translation-link" href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases">Tradução (.zip)</a>
+                <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/releases">Todas as versões</a>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Projeto</h4>
+                <a href="https://github.com/rodrigomiquilino/wwm_brasileiro">GitHub</a>
+                <a href="translate.html">Ajudar a Traduzir</a>
+                <a href="#apoiar">Apoiar o Projeto</a>
+                <a href="https://github.com/rodrigomiquilino/wwm_brasileiro/blob/main/LICENSE">Licença MIT</a>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Comunidade</h4>
+                <a href="https://discordapp.com/users/rodrigo.dev">Discord</a>
+                <a href="https://store.steampowered.com/app/3564740/Where_Winds_Meet/">Steam</a>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>
+                Feito com ❤️ pela <a href="https://github.com/rodrigomiquilino">Comunidade WWM Brasil</a><br>
+                Este é um projeto não-oficial. Where Winds Meet © Everstone Games.
+            </p>
+        </div>
+    </footer>
+    
+    <script>
+        // ========== API CALLS ==========
+        const GITHUB_API = 'https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro';
+        
+        // ========== CACHE SYSTEM ==========
+        const CacheManager = {
+            CACHE_KEY: 'wwm_api_cache', // Compartilhado com translate.html
+            CACHE_TTL: 15 * 60 * 1000, // 15 minutos
+            
+            get(key, allowExpired = false) {
+                try {
+                    const cache = JSON.parse(localStorage.getItem(this.CACHE_KEY) || '{}');
+                    const item = cache[key];
+                    if (item && Date.now() - item.timestamp < this.CACHE_TTL) {
+                        console.log(`[Cache HIT] ${key}`);
+                        return item.data;
+                    }
+                    if (item && allowExpired) {
+                        console.log(`[Cache STALE] ${key} (usando dados antigos)`);
+                        return item.data;
+                    }
+                    if (item) {
+                        console.log(`[Cache EXPIRED] ${key}`);
+                    }
+                    return null;
+                } catch (e) {
+                    return null;
+                }
+            },
+            
+            set(key, data) {
+                try {
+                    const cache = JSON.parse(localStorage.getItem(this.CACHE_KEY) || '{}');
+                    cache[key] = { data, timestamp: Date.now() };
+                    localStorage.setItem(this.CACHE_KEY, JSON.stringify(cache));
+                    console.log(`[Cache SET] ${key}`);
+                } catch (e) {
+                    console.warn('Cache write failed:', e);
+                }
+            },
+            
+            clear() {
+                localStorage.removeItem(this.CACHE_KEY);
+            }
+        };
+        
+        // API call com cache e fallback para dados expirados
+        async function cachedApiCall(cacheKey, url, options = {}) {
+            // Primeiro tenta cache válido
+            const cached = CacheManager.get(cacheKey);
+            if (cached) return cached;
+            
+            try {
+                const response = await fetch(url, options);
+                
+                // Rate limit atingido
+                if (response.status === 403) {
+                    const staleData = CacheManager.get(cacheKey, true); // allowExpired
+                    if (staleData) {
+                        console.warn(`[Rate Limit] Usando cache expirado para ${cacheKey}`);
+                        return staleData;
+                    }
+                    const resetTime = response.headers.get('X-RateLimit-Reset');
+                    const resetDate = resetTime ? new Date(parseInt(resetTime) * 1000).toLocaleTimeString('pt-BR') : 'em breve';
+                    throw new Error(`Rate limit excedido. Tente novamente às ${resetDate}`);
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                CacheManager.set(cacheKey, data);
+                return data;
+            } catch (error) {
+                // Em caso de erro de rede, tenta cache expirado
+                const staleData = CacheManager.get(cacheKey, true);
+                if (staleData) {
+                    console.warn(`[Fallback] Usando cache expirado para ${cacheKey}`);
+                    return staleData;
+                }
+                throw error;
+            }
+        }
+        
+        // ========== SECURITY ==========
+        // Escape HTML para prevenir XSS
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
+            const div = document.createElement('div');
+            div.textContent = String(text);
+            return div.innerHTML;
+        }
+        
+        // ========== STATE ==========
+        // Armazena as versões encontradas
+        let latestLauncher = null;
+        let latestTranslation = null;
+        
+        // Encontra a release mais recente do launcher (tag começa com "launcher-")
+        function findLatestLauncher(releases) {
+            return releases.find(r => r.tag_name.startsWith('launcher-'));
+        }
+        
+        // Encontra a release mais recente da tradução (tag NÃO começa com "launcher")
+        function findLatestTranslation(releases) {
+            return releases.find(r => !r.tag_name.startsWith('launcher'));
+        }
+        
+        // Encontra o asset de download em uma release
+        function findAsset(release, extension) {
+            if (!release || !release.assets) return null;
+            return release.assets.find(a => a.name.endsWith(extension));
+        }
+        
+        // Extrai versão da tag (remove prefixos como "launcher-" ou "v")
+        function extractVersion(tag) {
+            return tag.replace(/^(launcher-|v)/i, '');
+        }
+        
+        // Atualiza os links de download dinamicamente
+        function updateDownloadLinks() {
+            // Launcher
+            if (latestLauncher) {
+                const launcherVersion = extractVersion(latestLauncher.tag_name);
+                const launcherAsset = findAsset(latestLauncher, '.exe');
+                const launcherUrl = launcherAsset ? launcherAsset.browser_download_url : latestLauncher.html_url;
+                
+                // Hero (agora é button, só atualiza texto)
+                const heroLauncherText = document.getElementById('hero-launcher-text');
+                if (heroLauncherText) heroLauncherText.textContent = `Baixar Launcher v${launcherVersion}`;
+                
+                // Download section (agora é button, só atualiza texto)
+                const downloadLauncherText = document.getElementById('download-launcher-text');
+                if (downloadLauncherText) downloadLauncherText.textContent = `Baixar Launcher v${launcherVersion} (.exe)`;
+                
+                // Footer
+                const footerLauncherLink = document.getElementById('footer-launcher-link');
+                if (footerLauncherLink) {
+                    footerLauncherLink.href = launcherUrl;
+                    footerLauncherLink.textContent = `Launcher v${launcherVersion} (.exe)`;
+                }
+                
+                // Modal launcher download button
+                const modalLauncherDownload = document.getElementById('modal-launcher-download');
+                if (modalLauncherDownload) {
+                    modalLauncherDownload.href = launcherUrl;
+                    modalLauncherDownload.innerHTML = `<i class="fas fa-download"></i> Baixar Launcher v${launcherVersion}`;
+                }
+            }
+            
+            // Tradução
+            if (latestTranslation) {
+                const translationVersion = extractVersion(latestTranslation.tag_name);
+                const translationAsset = findAsset(latestTranslation, '.zip');
+                const translationUrl = translationAsset ? translationAsset.browser_download_url : latestTranslation.html_url;
+                
+                // Hero (agora é button, só atualiza texto)
+                const heroTranslationText = document.getElementById('hero-translation-text');
+                if (heroTranslationText) heroTranslationText.textContent = `Baixar Tradução v${translationVersion}`;
+                
+                // Download section (agora é button, só atualiza texto)
+                const downloadTranslationText = document.getElementById('download-translation-text');
+                if (downloadTranslationText) downloadTranslationText.textContent = `Baixar Tradução v${translationVersion} (.zip)`;
+                
+                // Footer
+                const footerTranslationLink = document.getElementById('footer-translation-link');
+                if (footerTranslationLink) {
+                    footerTranslationLink.href = translationUrl;
+                    footerTranslationLink.textContent = `Tradução v${translationVersion} (.zip)`;
+                }
+                
+                // Modal manual download button
+                const modalManualDownload = document.getElementById('modal-manual-download');
+                if (modalManualDownload) {
+                    modalManualDownload.href = translationUrl;
+                    modalManualDownload.innerHTML = `<i class="fas fa-file-archive"></i> Baixar Tradução v${translationVersion}`;
+                }
+                
+                // Stats
+                const statVersion = document.getElementById('stat-version');
+                if (statVersion) statVersion.textContent = `v${translationVersion}`;
+            }
+        }
+        
+        // Fetch releases
+        async function fetchReleases() {
+            try {
+                const releases = await cachedApiCall('releases', `${GITHUB_API}/releases`);
+                
+                const container = document.getElementById('releases-list');
+                
+                if (!releases.length) {
+                    container.innerHTML = '<div class="loading">Nenhuma release encontrada</div>';
+                    return;
+                }
+                
+                // Encontra as releases mais recentes de cada tipo
+                latestLauncher = findLatestLauncher(releases);
+                latestTranslation = findLatestTranslation(releases);
+                
+                // Atualiza os links de download
+                updateDownloadLinks();
+                
+                // Update stats
+                let totalDownloads = 0;
+                releases.forEach(r => {
+                    r.assets.forEach(a => totalDownloads += a.download_count);
+                });
+                
+                document.getElementById('stat-downloads').textContent = totalDownloads.toLocaleString('pt-BR');
+                
+                // Render releases (mostra todas, com ícone diferente para launcher)
+                container.innerHTML = releases.slice(0, 10).map((release, index) => {
+                    const isLauncher = release.tag_name.startsWith('launcher-');
+                    const isLatestLauncher = latestLauncher && release.tag_name === latestLauncher.tag_name;
+                    const isLatestTranslation = latestTranslation && release.tag_name === latestTranslation.tag_name;
+                    const tagLabel = isLatestLauncher ? 'Launcher' : (isLatestTranslation ? 'Tradução' : '');
+                    
+                    return `
+                        <a href="${release.html_url}" target="_blank" class="release-item" style="text-decoration: none; color: inherit;">
+                            <div class="release-icon">
+                                <i class="fas ${isLauncher ? 'fa-rocket' : 'fa-tag'}"></i>
+                            </div>
+                            <div class="release-info">
+                                <div class="release-version">${release.name || release.tag_name}</div>
+                                <div class="release-date">${new Date(release.published_at).toLocaleDateString('pt-BR')}</div>
+                            </div>
+                            ${tagLabel ? `<span class="release-tag ${isLatestLauncher ? 'launcher' : 'latest'}">${tagLabel}</span>` : ''}
+                        </a>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                document.getElementById('releases-list').innerHTML = 
+                    '<div class="loading"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar releases</div>';
+            }
+        }
+        
+        // Fetch commits
+        async function fetchCommits() {
+            try {
+                const commits = await cachedApiCall('commits', `${GITHUB_API}/commits?per_page=15`);
+                
+                const container = document.getElementById('commits-list');
+                
+                if (!commits.length) {
+                    container.innerHTML = '<div class="loading">Nenhum commit encontrado</div>';
+                    return;
+                }
+                
+                container.innerHTML = commits.map(commit => {
+                    const author = commit.author?.login || commit.commit.author.name;
+                    const initial = author.charAt(0).toUpperCase();
+                    const date = new Date(commit.commit.author.date).toLocaleDateString('pt-BR');
+                    const sha = commit.sha.substring(0, 7);
+                    const message = commit.commit.message.split('\n')[0];
+                    
+                    return `
+                        <a href="${commit.html_url}" target="_blank" class="commit-item" style="text-decoration: none; color: inherit;">
+                            <div class="commit-avatar">${initial}</div>
+                            <div class="commit-content">
+                                <div class="commit-message">${message}</div>
+                                <div class="commit-meta">
+                                    <span>${author}</span>
+                                    <span class="commit-sha">${sha}</span>
+                                    <span>${date}</span>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                document.getElementById('commits-list').innerHTML = 
+                    '<div class="loading"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar commits</div>';
+            }
+        }
+        
+        // Load Hall of Fame - Two Column Layout (COM CACHE)
+        async function loadContributors() {
+            const container = document.getElementById('hall-container');
+            if (!container) return;
+            
+            // Developers fixos
+            const LEAD_DEV = 'rodrigomiquilino';
+            const SECONDARY_DEV = 'DOG729';
+            
+            try {
+                container.innerHTML = '<div class="hall-loading"><i class="fas fa-spinner fa-spin"></i> Carregando Hall da Fama...</div>';
+                
+                // Buscar dados em paralelo COM CACHE
+                const [repoContributors, issues, leadDevData, secondaryDevData] = await Promise.all([
+                    cachedApiCall('contributors', 'https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/contributors?per_page=50'),
+                    cachedApiCall('applied_issues', 'https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues?state=closed&labels=applied&per_page=100'),
+                    cachedApiCall(`user_${LEAD_DEV}`, `https://api.github.com/users/${LEAD_DEV}`),
+                    cachedApiCall(`user_${SECONDARY_DEV}`, `https://api.github.com/users/${SECONDARY_DEV}`)
+                ]);
+                
+                // Buscar commits dos devs principais
+                const leadDevContrib = repoContributors.find(c => c.login === LEAD_DEV);
+                const secondaryDevContrib = repoContributors.find(c => c.login === SECONDARY_DEV);
+                
+                // Processar autores de issues aprovadas
+                let issueAuthors = [];
+                const authorCounts = {};
+                issues.forEach(issue => {
+                    if (issue.user && issue.user.type === 'User') {
+                        const login = issue.user.login;
+                        if (!authorCounts[login]) {
+                            authorCounts[login] = {
+                                login: login,
+                                avatar_url: issue.user.avatar_url,
+                                html_url: issue.user.html_url,
+                                contributions: 0,
+                                source: 'issues'
+                            };
+                        }
+                        try {
+                            const jsonMatch = issue.body?.match(/"total"\s*:\s*(\d+)/);
+                            const count = jsonMatch ? parseInt(jsonMatch[1]) : 1;
+                            authorCounts[login].contributions += count;
+                        } catch (e) {
+                            authorCounts[login].contributions += 1;
+                        }
+                    }
+                });
+                issueAuthors = Object.values(authorCounts);
+                
+                // Combinar contributors (excluindo os devs principais)
+                const communityContributors = new Map();
+                
+                repoContributors
+                    .filter(c => c.type === 'User' && c.login !== LEAD_DEV && c.login !== SECONDARY_DEV)
+                    .forEach(c => {
+                        communityContributors.set(c.login, {
+                            login: c.login,
+                            avatar_url: c.avatar_url,
+                            html_url: c.html_url,
+                            contributions: c.contributions,
+                            source: 'commits'
+                        });
+                    });
+                
+                issueAuthors
+                    .filter(a => a.login !== LEAD_DEV && a.login !== SECONDARY_DEV)
+                    .forEach(author => {
+                        if (communityContributors.has(author.login)) {
+                            const existing = communityContributors.get(author.login);
+                            existing.contributions += author.contributions;
+                            existing.source = 'both';
+                        } else {
+                            communityContributors.set(author.login, author);
+                        }
+                    });
+                
+                // Ordenar e pegar top 10
+                const topCommunity = Array.from(communityContributors.values())
+                    .sort((a, b) => b.contributions - a.contributions)
+                    .slice(0, 10);
+                
+                // Renderizar o layout
+                container.innerHTML = `
+                    <!-- Left Column: Developers Castle -->
+                    <div class="devs-castle">
+                        <div class="castle-title"><i class="fas fa-crown"></i> Desenvolvedores</div>
+                        
+                        <!-- Lead Developer - GOLD -->
+                        <div class="dev-card lead">
+                            <div class="dev-header">
+                                <div class="dev-rank-badge">👑</div>
+                                <div class="dev-avatar">
+                                    <div class="dev-avatar-glow"></div>
+                                    <a href="${leadDevData?.html_url || 'https://github.com/' + LEAD_DEV}" target="_blank">
+                                        <img src="${leadDevData?.avatar_url || 'https://github.com/' + LEAD_DEV + '.png'}" alt="${LEAD_DEV}">
+                                    </a>
+                                </div>
+                                <div class="dev-info">
+                                    <div class="dev-name">
+                                        <a href="${leadDevData?.html_url || 'https://github.com/' + LEAD_DEV}" target="_blank">@${LEAD_DEV}</a>
+                                    </div>
+                                    <div class="dev-title">
+                                        <i class="fas fa-code"></i> Desenvolvedor Principal
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dev-stats">
+                                <div class="dev-stat">
+                                    <div class="dev-stat-value">${leadDevContrib?.contributions || '∞'}</div>
+                                    <div class="dev-stat-label">Commits</div>
+                                </div>
+                                <div class="dev-stat">
+                                    <div class="dev-stat-value">${leadDevData?.public_repos || '-'}</div>
+                                    <div class="dev-stat-label">Repos</div>
+                                </div>
+                                <div class="dev-stat">
+                                    <div class="dev-stat-value">${leadDevData?.followers || '-'}</div>
+                                    <div class="dev-stat-label">Seguidores</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Secondary Developer - SILVER -->
+                        <div class="dev-card secondary">
+                            <div class="dev-header">
+                                <div class="dev-rank-badge">🥈</div>
+                                <div class="dev-avatar">
+                                    <a href="${secondaryDevData?.html_url || 'https://github.com/' + SECONDARY_DEV}" target="_blank">
+                                        <img src="${secondaryDevData?.avatar_url || 'https://github.com/' + SECONDARY_DEV + '.png'}" alt="${SECONDARY_DEV}">
+                                    </a>
+                                </div>
+                                <div class="dev-info">
+                                    <div class="dev-name">
+                                        <a href="${secondaryDevData?.html_url || 'https://github.com/' + SECONDARY_DEV}" target="_blank">@${SECONDARY_DEV}</a>
+                                    </div>
+                                    <div class="dev-title">
+                                        <i class="fas fa-code-branch"></i> Desenvolvedor Secundário
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dev-stats">
+                                <div class="dev-stat">
+                                    <div class="dev-stat-value">${secondaryDevContrib?.contributions || '-'}</div>
+                                    <div class="dev-stat-label">Commits</div>
+                                </div>
+                                <div class="dev-stat">
+                                    <div class="dev-stat-value">${secondaryDevData?.public_repos || '-'}</div>
+                                    <div class="dev-stat-label">Repos</div>
+                                </div>
+                                <div class="dev-stat">
+                                    <div class="dev-stat-value">${secondaryDevData?.followers || '-'}</div>
+                                    <div class="dev-stat-label">Seguidores</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column: Community Ranking -->
+                    <div class="community-ranking">
+                        <div class="ranking-title"><i class="fas fa-medal"></i> Top Tradutores</div>
+                        
+                        ${topCommunity.length > 0 ? `
+                            <div class="ranking-list">
+                                ${topCommunity.map((contributor, index) => {
+                                    const position = index + 1;
+                                    const roleName = contributor.source === 'issues' ? 'Tradutor' : 
+                                                     contributor.source === 'both' ? 'Tradutor & Dev' : 'Contributor';
+                                    // Sanitizar dados do usuário para prevenir XSS
+                                    const safeLogin = escapeHtml(contributor.login);
+                                    const safeHtmlUrl = escapeHtml(contributor.html_url);
+                                    const safeAvatarUrl = escapeHtml(contributor.avatar_url);
+                                    
+                                    return `
+                                        <div class="ranking-item">
+                                            <div class="ranking-position">${position}º</div>
+                                            <div class="ranking-avatar">
+                                                <a href="${safeHtmlUrl}" target="_blank">
+                                                    <img src="${safeAvatarUrl}" alt="${safeLogin}" loading="lazy">
+                                                </a>
+                                            </div>
+                                            <div class="ranking-info">
+                                                <div class="ranking-name">
+                                                    <a href="${safeHtmlUrl}" target="_blank">@${safeLogin}</a>
+                                                </div>
+                                                <div class="ranking-role">${roleName}</div>
+                                            </div>
+                                            <div class="ranking-score">
+                                                <div class="ranking-score-value">${contributor.contributions}</div>
+                                                <div class="ranking-score-label">pts</div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        ` : `
+                            <div class="ranking-empty">
+                                <i class="fas fa-users"></i>
+                                <p>Seja o primeiro tradutor!</p>
+                            </div>
+                        `}
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Error loading hall of fame:', error);
+                container.innerHTML = `
+                    <div class="hall-loading">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Erro ao carregar Hall da Fama</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Load Recent Translations - Reutiliza cache do Hall da Fama
+        async function loadRecentTranslations() {
+            const grid = document.getElementById('recent-translations-grid');
+            if (!grid) return;
+            
+            try {
+                // Reutiliza o mesmo cache do Hall (applied_issues) - economia de 1 chamada
+                const allIssues = await cachedApiCall(
+                    'applied_issues',
+                    'https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues?state=closed&labels=applied&per_page=100'
+                );
+                
+                // Ordenar por data de fechamento e pegar os 6 mais recentes
+                const issues = [...allIssues]
+                    .sort((a, b) => new Date(b.closed_at) - new Date(a.closed_at))
+                    .slice(0, 6);
+                
+                if (!issues || issues.length === 0) {
+                    grid.innerHTML = '<div class="recent-translations-empty"><i class="fas fa-inbox"></i> Nenhuma tradução aprovada ainda. Seja o primeiro!</div>';
+                    return;
+                }
+                
+                // Processar cada issue para extrair dados (SEM buscar eventos - economia de API)
+                const cards = issues.slice(0, 6).map(issue => {
+                    // Extrair JSON do corpo da issue
+                    let suggestions = [];
+                    let firstSuggestion = null;
+                    let editedCount = 0;
+                    
+                    try {
+                        const jsonMatch = issue.body?.match(/```json\s*\n([\s\S]*?)\n```/);
+                        if (jsonMatch) {
+                            const data = JSON.parse(jsonMatch[1].trim());
+                            suggestions = data.suggestions || [];
+                            firstSuggestion = suggestions[0];
+                            // Contar quantas foram editadas pelo revisor
+                            editedCount = suggestions.filter(s => s.editedByReviewer).length;
+                        }
+                    } catch (e) {
+                        console.warn('Erro ao parsear JSON da issue:', issue.number);
+                    }
+                    
+                    const closedDate = new Date(issue.closed_at);
+                    const dateStr = closedDate.toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                    });
+                    
+                    // Extrair uma amostra de tradução
+                    let sampleOriginal = '';
+                    let sampleTranslation = '';
+                    let wasEdited = false;
+                    
+                    if (firstSuggestion) {
+                        sampleOriginal = firstSuggestion.id?.substring(0, 12) + '...';
+                        sampleTranslation = firstSuggestion.suggestion?.substring(0, 80) + (firstSuggestion.suggestion?.length > 80 ? '...' : '');
+                        wasEdited = firstSuggestion.editedByReviewer || false;
+                    } else {
+                        // Fallback: tentar extrair do resumo (verificar se tem ✏️)
+                        const summaryMatch = issue.body?.match(/\d+\.\s*`([^`]+)`\s*(✏️)?\s*→\s*([^\n]+)/);
+                        if (summaryMatch) {
+                            sampleOriginal = summaryMatch[1].substring(0, 12) + '...';
+                            wasEdited = !!summaryMatch[2];
+                            sampleTranslation = summaryMatch[3].substring(0, 80);
+                        }
+                    }
+                    
+                    // Badge de edição do revisor
+                    const reviewerBadge = editedCount > 0 ? `
+                        <span class="recent-translation-edited" title="${editedCount} tradução(ões) editada(s) pelo revisor">
+                            <i class="fas fa-edit"></i> ${editedCount} editada${editedCount > 1 ? 's' : ''}
+                        </span>
+                    ` : '';
+                    
+                    return `
+                        <div class="recent-translation-card">
+                            <div class="recent-translation-header">
+                                <div class="recent-translation-meta">
+                                    <span class="recent-translation-date">
+                                        <i class="fas fa-calendar-check"></i> ${dateStr}
+                                    </span>
+                                    ${reviewerBadge}
+                                </div>
+                                <span class="recent-translation-count">
+                                    <i class="fas fa-language"></i> ${suggestions.length || '?'} tradução${suggestions.length !== 1 ? 'ões' : ''}
+                                </span>
+                            </div>
+                            
+                            ${sampleTranslation ? `
+                                <div class="recent-translation-text">
+                                    <div class="recent-translation-original">
+                                        <i class="fas fa-quote-left" style="opacity: 0.5;"></i> ID: ${escapeHtml(sampleOriginal)}${wasEdited ? ' <span style="color: #60a5fa;" title="Editada pelo revisor">✏️</span>' : ''}
+                                    </div>
+                                    <div class="recent-translation-result">
+                                        "${escapeHtml(sampleTranslation)}"
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="recent-translation-credits">
+                                <div class="recent-translation-author">
+                                    <span class="recent-translation-label">Tradutor</span>
+                                    <img src="${escapeHtml(issue.user?.avatar_url || '')}" alt="${escapeHtml(issue.user?.login || 'user')}">
+                                    <span>@${escapeHtml(issue.user?.login || 'anônimo')}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                grid.innerHTML = cards.join('');
+                
+            } catch (error) {
+                console.error('Error loading recent translations:', error);
+                grid.innerHTML = '<div class="recent-translations-empty"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar traduções recentes</div>';
+            }
+        }
+        
+        // Initialize with Lazy Loading (só carrega quando visível)
+        document.addEventListener('DOMContentLoaded', () => {
+            // Releases e commits são importantes - carregar imediatamente
+            fetchReleases();
+            fetchCommits();
+            
+            // Hall da Fama e Traduções Recentes - lazy load quando visível
+            const lazyLoadObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        if (id === 'hall-container' && !entry.target.dataset.loaded) {
+                            entry.target.dataset.loaded = 'true';
+                            loadContributors();
+                        } else if (id === 'recent-translations-grid' && !entry.target.dataset.loaded) {
+                            entry.target.dataset.loaded = 'true';
+                            loadRecentTranslations();
+                        }
+                        lazyLoadObserver.unobserve(entry.target);
+                    }
+                });
+            }, { rootMargin: '200px' }); // Carrega 200px antes de aparecer
+            
+            const hallContainer = document.getElementById('hall-container');
+            const recentGrid = document.getElementById('recent-translations-grid');
+            
+            if (hallContainer) lazyLoadObserver.observe(hallContainer);
+            if (recentGrid) lazyLoadObserver.observe(recentGrid);
+        });
+        
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        
+        // ========== PIX QR CODE GENERATOR ==========
+        // Gera o QR Code PIX ao carregar a página
+        function generatePixQRCode() {
+            const pixKey = '5d92c454-726c-4f54-81fd-5129a76a8ed7';
+            const merchantName = 'Rodrigo Miquilino';
+            const merchantCity = 'Rio de Janeiro';
+            
+            // Payload PIX no formato BR Code (EMV)
+            // Referência: https://www.bcb.gov.br/content/estabilidadefinanceira/pix/Regulamento_Pix/II_ManualdePadroesparaIniciacaodoPix.pdf
+            
+            function pad(num) {
+                return num.toString().padStart(2, '0');
+            }
+            
+            function field(id, val) {
+                return id + pad(val.length) + val;
+            }
+            
+            // CRC16-CCITT-FALSE
+            function crc16(str) {
+                let crc = 0xFFFF;
+                for (let c of str) {
+                    crc ^= c.charCodeAt(0) << 8;
+                    for (let i = 0; i < 8; i++) {
+                        crc = crc & 0x8000 ? (crc << 1) ^ 0x1021 : crc << 1;
+                    }
+                }
+                return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+            }
+            
+            // Merchant Account Info (26)
+            const mai26 = field('00', 'br.gov.bcb.pix') + field('01', pixKey);
+            
+            // Monta payload sem CRC
+            let payload = '';
+            payload += field('00', '01');                    // Payload Format Indicator
+            payload += field('26', mai26);                   // Merchant Account Info
+            payload += field('52', '0000');                  // MCC
+            payload += field('53', '986');                   // Currency (BRL)
+            payload += field('58', 'BR');                    // Country
+            payload += field('59', merchantName);            // Merchant Name
+            payload += field('60', merchantCity);            // City
+            payload += '6304';                               // CRC field ID + size (04)
+            
+            // Calcula CRC e adiciona ao final
+            const crcValue = crc16(payload);
+            payload += crcValue;
+            
+            // console.log('PIX Payload:', payload);
+            
+            // Gera QR Code via API
+            const img = document.getElementById('pix-qrcode-img');
+            if (img) {
+                const encodedData = encodeURIComponent(payload);
+                img.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodedData}`;
+            }
+        }
+        
+        // Inicializa o QR Code quando a página carregar
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', generatePixQRCode);
+        } else {
+            generatePixQRCode();
+        }
+        
+        // ========== PIX COPY FUNCTION ==========
+        function copyPixKey(button) {
+            const pixKey = '5d92c454-726c-4f54-81fd-5129a76a8ed7';
+            
+            navigator.clipboard.writeText(pixKey).then(() => {
+                button.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.innerHTML = '<i class="fas fa-copy"></i> Copiar Chave PIX';
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(() => {
+                // Fallback para navegadores antigos
+                const textarea = document.createElement('textarea');
+                textarea.value = pixKey;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                button.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.innerHTML = '<i class="fas fa-copy"></i> Copiar Chave PIX';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+        
+        // ========== MODAL FUNCTIONS ==========
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        // Event listeners para botões de download (usando data-modal)
+        document.querySelectorAll('[data-modal]').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const modalId = this.getAttribute('data-modal');
+                openModal(modalId);
+            });
+        });
+        
+        // Event listeners para botões de fechar modal
+        document.querySelectorAll('.modal-close, .modal-footer .btn-secondary').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const modal = this.closest('.modal-overlay');
+                if (modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+        
+        // Fechar modal ao clicar fora
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+        
+        // Fechar modal com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
+</body>
+</html>
