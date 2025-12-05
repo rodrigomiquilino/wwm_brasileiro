@@ -169,9 +169,9 @@
                     <p>Instalador automático com interface gráfica moderna. Instala e atualiza a tradução com um clique. <strong>~40MB</strong></p>
                     
                     <ul class="download-features">
-                        <li><i class="fas fa-check"></i> Suporte a Steam, Epic e Standalone</li>
-                        <li><i class="fas fa-check"></i> Detecção automática da plataforma</li>
-                        <li><i class="fas fa-check"></i> Instalação com 1 clique</li>
+                        <li style="display: block;"><i class="fas fa-check"></i> <strong>Auto-Detecção</strong> de Steam, Epic e Standalone</li>
+                        <li><i class="fas fa-check"></i> Instalação com <strong>1 clique</strong></li>
+                        <li><i class="fas fa-check"></i> Suporte a <strong>4 arquivos</strong> de tradução</li>
                         <li><i class="fas fa-check"></i> Backup e restauração de originais</li>
                         <li><i class="fas fa-check"></i> Solicita admin quando necessário</li>
                         <li><i class="fas fa-check"></i> Suporte a escalas de DPI</li>
@@ -192,8 +192,8 @@
                     <p>Faça a instalação manual se preferir ter controle total sobre os arquivos.</p>
                     
                     <ul class="download-features">
-                        <li><i class="fas fa-check"></i> translate_words_map_en (~30k)</li>
-                        <li><i class="fas fa-check"></i> translate_words_map_en_diff (~20k)</li>
+                        <li><i class="fas fa-check"></i> <strong>4 arquivos</strong> de tradução</li>
+                        <li><i class="fas fa-check"></i> Estrutura HD/oversea/locale + HD/locale</li>
                         <li><i class="fas fa-check"></i> Sem dependências</li>
                         <li><i class="fas fa-check"></i> Portátil</li>
                     </ul>
@@ -292,8 +292,8 @@
                 </div>
                 <div class="install-step">
                     <div class="step-number">3</div>
-                    <h3>Selecione o Jogo</h3>
-                    <p>Clique em "Selecionar" e escolha o wwm.exe do seu jogo (Steam, Epic ou Standalone)</p>
+                    <h3>Auto-Detectar 🔍</h3>
+                    <p>Clique em <strong>"Auto-Detectar"</strong> e o launcher encontra o jogo automaticamente!</p>
                 </div>
                 <div class="install-step">
                     <div class="step-number">4</div>
@@ -304,16 +304,18 @@
             
             <!-- Manual Installation -->
             <div class="opensource-banner mt-3">
-                <h3><i class="fas fa-wrench"></i> Instalação Manual</h3>
+                <h3><i class="fas fa-wrench"></i> Instalação Manual (4 arquivos)</h3>
                 <p>
-                    Se preferir instalar manualmente, baixe o arquivo ZIP e extraia os arquivos para a pasta de locale do seu jogo:
+                    Se preferir instalar manualmente, baixe o ZIP e extraia os arquivos para as <strong>2 pastas</strong> do jogo:
                 </p>
                 <code>
-                    <strong>Steam/Epic:</strong> ...\Where Winds Meet\Package\HD\oversea\locale\<br>
-                    <strong>Standalone:</strong> ...\wwm_standard\LocalData\Patch\HD\oversea\locale\
+                    <strong>Pasta 1 (Steam/Epic):</strong> ...\Package\HD\oversea\locale\<br>
+                    <strong>Pasta 2 (Steam/Epic):</strong> ...\Package\HD\locale\<br><br>
+                    <strong>Pasta 1 (Standalone):</strong> ...\LocalData\Patch\HD\oversea\locale\<br>
+                    <strong>Pasta 2 (Standalone):</strong> ...\LocalData\Patch\HD\locale\
                 </code>
                 <p class="small">
-                    Substitua os arquivos <strong>translate_words_map_en</strong> e <strong>translate_words_map_en_diff</strong>
+                    Substitua os arquivos <strong>translate_words_map_en</strong> e <strong>translate_words_map_en_diff</strong> em ambas as pastas.
                 </p>
             </div>
         </div>
@@ -409,7 +411,7 @@
                         </li>
                         <li>
                             <span class="step-num">2</span>
-                            <span class="step-text">Clique em <strong>"Selecionar"</strong> e encontre o arquivo <strong>wwm.exe</strong> do seu jogo (veja como abaixo)</span>
+                            <span class="step-text">Clique em <strong>"🔍 Auto-Detectar"</strong> - o launcher encontra o jogo automaticamente!</span>
                         </li>
                         <li>
                             <span class="step-num">3</span>
@@ -423,45 +425,43 @@
                 </div>
                 
                 <div class="modal-section">
-                    <h3><i class="fas fa-folder-open"></i> Como encontrar o wwm.exe</h3>
+                    <h3><i class="fas fa-magic"></i> Auto-Detecção Inteligente</h3>
+                    <p>O launcher v3.0 detecta automaticamente a instalação do jogo em:</p>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li><i class="fab fa-steam" style="color: #1b2838;"></i> <strong>Steam</strong> - Via registro do Windows</li>
+                        <li><i class="fas fa-gamepad" style="color: #2f2f2f;"></i> <strong>Epic Games</strong> - Via manifestos da Epic</li>
+                        <li><i class="fas fa-desktop" style="color: #666;"></i> <strong>Standalone</strong> - Caminhos comuns (C:\Program Files\wwm\)</li>
+                    </ul>
+                </div>
+                
+                <div class="modal-section">
+                    <h3><i class="fas fa-folder-open"></i> Busca Manual (Se necessário)</h3>
+                    <p>Se o Auto-Detectar não encontrar, clique em <strong>"Procurar wwm.exe"</strong> e navegue até:</p>
                     
                     <div class="path-box">
                         <div class="platform-name"><i class="fab fa-steam"></i> Steam</div>
                         <code>
-                            <strong>Método rápido:</strong> Biblioteca Steam → Clique direito no jogo → Gerenciar → Navegar arquivos locais<br><br>
-                            <strong>Caminho:</strong> Abra a pasta do jogo, depois navegue até:<br>
-                            📁 Engine → 📁 Binaries → 📁 Win64r → 📄 <strong>wwm.exe</strong><br><br>
-                            <strong>Caminho completo:</strong><br>
-                            C:\Program Files (x86)\Steam\steamapps\common\Where Winds Meet\Engine\Binaries\Win64r\<strong>wwm.exe</strong>
+                            📁 Engine → 📁 Binaries → 📁 Win64r → 📄 <strong>wwm.exe</strong>
                         </code>
                     </div>
                     
                     <div class="path-box">
                         <div class="platform-name"><i class="fas fa-gamepad"></i> Epic Games</div>
                         <code>
-                            <strong>Método rápido:</strong> Epic Games → Biblioteca → Clique nos 3 pontos (...) → Gerenciar → Abrir pasta de instalação<br><br>
-                            <strong>Caminho:</strong> Abra a pasta do jogo, depois navegue até:<br>
-                            📁 Engine → 📁 Binaries → 📁 Win64r → 📄 <strong>wwm.exe</strong><br><br>
-                            <strong>Caminho completo:</strong><br>
-                            C:\Program Files\Epic Games\WhereWindsMeet\Engine\Binaries\Win64r\<strong>wwm.exe</strong>
+                            📁 Engine → 📁 Binaries → 📁 Win64r → 📄 <strong>wwm.exe</strong>
                         </code>
                     </div>
                     
                     <div class="path-box">
-                        <div class="platform-name"><i class="fas fa-desktop"></i> Standalone (Standard ou Lite)</div>
+                        <div class="platform-name"><i class="fas fa-desktop"></i> Standalone</div>
                         <code>
-                            <strong>Localização padrão:</strong> O jogo standalone é instalado na pasta que você escolheu<br><br>
-                            <strong>Caminho:</strong> Abra a pasta wwm_standard (ou wwm_lite), depois navegue até:<br>
-                            📁 Engine → 📁 Binaries → 📁 Win64r → 📄 <strong>wwm.exe</strong><br><br>
-                            <strong>Caminho comum:</strong><br>
-                            C:\Program Files\wwm\wwm_standard\Engine\Binaries\Win64r\<strong>wwm.exe</strong><br>
-                            C:\Program Files\wwm\wwm_lite\Engine\Binaries\Win64r\<strong>wwm.exe</strong>
+                            📁 wwm_standard (ou wwm_lite) → 📁 Engine → 📁 Binaries → 📁 Win64r → 📄 <strong>wwm.exe</strong>
                         </code>
                     </div>
                 </div>
                 
                 <div class="modal-tip">
-                    <p><strong>💡 Dica:</strong> O launcher detecta automaticamente a plataforma e cria backup dos arquivos originais. Você pode restaurar a qualquer momento!</p>
+                    <p><strong>💡 Novo na v3.0:</strong> O launcher agora suporta <strong>4 arquivos</strong> de tradução em <strong>2 pastas</strong> diferentes, garantindo tradução completa!</p>
                 </div>
             </div>
             <div class="modal-footer">
@@ -487,68 +487,57 @@
                     <ol class="step-list">
                         <li>
                             <span class="step-num">1</span>
-                            <span class="step-text">Baixe o arquivo <strong>traducao_ptbr.zip</strong></span>
+                            <span class="step-text">Baixe o arquivo <strong>HD.zip</strong> da tradução</span>
                         </li>
                         <li>
                             <span class="step-num">2</span>
-                            <span class="step-text">Extraia o conteúdo do ZIP (dois arquivos)</span>
+                            <span class="step-text">Extraia o conteúdo do ZIP (pasta HD com 4 arquivos)</span>
                         </li>
                         <li>
                             <span class="step-num">3</span>
-                            <span class="step-text">Navegue até a <strong>pasta de tradução</strong> do seu jogo (veja como abaixo)</span>
+                            <span class="step-text">Copie os arquivos para as <strong>2 pastas de tradução</strong> do seu jogo</span>
                         </li>
                         <li>
                             <span class="step-num">4</span>
-                            <span class="step-text">Cole os arquivos e <strong>substitua</strong> quando perguntado</span>
+                            <span class="step-text"><strong>Substitua</strong> quando perguntado (em ambas as pastas)</span>
                         </li>
                     </ol>
                 </div>
                 
                 <div class="modal-section">
-                    <h3><i class="fas fa-file"></i> Arquivos incluídos no ZIP</h3>
+                    <h3><i class="fas fa-file"></i> Estrutura do ZIP</h3>
                     <div class="path-box">
-                        <div class="platform-name"><i class="fas fa-file-alt"></i> Arquivos de Tradução</div>
+                        <div class="platform-name"><i class="fas fa-folder-tree"></i> Conteúdo do HD.zip</div>
                         <code>
-                            • <strong>translate_words_map_en</strong> (~30.000 strings)<br>
-                            • <strong>translate_words_map_en_diff</strong> (~20.000 strings)
+                            <strong>HD/</strong><br>
+                            ├── <strong>oversea/locale/</strong><br>
+                            │&nbsp;&nbsp;&nbsp;&nbsp;├── translate_words_map_en<br>
+                            │&nbsp;&nbsp;&nbsp;&nbsp;└── translate_words_map_en_diff<br>
+                            └── <strong>locale/</strong><br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── translate_words_map_en<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── translate_words_map_en_diff
                         </code>
                     </div>
                 </div>
                 
                 <div class="modal-section">
-                    <h3><i class="fas fa-folder-open"></i> Como chegar na pasta de tradução</h3>
+                    <h3><i class="fas fa-folder-open"></i> Onde colocar os arquivos</h3>
                     
                     <div class="path-box">
-                        <div class="platform-name"><i class="fab fa-steam"></i> Steam</div>
+                        <div class="platform-name"><i class="fab fa-steam"></i> Steam / <i class="fas fa-gamepad"></i> Epic</div>
                         <code>
-                            <strong>Método rápido:</strong> Biblioteca Steam → Clique direito no jogo → Gerenciar → Navegar arquivos locais<br><br>
-                            <strong>Caminho:</strong> Abra a pasta do jogo, depois navegue até:<br>
-                            📁 Package → 📁 HD → 📁 oversea → 📁 <strong>locale</strong><br><br>
-                            <strong>Caminho completo:</strong><br>
-                            C:\Program Files (x86)\Steam\steamapps\common\Where Winds Meet\<strong>Package\HD\oversea\locale\</strong>
+                            <strong>Pasta 1:</strong> ...\Package\<strong>HD\oversea\locale\</strong><br>
+                            <strong>Pasta 2:</strong> ...\Package\<strong>HD\locale\</strong><br><br>
+                            <em>Copie os 2 arquivos para cada pasta (total: 4 arquivos)</em>
                         </code>
                     </div>
                     
                     <div class="path-box">
-                        <div class="platform-name"><i class="fas fa-gamepad"></i> Epic Games</div>
+                        <div class="platform-name"><i class="fas fa-desktop"></i> Standalone</div>
                         <code>
-                            <strong>Método rápido:</strong> Epic Games → Biblioteca → Clique nos 3 pontos (...) → Gerenciar → Abrir pasta de instalação<br><br>
-                            <strong>Caminho:</strong> Abra a pasta do jogo, depois navegue até:<br>
-                            📁 Package → 📁 HD → 📁 oversea → 📁 <strong>locale</strong><br><br>
-                            <strong>Caminho completo:</strong><br>
-                            C:\Program Files\Epic Games\WhereWindsMeet\<strong>Package\HD\oversea\locale\</strong>
-                        </code>
-                    </div>
-                    
-                    <div class="path-box">
-                        <div class="platform-name"><i class="fas fa-desktop"></i> Standalone (Standard ou Lite)</div>
-                        <code>
-                            <strong>Localização padrão:</strong> O jogo standalone é instalado na pasta que você escolheu<br><br>
-                            <strong>Caminho:</strong> Abra a pasta wwm_standard (ou wwm_lite), depois navegue até:<br>
-                            📁 LocalData → 📁 Patch → 📁 HD → 📁 oversea → 📁 <strong>locale</strong><br><br>
-                            <strong>Caminho comum:</strong><br>
-                            C:\Program Files\wwm\wwm_standard\<strong>LocalData\Patch\HD\oversea\locale\</strong><br>
-                            C:\Program Files\wwm\wwm_lite\<strong>LocalData\Patch\HD\oversea\locale\</strong>
+                            <strong>Pasta 1:</strong> ...\LocalData\Patch\<strong>HD\oversea\locale\</strong><br>
+                            <strong>Pasta 2:</strong> ...\LocalData\Patch\<strong>HD\locale\</strong><br><br>
+                            <em>Copie os 2 arquivos para cada pasta (total: 4 arquivos)</em>
                         </code>
                     </div>
                 </div>

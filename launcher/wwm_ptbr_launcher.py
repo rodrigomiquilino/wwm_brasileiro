@@ -100,7 +100,7 @@ except ImportError:
 # ============================================================================
 
 APP_NAME = "WWM Tradutor PT-BR"
-APP_VERSION = "2.2.0"
+APP_VERSION = "3.0.0"
 GITHUB_REPO = "rodrigomiquilino/wwm_brasileiro"
 GITHUB_API_RELEASES = f"https://api.github.com/repos/{GITHUB_REPO}/releases"
 GITHUB_RELEASES_PAGE = f"https://github.com/{GITHUB_REPO}/releases"
@@ -111,11 +111,21 @@ LOCAL_CONFIG_FILE = "wwm_ptbr_launcher.json"
 # Arquivo de configuração da tradução (na pasta de tradução do jogo)
 TRANSLATION_CONFIG_FILE = ".wwm_ptbr_config"
 
-# Arquivos de tradução
-TRANSLATION_FILES = [
-    "translate_words_map_en",
-    "translate_words_map_en_diff"
-]
+# Arquivos de tradução - estrutura de pastas relativas ao HD
+# Cada pasta contém os mesmos arquivos, mas com conteúdo diferente
+TRANSLATION_STRUCTURE = {
+    "oversea/locale": [
+        "translate_words_map_en",
+        "translate_words_map_en_diff"
+    ],
+    "locale": [
+        "translate_words_map_en",
+        "translate_words_map_en_diff"
+    ]
+}
+
+# Lista plana de nomes de arquivos (para compatibilidade)
+TRANSLATION_FILES = ["translate_words_map_en", "translate_words_map_en_diff"]
 
 # Plataformas suportadas
 class Platform:
@@ -125,28 +135,29 @@ class Platform:
     UNKNOWN = "unknown"
 
 
-# Caminhos relativos por plataforma
+# Caminhos relativos por plataforma (agora aponta para HD como base)
 PLATFORM_CONFIG = {
     Platform.STEAM: {
         "name": "Steam",
-        "translation_path": r"Package\HD\oversea\locale",
+        "hd_path": r"Package\HD",
         "exe_pattern": r"Engine\Binaries\Win64r\wwm.exe",
         "launch_command": "steam://rungameid/3564740",
-        "icon": "🎮"
+        "icon": "🎮",
+        "steam_appid": "3564740"
     },
     Platform.EPIC: {
         "name": "Epic Games",
-        "translation_path": r"Package\HD\oversea\locale",
+        "hd_path": r"Package\HD",
         "exe_pattern": r"Engine\Binaries\Win64r\wwm.exe",
         "launch_command": "com.epicgames.launcher://apps/4806012311744989a5f96d97a42f7829%3Ad53f8dc5825748849ca0890279c3dad7%3Aa7d28f0e0935490b9d6f92dda1a7a75b?action=launch&silent=true",
         "icon": "🎯"
     },
     Platform.STANDALONE: {
         "name": "Standalone",
-        "translation_path": r"LocalData\Patch\HD\oversea\locale",
+        "hd_path": r"LocalData\Patch\HD",
         "exe_pattern": r"wwm_(standard|lite)\Engine\Binaries\Win64r\wwm.exe",
-        "variants": ["wwm_standard", "wwm_lite"],  # Variantes suportadas
-        "launcher_exe": "launcher.exe",  # Executável para iniciar o jogo
+        "variants": ["wwm_standard", "wwm_lite"],
+        "launcher_exe": "launcher.exe",
         "launch_command": None,
         "icon": "💻"
     }
@@ -207,10 +218,15 @@ def get_file_modified_time(filepath: str) -> str:
 # ============================================================================
 
 class TranslationConfig:
-    """Gerencia o arquivo de configuração na pasta de tradução"""
+    """Gerencia o arquivo de configuração na pasta HD"""
     
-    def __init__(self, translation_path: str):
-        self.config_path = Path(translation_path) / TRANSLATION_CONFIG_FILE
+    def __init__(self, hd_path: str):
+        """
+        Args:
+            hd_path: Caminho para a pasta HD (ex: Package/HD ou LocalData/Patch/HD)
+        """
+        self.hd_path = Path(hd_path)
+        self.config_path = self.hd_path / TRANSLATION_CONFIG_FILE
         self.data = self._load()
     
     def _load(self) -> dict:
@@ -244,7 +260,10 @@ class TranslationConfig:
         return self.data.get('timestamp', '')
     
     def get_file_hashes(self) -> dict:
-        """Retorna os hashes dos arquivos instalados"""
+        """Retorna os hashes dos arquivos instalados
+        
+        Formato: {"oversea/locale/translate_words_map_en": "hash", ...}
+        """
         return self.data.get('file_hashes', {})
     
     def set_installed(self, version: str, timestamp: str, file_hashes: dict):
@@ -266,6 +285,223 @@ class TranslationConfig:
 
 
 # ============================================================================
+# AUTO-DETECTOR DE INSTALAÇÃO DO JOGO
+# ============================================================================
+
+class GameAutoDetector:
+    """Detecta automaticamente instalações do jogo Where Winds Meet"""
+    
+    STEAM_APPID = "3564740"
+    
+    @staticmethod
+    def find_all_installations() -> list:
+        """
+        Encontra todas as instalações do jogo.
+        
+        Returns:
+            Lista de tuplas (platform, exe_path, game_root, hd_path)
+        """
+        installations = []
+        
+        # Tenta encontrar em cada plataforma
+        steam = GameAutoDetector.find_steam_installation()
+        if steam:
+            installations.append(steam)
+        
+        epic = GameAutoDetector.find_epic_installation()
+        if epic:
+            installations.append(epic)
+        
+        standalone = GameAutoDetector.find_standalone_installation()
+        installations.extend(standalone)  # Pode retornar múltiplas
+        
+        return installations
+    
+    @staticmethod
+    def find_steam_installation() -> tuple:
+        """
+        Busca instalação do Steam via registro do Windows.
+        
+        Returns:
+            (Platform.STEAM, exe_path, game_root, hd_path) ou None
+        """
+        try:
+            import winreg
+            
+            # Busca o caminho do Steam no registro
+            steam_paths = []
+            
+            # Tenta 64-bit primeiro
+            try:
+                key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, 
+                                     r"SOFTWARE\WOW6432Node\Valve\Steam")
+                steam_path = winreg.QueryValueEx(key, "InstallPath")[0]
+                winreg.CloseKey(key)
+                steam_paths.append(steam_path)
+            except:
+                pass
+            
+            # Tenta 32-bit
+            try:
+                key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, 
+                                     r"SOFTWARE\Valve\Steam")
+                steam_path = winreg.QueryValueEx(key, "InstallPath")[0]
+                winreg.CloseKey(key)
+                if steam_path not in steam_paths:
+                    steam_paths.append(steam_path)
+            except:
+                pass
+            
+            # Tenta usuário atual
+            try:
+                key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, 
+                                     r"SOFTWARE\Valve\Steam")
+                steam_path = winreg.QueryValueEx(key, "SteamPath")[0]
+                winreg.CloseKey(key)
+                if steam_path not in steam_paths:
+                    steam_paths.append(steam_path)
+            except:
+                pass
+            
+            for steam_path in steam_paths:
+                steam_path = Path(steam_path)
+                
+                # Lê libraryfolders.vdf para encontrar todas as bibliotecas
+                library_file = steam_path / "steamapps" / "libraryfolders.vdf"
+                
+                if library_file.exists():
+                    library_paths = GameAutoDetector._parse_library_folders(library_file)
+                    
+                    # Adiciona o caminho padrão
+                    library_paths.insert(0, steam_path)
+                    
+                    # Procura o jogo em cada biblioteca
+                    for lib_path in library_paths:
+                        game_root = Path(lib_path) / "steamapps" / "common" / "Where Winds Meet"
+                        exe_path = game_root / "Engine" / "Binaries" / "Win64r" / "wwm.exe"
+                        
+                        if exe_path.exists():
+                            hd_path = game_root / PLATFORM_CONFIG[Platform.STEAM]["hd_path"]
+                            return (Platform.STEAM, str(exe_path), game_root, hd_path)
+            
+        except Exception as e:
+            pass
+        
+        return None
+    
+    @staticmethod
+    def _parse_library_folders(vdf_path: Path) -> list:
+        """Parse libraryfolders.vdf para encontrar caminhos de biblioteca"""
+        paths = []
+        try:
+            with open(vdf_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Regex para encontrar caminhos
+            import re
+            # Formato: "path"		"C:\\Program Files (x86)\\Steam"
+            pattern = r'"path"\s+"([^"]+)"'
+            matches = re.findall(pattern, content)
+            
+            for match in matches:
+                # Converte \\ para \
+                path = match.replace('\\\\', '\\')
+                paths.append(path)
+        except:
+            pass
+        
+        return paths
+    
+    @staticmethod
+    def find_epic_installation() -> tuple:
+        """
+        Busca instalação da Epic Games.
+        
+        Returns:
+            (Platform.EPIC, exe_path, game_root, hd_path) ou None
+        """
+        try:
+            # Arquivo de manifesto da Epic
+            programdata = os.environ.get('PROGRAMDATA', 'C:\\ProgramData')
+            manifest_dir = Path(programdata) / "Epic" / "EpicGamesLauncher" / "Data" / "Manifests"
+            
+            if manifest_dir.exists():
+                for manifest_file in manifest_dir.glob("*.item"):
+                    try:
+                        with open(manifest_file, 'r', encoding='utf-8') as f:
+                            data = json.load(f)
+                        
+                        # Verifica se é o Where Winds Meet
+                        display_name = data.get('DisplayName', '').lower()
+                        if 'where winds meet' in display_name or 'wwm' in display_name:
+                            install_location = data.get('InstallLocation', '')
+                            if install_location:
+                                game_root = Path(install_location)
+                                exe_path = game_root / "Engine" / "Binaries" / "Win64r" / "wwm.exe"
+                                
+                                if exe_path.exists():
+                                    hd_path = game_root / PLATFORM_CONFIG[Platform.EPIC]["hd_path"]
+                                    return (Platform.EPIC, str(exe_path), game_root, hd_path)
+                    except:
+                        continue
+            
+            # Fallback: procura em caminhos comuns da Epic
+            epic_paths = [
+                Path(os.environ.get('PROGRAMFILES', 'C:\\Program Files')) / "Epic Games",
+                Path("C:\\Epic Games"),
+                Path("D:\\Epic Games"),
+            ]
+            
+            for epic_path in epic_paths:
+                if epic_path.exists():
+                    for game_folder in epic_path.iterdir():
+                        if game_folder.is_dir():
+                            exe_path = game_folder / "Engine" / "Binaries" / "Win64r" / "wwm.exe"
+                            if exe_path.exists():
+                                hd_path = game_folder / PLATFORM_CONFIG[Platform.EPIC]["hd_path"]
+                                return (Platform.EPIC, str(exe_path), game_folder, hd_path)
+        
+        except Exception as e:
+            pass
+        
+        return None
+    
+    @staticmethod
+    def find_standalone_installation() -> list:
+        """
+        Busca instalações standalone do jogo.
+        
+        Returns:
+            Lista de (Platform.STANDALONE, exe_path, game_root, hd_path)
+        """
+        results = []
+        
+        # Caminhos comuns para instalação standalone
+        search_paths = [
+            Path("C:\\Program Files\\wwm"),
+            Path("C:\\Program Files (x86)\\wwm"),
+            Path("C:\\Games\\wwm"),
+            Path("D:\\Program Files\\wwm"),
+            Path("D:\\Games\\wwm"),
+            Path("E:\\Games\\wwm"),
+        ]
+        
+        variants = ["wwm_standard", "wwm_lite"]
+        
+        for base_path in search_paths:
+            if base_path.exists():
+                for variant in variants:
+                    game_root = base_path / variant
+                    exe_path = game_root / "Engine" / "Binaries" / "Win64r" / "wwm.exe"
+                    
+                    if exe_path.exists():
+                        hd_path = game_root / PLATFORM_CONFIG[Platform.STANDALONE]["hd_path"]
+                        results.append((Platform.STANDALONE, str(exe_path), game_root, hd_path))
+        
+        return results
+
+
+# ============================================================================
 # DETECTOR DE PLATAFORMA
 # ============================================================================
 
@@ -275,7 +511,7 @@ class PlatformDetector:
     @staticmethod
     def detect(exe_path: str) -> tuple:
         """
-        Detecta a plataforma e retorna (platform, game_root, translation_path)
+        Detecta a plataforma e retorna (platform, game_root, hd_path)
         """
         exe_path = Path(exe_path)
         exe_name = exe_path.name.lower()
@@ -289,8 +525,8 @@ class PlatformDetector:
                 # wwm/wwm_standard/Engine/Binaries/Win64r/wwm.exe → wwm/wwm_standard/
                 # wwm/wwm_lite/Engine/Binaries/Win64r/wwm.exe → wwm/wwm_lite/
                 game_root = exe_path.parent.parent.parent.parent  # wwm_standard ou wwm_lite
-                translation_path = game_root / PLATFORM_CONFIG[Platform.STANDALONE]["translation_path"]
-                return Platform.STANDALONE, game_root, translation_path
+                hd_path = game_root / PLATFORM_CONFIG[Platform.STANDALONE]["hd_path"]
+                return Platform.STANDALONE, game_root, hd_path
             
             # Steam ou Epic: Engine/Binaries/Win64r/wwm.exe → raiz do jogo
             game_root = exe_path.parent.parent.parent.parent
@@ -312,8 +548,8 @@ class PlatformDetector:
                     platform = Platform.UNKNOWN
             
             if platform in [Platform.STEAM, Platform.EPIC]:
-                translation_path = game_root / PLATFORM_CONFIG[platform]["translation_path"]
-                return platform, game_root, translation_path
+                hd_path = game_root / PLATFORM_CONFIG[platform]["hd_path"]
+                return platform, game_root, hd_path
         
         return Platform.UNKNOWN, None, None
     
@@ -343,9 +579,13 @@ class TranslationStatus:
 class TranslationChecker:
     """Verifica o status da tradução instalada"""
     
-    def __init__(self, translation_path: str):
-        self.translation_path = Path(translation_path)
-        self.config = TranslationConfig(translation_path)
+    def __init__(self, hd_path: str):
+        """
+        Args:
+            hd_path: Caminho para a pasta HD
+        """
+        self.hd_path = Path(hd_path)
+        self.config = TranslationConfig(hd_path)
     
     def get_status(self) -> dict:
         """
@@ -360,11 +600,14 @@ class TranslationChecker:
             'message': ''
         }
         
-        # Verifica se existe backup
-        for tf in TRANSLATION_FILES:
-            backup_file = self.translation_path / f"{tf}.backup"
-            if backup_file.exists():
-                result['has_backup'] = True
+        # Verifica se existe backup em qualquer pasta
+        for folder, files in TRANSLATION_STRUCTURE.items():
+            for tf in files:
+                backup_file = self.hd_path / folder / f"{tf}.backup"
+                if backup_file.exists():
+                    result['has_backup'] = True
+                    break
+            if result['has_backup']:
                 break
         
         # Verifica se a tradução foi instalada por nós
@@ -379,15 +622,20 @@ class TranslationChecker:
         
         # Verifica se os arquivos ainda são os mesmos (não foram sobrescritos)
         saved_hashes = self.config.get_file_hashes()
-        for tf in TRANSLATION_FILES:
-            file_path = self.translation_path / tf
-            if file_path.exists():
-                current_hash = get_file_hash(str(file_path))
-                saved_hash = saved_hashes.get(tf, '')
+        for folder, files in TRANSLATION_STRUCTURE.items():
+            for tf in files:
+                file_key = f"{folder}/{tf}"
+                file_path = self.hd_path / folder / tf
                 
-                if saved_hash and current_hash != saved_hash:
-                    result['files_intact'] = False
-                    break
+                if file_path.exists():
+                    current_hash = get_file_hash(str(file_path))
+                    saved_hash = saved_hashes.get(file_key, '')
+                    
+                    if saved_hash and current_hash != saved_hash:
+                        result['files_intact'] = False
+                        break
+            if not result['files_intact']:
+                break
         
         if not result['files_intact']:
             result['status'] = TranslationStatus.OVERWRITTEN
@@ -741,7 +989,7 @@ class LauncherWindow(QMainWindow):
         self.exe_path = self.config.get('exe_path', '')
         self.platform = Platform.UNKNOWN
         self.game_root = None
-        self.translation_path = None
+        self.hd_path = None  # Caminho para pasta HD (substituiu translation_path)
         
         # Versões
         self.latest_version = None
@@ -750,8 +998,12 @@ class LauncherWindow(QMainWindow):
         
         self.init_ui()
         
-        # Se já tem executável salvo, tenta detectar
-        if self.exe_path and Path(self.exe_path).exists():
+        # Tenta auto-detectar primeiro
+        if not self.exe_path or not Path(self.exe_path).exists():
+            # Tenta auto-detectar na inicialização
+            QTimer.singleShot(100, self._try_auto_detect_on_startup)
+        else:
+            # Se já tem executável salvo, tenta detectar
             self._detect_platform(self.exe_path)
         
         # Verifica atualizações automaticamente
@@ -975,7 +1227,7 @@ class LauncherWindow(QMainWindow):
         """Cria a seção de seleção do jogo"""
         selector = QFrame()
         selector.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        selector.setMinimumHeight(140)
+        selector.setMinimumHeight(160)
         selector.setStyleSheet(f"""
             QFrame {{
                 background: {Theme.BACKGROUND_MEDIUM};
@@ -996,7 +1248,7 @@ class LauncherWindow(QMainWindow):
         selector_layout.addWidget(label)
         
         # Caminho do executável
-        self.path_label = QLabel("Localize o arquivo wwm.exe do jogo")
+        self.path_label = QLabel("Clique em Auto-Detectar ou procure o wwm.exe")
         self.path_label.setFont(QFont("Segoe UI", 8))
         self.path_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; border: none;")
         self.path_label.setWordWrap(True)
@@ -1011,11 +1263,24 @@ class LauncherWindow(QMainWindow):
         self.game_status.setMinimumHeight(16)
         selector_layout.addWidget(self.game_status)
         
-        # Botão embaixo (largura total)
+        # Botões lado a lado
+        buttons_row = QHBoxLayout()
+        buttons_row.setSpacing(10)
+        
+        # Botão Auto-Detectar (primário)
+        self.auto_detect_btn = StyledButton("🔍 Auto-Detectar", primary=True)
+        self.auto_detect_btn.setFixedHeight(36)
+        self.auto_detect_btn.clicked.connect(self.auto_detect_game)
+        self.auto_detect_btn.setToolTip("Detecta automaticamente a instalação do jogo (Steam, Epic, Standalone)")
+        buttons_row.addWidget(self.auto_detect_btn)
+        
+        # Botão Procurar (secundário)
         browse_btn = StyledButton("📁 Procurar wwm.exe")
         browse_btn.setFixedHeight(36)
         browse_btn.clicked.connect(self.browse_game)
-        selector_layout.addWidget(browse_btn)
+        buttons_row.addWidget(browse_btn)
+        
+        selector_layout.addLayout(buttons_row)
         
         layout.addWidget(selector)
     
@@ -1206,38 +1471,79 @@ class LauncherWindow(QMainWindow):
         if file_path:
             self._detect_platform(file_path)
     
-    def _detect_platform(self, exe_path: str):
-        """Detecta a plataforma e configura os caminhos"""
-        platform, game_root, translation_path = PlatformDetector.detect(exe_path)
+    def _try_auto_detect_on_startup(self):
+        """Tenta auto-detectar silenciosamente na inicialização"""
+        installations = GameAutoDetector.find_all_installations()
+        if len(installations) == 1:
+            # Apenas uma instalação encontrada, usa automaticamente
+            platform, exe_path, game_root, hd_path = installations[0]
+            self._configure_installation(platform, exe_path, game_root, hd_path, silent=True)
+    
+    def auto_detect_game(self):
+        """Detecta automaticamente a instalação do jogo"""
+        self.auto_detect_btn.setEnabled(False)
+        self.auto_detect_btn.setText("🔍 Buscando...")
+        self.status_label.setText("Procurando instalação do jogo...")
+        self.status_label.setStyleSheet(f"color: {Theme.INFO};")
         
-        if platform == Platform.UNKNOWN:
+        # Processa eventos para atualizar UI
+        QApplication.processEvents()
+        
+        installations = GameAutoDetector.find_all_installations()
+        
+        self.auto_detect_btn.setEnabled(True)
+        self.auto_detect_btn.setText("🔍 Auto-Detectar")
+        
+        if len(installations) == 0:
             QMessageBox.warning(
                 self,
-                "Executável Inválido",
-                "Não foi possível identificar a plataforma.\n\n"
-                "Selecione o executável wwm.exe do jogo:\n"
-                "• Steam: [Steam]\\steamapps\\common\\...\\Engine\\Binaries\\Win64r\\wwm.exe\n"
-                "• Epic: [Epic Games]\\...\\Engine\\Binaries\\Win64r\\wwm.exe\n"
-                "• Standalone: [wwm]\\wwm_standard\\Engine\\Binaries\\Win64r\\wwm.exe\n"
-                "• Standalone Lite: [wwm]\\wwm_lite\\Engine\\Binaries\\Win64r\\wwm.exe"
+                "Jogo não encontrado",
+                "Não foi possível detectar automaticamente a instalação do jogo.\n\n"
+                "Tente usar o botão 'Procurar wwm.exe' para selecionar manualmente.\n\n"
+                "Caminhos verificados:\n"
+                "• Steam (via registro do Windows)\n"
+                "• Epic Games (via manifestos)\n"
+                "• Standalone (C:\\Program Files\\wwm\\)"
             )
+            self.status_label.setText("Jogo não detectado - use 'Procurar wwm.exe'")
+            self.status_label.setStyleSheet(f"color: {Theme.WARNING};")
             return
         
-        # Verifica se a pasta de tradução existe
-        if not translation_path.exists():
-            QMessageBox.warning(
+        if len(installations) == 1:
+            # Apenas uma instalação encontrada
+            platform, exe_path, game_root, hd_path = installations[0]
+            self._configure_installation(platform, exe_path, game_root, hd_path)
+        else:
+            # Múltiplas instalações - usa a primeira e avisa
+            platform, exe_path, game_root, hd_path = installations[0]
+            self._configure_installation(platform, exe_path, game_root, hd_path)
+            
+            QMessageBox.information(
                 self,
-                "Pasta não encontrada",
-                f"A pasta de tradução não foi encontrada:\n{translation_path}\n\n"
-                "Verifique se o jogo está instalado corretamente."
+                "Múltiplas instalações",
+                f"Foram encontradas {len(installations)} instalações.\n"
+                f"Usando: {PLATFORM_CONFIG[platform]['name']}\n\n"
+                "Se esta não for a correta, use 'Procurar wwm.exe' para selecionar outra."
             )
+    
+    def _configure_installation(self, platform, exe_path, game_root, hd_path, silent=False):
+        """Configura uma instalação detectada"""
+        # Verifica se a pasta HD existe
+        if not hd_path.exists():
+            if not silent:
+                QMessageBox.warning(
+                    self,
+                    "Pasta não encontrada",
+                    f"A pasta HD não foi encontrada:\n{hd_path}\n\n"
+                    "Verifique se o jogo está instalado corretamente."
+                )
             return
         
         # Salva configuração
-        self.exe_path = exe_path
+        self.exe_path = str(exe_path)
         self.platform = platform
         self.game_root = game_root
-        self.translation_path = translation_path
+        self.hd_path = hd_path
         self._save_local_config()
         
         # Atualiza UI
@@ -1255,7 +1561,7 @@ class LauncherWindow(QMainWindow):
         self.card_platform.set_value(f"{platform_config['icon']} {platform_name}", Theme.GOLD_PRIMARY)
         self.path_label.setText(str(exe_path))
         self.path_label.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; border: none;")
-        self.game_status.setText(f"✓ Pasta de tradução: {translation_path}")
+        self.game_status.setText(f"✓ Pasta HD: {hd_path}")
         self.game_status.setStyleSheet(f"color: {Theme.SUCCESS}; border: none;")
         
         self.play_btn.setEnabled(True)
@@ -1267,12 +1573,31 @@ class LauncherWindow(QMainWindow):
         # Verifica automaticamente se há atualizações online
         self.check_for_updates()
     
-    def _update_translation_status(self):
-        """Atualiza o status da tradução instalada"""
-        if not self.translation_path:
+    def _detect_platform(self, exe_path: str):
+        """Detecta a plataforma e configura os caminhos"""
+        platform, game_root, hd_path = PlatformDetector.detect(exe_path)
+        
+        if platform == Platform.UNKNOWN:
+            QMessageBox.warning(
+                self,
+                "Executável Inválido",
+                "Não foi possível identificar a plataforma.\n\n"
+                "Selecione o executável wwm.exe do jogo:\n"
+                "• Steam: [Steam]\\steamapps\\common\\...\\Engine\\Binaries\\Win64r\\wwm.exe\n"
+                "• Epic: [Epic Games]\\...\\Engine\\Binaries\\Win64r\\wwm.exe\n"
+                "• Standalone: [wwm]\\wwm_standard\\Engine\\Binaries\\Win64r\\wwm.exe\n"
+                "• Standalone Lite: [wwm]\\wwm_lite\\Engine\\Binaries\\Win64r\\wwm.exe"
+            )
             return
         
-        checker = TranslationChecker(str(self.translation_path))
+        self._configure_installation(platform, exe_path, game_root, hd_path)
+    
+    def _update_translation_status(self):
+        """Atualiza o status da tradução instalada"""
+        if not self.hd_path:
+            return
+        
+        checker = TranslationChecker(str(self.hd_path))
         status = checker.get_status()
         
         # Atualiza cards
@@ -1327,9 +1652,9 @@ class LauncherWindow(QMainWindow):
             self.card_available.set_value(version, Theme.GOLD_PRIMARY)
             
             # Atualiza status se tiver plataforma detectada
-            if self.translation_path:
+            if self.hd_path:
                 # Verifica se precisa atualizar baseado na versão
-                checker = TranslationChecker(str(self.translation_path))
+                checker = TranslationChecker(str(self.hd_path))
                 config = checker.config
                 installed_version = config.get_installed_version()
                 
@@ -1384,7 +1709,7 @@ class LauncherWindow(QMainWindow):
     
     def install_translation(self):
         """Instala ou atualiza a tradução"""
-        if not self.translation_path:
+        if not self.hd_path:
             QMessageBox.warning(self, "Erro", "Selecione o executável do jogo primeiro!")
             return
         
@@ -1425,12 +1750,12 @@ class LauncherWindow(QMainWindow):
         self.download_thread.start()
     
     def on_download_finished(self, success: bool, result: str):
-        """Callback do download"""
+        """Callback do download - suporta múltiplas pastas"""
         if success:
             try:
                 self.status_label.setText("Extraindo arquivos...")
                 
-                locale_path = self.translation_path
+                hd_path = self.hd_path
                 temp_extract_dir = tempfile.mkdtemp(prefix='wwm_translation_')
                 
                 files_installed = []
@@ -1441,26 +1766,44 @@ class LauncherWindow(QMainWindow):
                     with zipfile.ZipFile(result, 'r') as zip_ref:
                         zip_ref.extractall(temp_extract_dir)
                     
-                    for translation_file in TRANSLATION_FILES:
-                        source_file = self._find_file_in_directory(temp_extract_dir, translation_file)
+                    # Procura a pasta HD no ZIP extraído
+                    hd_source = self._find_hd_folder(temp_extract_dir)
+                    
+                    # Para cada pasta na estrutura de tradução
+                    for folder, files in TRANSLATION_STRUCTURE.items():
+                        dest_folder = hd_path / folder
                         
-                        if source_file:
-                            dest_file = locale_path / translation_file
+                        # Cria a pasta se não existir
+                        dest_folder.mkdir(parents=True, exist_ok=True)
+                        
+                        for translation_file in files:
+                            # Tenta encontrar o arquivo no ZIP
+                            if hd_source:
+                                # ZIP com estrutura HD/...
+                                source_file = hd_source / folder / translation_file
+                            else:
+                                # Fallback: busca recursivamente
+                                found = self._find_file_with_path(temp_extract_dir, folder, translation_file)
+                                source_file = Path(found) if found else None
                             
-                            # Backup do arquivo original
-                            if dest_file.exists():
-                                backup_file = dest_file.with_suffix('.backup')
-                                # Só faz backup se não existir (preserva o original real)
-                                if not backup_file.exists():
-                                    shutil.copy2(dest_file, backup_file)
-                                    files_backed_up.append(translation_file)
-                            
-                            # Copia o novo arquivo
-                            shutil.copy2(source_file, dest_file)
-                            files_installed.append(translation_file)
-                            
-                            # Calcula hash
-                            file_hashes[translation_file] = get_file_hash(str(dest_file))
+                            if source_file and source_file.exists():
+                                dest_file = dest_folder / translation_file
+                                file_key = f"{folder}/{translation_file}"
+                                
+                                # Backup do arquivo original
+                                if dest_file.exists():
+                                    backup_file = dest_file.with_suffix('.backup')
+                                    # Só faz backup se não existir (preserva o original real)
+                                    if not backup_file.exists():
+                                        shutil.copy2(dest_file, backup_file)
+                                        files_backed_up.append(file_key)
+                                
+                                # Copia o novo arquivo
+                                shutil.copy2(source_file, dest_file)
+                                files_installed.append(file_key)
+                                
+                                # Calcula hash
+                                file_hashes[file_key] = get_file_hash(str(dest_file))
                     
                     shutil.rmtree(temp_extract_dir, ignore_errors=True)
                     
@@ -1472,7 +1815,7 @@ class LauncherWindow(QMainWindow):
                 
                 if files_installed:
                     # Salva configuração da tradução
-                    config = TranslationConfig(str(locale_path))
+                    config = TranslationConfig(str(hd_path))
                     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     config.set_installed(self.latest_version, timestamp, file_hashes)
                     
@@ -1482,12 +1825,12 @@ class LauncherWindow(QMainWindow):
                     self.status_label.setStyleSheet(f"color: {Theme.SUCCESS};")
                     
                     msg = f"Tradução v{self.latest_version} instalada com sucesso!\n\n"
-                    msg += f"📦 Arquivos instalados:\n"
+                    msg += f"📦 Arquivos instalados ({len(files_installed)}):\n"
                     for f in files_installed:
                         msg += f"   • {f}\n"
                     
                     if files_backed_up:
-                        msg += f"\n💾 Backups criados:\n"
+                        msg += f"\n💾 Backups criados ({len(files_backed_up)}):\n"
                         for f in files_backed_up:
                             msg += f"   • {f}.backup\n"
                     
@@ -1508,11 +1851,38 @@ class LauncherWindow(QMainWindow):
         self.restore_btn.setEnabled(True)
         self.progress_bar.setVisible(False)
     
+    def _find_hd_folder(self, directory: str) -> Path:
+        """Procura a pasta HD no diretório extraído"""
+        for root, dirs, files in os.walk(directory):
+            if 'HD' in dirs:
+                return Path(root) / 'HD'
+        return None
+    
+    def _find_file_with_path(self, directory: str, relative_folder: str, filename: str) -> str:
+        """Procura um arquivo considerando o caminho relativo exato"""
+        # Converte o folder para o separador do sistema
+        target_folder = relative_folder.replace('/', os.sep)
+        
+        # Primeiro tenta encontrar na estrutura correta
+        for root, dirs, files in os.walk(directory):
+            if filename in files:
+                root_path = str(Path(root))
+                # Verifica se o caminho TERMINA com a pasta alvo (match exato)
+                # Isso evita confundir "locale" com "oversea/locale"
+                if root_path.endswith(target_folder):
+                    return os.path.join(root, filename)
+        
+        # Fallback: retorna qualquer ocorrência (último recurso)
+        for root, dirs, files in os.walk(directory):
+            if filename in files:
+                return os.path.join(root, filename)
+        return None
+    
     def _check_write_permission(self) -> bool:
-        """Verifica se tem permissão de escrita na pasta de tradução"""
+        """Verifica se tem permissão de escrita na pasta HD"""
         try:
             # Tenta criar um arquivo temporário na pasta
-            test_file = self.translation_path / ".write_test"
+            test_file = self.hd_path / ".write_test"
             test_file.touch()
             test_file.unlink()
             return True
@@ -1521,7 +1891,7 @@ class LauncherWindow(QMainWindow):
                 self,
                 "Permissão Necessária",
                 "A pasta do jogo requer permissão de administrador para modificar.\n\n"
-                f"Pasta: {self.translation_path}\n\n"
+                f"Pasta: {self.hd_path}\n\n"
                 "Deseja reiniciar o launcher como Administrador?",
                 QMessageBox.Yes | QMessageBox.No
             )
@@ -1533,7 +1903,7 @@ class LauncherWindow(QMainWindow):
             QMessageBox.warning(
                 self,
                 "Erro de Permissão",
-                f"Não foi possível acessar a pasta:\n{self.translation_path}\n\n"
+                f"Não foi possível acessar a pasta:\n{self.hd_path}\n\n"
                 f"Erro: {str(e)}"
             )
             return False
@@ -1546,8 +1916,8 @@ class LauncherWindow(QMainWindow):
         return None
     
     def restore_backup(self):
-        """Restaura os arquivos originais"""
-        if not self.translation_path:
+        """Restaura os arquivos originais de todas as pastas"""
+        if not self.hd_path:
             return
         
         # Verifica permissão de escrita
@@ -1566,23 +1936,27 @@ class LauncherWindow(QMainWindow):
             return
         
         try:
-            locale_path = self.translation_path
+            hd_path = self.hd_path
             files_restored = []
             
-            for translation_file in TRANSLATION_FILES:
-                backup_file = locale_path / f"{translation_file}.backup"
-                original_file = locale_path / translation_file
+            # Para cada pasta na estrutura de tradução
+            for folder, files in TRANSLATION_STRUCTURE.items():
+                folder_path = hd_path / folder
                 
-                if backup_file.exists():
-                    if original_file.exists():
-                        original_file.unlink()
+                for translation_file in files:
+                    backup_file = folder_path / f"{translation_file}.backup"
+                    original_file = folder_path / translation_file
                     
-                    shutil.move(str(backup_file), str(original_file))
-                    files_restored.append(translation_file)
+                    if backup_file.exists():
+                        if original_file.exists():
+                            original_file.unlink()
+                        
+                        shutil.move(str(backup_file), str(original_file))
+                        files_restored.append(f"{folder}/{translation_file}")
             
             if files_restored:
                 # Remove configuração
-                config = TranslationConfig(str(locale_path))
+                config = TranslationConfig(str(hd_path))
                 config.clear()
                 
                 self._update_translation_status()
@@ -1591,7 +1965,7 @@ class LauncherWindow(QMainWindow):
                 self.status_label.setStyleSheet(f"color: {Theme.SUCCESS};")
                 
                 msg = "Arquivos originais restaurados!\n\n"
-                msg += "📦 Arquivos restaurados:\n"
+                msg += f"📦 Arquivos restaurados ({len(files_restored)}):\n"
                 for f in files_restored:
                     msg += f"   • {f}\n"
                 
