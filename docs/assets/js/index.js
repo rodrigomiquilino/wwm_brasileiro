@@ -460,4 +460,94 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Gerar QR Code PIX
     generatePixQRCode();
+    
+    // Inicializar Discord Widget
+    initDiscordWidget();
 });
+
+// ========== DISCORD WIDGET ==========
+function openDiscordWidget() {
+    const modal = document.getElementById('discord-widget-modal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeDiscordWidget() {
+    const modal = document.getElementById('discord-widget-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+function setDiscordWidgetSize(size) {
+    const modal = document.querySelector('.discord-modal');
+    if (!modal) return;
+    
+    // Remove all size classes
+    modal.classList.remove('size-small', 'size-default', 'size-fullscreen');
+    
+    // Add new size class
+    modal.classList.add(`size-${size}`);
+    
+    // Update button states
+    document.querySelectorAll('.discord-size-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.size === size) {
+            btn.classList.add('active');
+        }
+    });
+}
+
+function initDiscordWidget() {
+    // Size buttons
+    document.querySelectorAll('.discord-size-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            setDiscordWidgetSize(this.dataset.size);
+        });
+    });
+    
+    // Close on overlay click
+    const overlay = document.getElementById('discord-widget-modal');
+    if (overlay) {
+        overlay.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDiscordWidget();
+            }
+        });
+    }
+    
+    // Close on ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('discord-widget-modal');
+            if (modal && modal.classList.contains('active')) {
+                closeDiscordWidget();
+            }
+        }
+    });
+    
+    // Check if iframe loads (fallback if widget not enabled)
+    const iframe = document.getElementById('discord-iframe');
+    if (iframe) {
+        iframe.addEventListener('error', function() {
+            const body = document.querySelector('.discord-modal-body');
+            if (body) body.classList.add('fallback-active');
+        });
+        
+        // Timeout fallback
+        setTimeout(() => {
+            try {
+                // If iframe is blank or has issues, show fallback
+                if (!iframe.contentWindow || iframe.contentDocument?.body?.innerHTML === '') {
+                    const body = document.querySelector('.discord-modal-body');
+                    if (body) body.classList.add('fallback-active');
+                }
+            } catch (e) {
+                // Cross-origin error means it loaded something
+            }
+        }, 5000);
+    }
+}

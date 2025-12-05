@@ -660,7 +660,7 @@
             
             <div class="footer-links">
                 <h4>Comunidade</h4>
-                <a href="https://discordapp.com/users/rodrigo.dev">Discord</a>
+                <a href="discord" target="_blank"><i class="fab fa-discord"></i> Comunidade Discord</a>
                 <a href="https://store.steampowered.com/app/3564740/Where_Winds_Meet/">Steam</a>
             </div>
         </div>
@@ -672,6 +672,65 @@
             </p>
         </div>
     </footer>
+    
+    <!-- Floating Discord Button -->
+    <div class="discord-float-container">
+        <button type="button" class="discord-float" onclick="openDiscordWidget()">
+            <i class="fab fa-discord"></i>
+            <span class="discord-float-text">Discord</span>
+        </button>
+        <div class="discord-tooltip">
+            <div class="discord-tooltip-wumpus">👋</div>
+            <div class="discord-tooltip-message">
+                Ei! Vem bater papo<br>com a gente!
+            </div>
+        </div>
+    </div>
+    
+    <!-- Discord Widget Modal -->
+    <div id="discord-widget-modal" class="discord-modal-overlay">
+        <div class="discord-modal size-default">
+            <div class="discord-modal-header">
+                <div class="discord-modal-title">
+                    <i class="fab fa-discord"></i>
+                    <span>WWM Brasileiro - Discord</span>
+                </div>
+                <div class="discord-modal-controls">
+                    <button type="button" class="discord-size-btn" data-size="small" title="Pequeno">
+                        <i class="fas fa-compress-alt"></i>
+                    </button>
+                    <button type="button" class="discord-size-btn active" data-size="default" title="Médio">
+                        <i class="fas fa-square"></i>
+                    </button>
+                    <button type="button" class="discord-size-btn" data-size="fullscreen" title="Fullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                    <button type="button" class="discord-close-btn" onclick="closeDiscordWidget()" title="Fechar">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="discord-modal-body">
+                <iframe id="discord-iframe" 
+                    src="https://discord.com/widget?id=1446559934744498198&theme=dark" 
+                    width="100%" 
+                    height="100%" 
+                    allowtransparency="true" 
+                    frameborder="0" 
+                    sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
+                </iframe>
+                <!-- Fallback message -->
+                <div class="discord-fallback">
+                    <i class="fab fa-discord"></i>
+                    <h3>Comunidade WWM Brasil</h3>
+                    <p>Widget não disponível? Entre diretamente:</p>
+                    <a href="https://discord.gg/dNKt7RA5U7" target="_blank" class="btn btn-primary">
+                        <i class="fab fa-discord"></i> Abrir Discord
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <!-- Scripts -->
     <script src="assets/js/shared.js"></script>
