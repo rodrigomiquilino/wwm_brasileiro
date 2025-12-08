@@ -4,6 +4,9 @@
 Script para aplicar sugestões de tradução de forma segura.
 Mantém a estrutura TSV intacta - apenas substitui o texto traduzido.
 
+ATUALIZADO: Agora suporta novo formato TSV com colunas ID e OriginalText,
+e funciona com o repositório wwm_brasileiro_auto_path.
+
 REGRAS DE SEGURANÇA:
 1. Nunca adiciona/remove linhas
 2. Nunca altera a estrutura TAB-separated
@@ -51,7 +54,31 @@ def extract_json_from_body(body: str) -> dict | None:
         return None
 
 
-def validate_suggestion(suggestion: dict, file_lines: list[str], file_name: str) -> tuple[bool, str]:
+def detect_tsv_format(lines: list[str]) -> tuple[int, int]:
+    """
+    Detecta o formato do TSV analisando o header.
+    Retorna: (id_column_index, text_column_index)
+    """
+    if not lines:
+        return 0, 1  # Default
+    
+    header = lines[0].split('\t')
+    header_lower = [h.strip().lower() for h in header]
+    
+    # Tentar encontrar colunas pelo nome
+    id_idx = 0
+    text_idx = 1
+    
+    for i, h in enumerate(header_lower):
+        if h == 'id':
+            id_idx = i
+        elif h in ['originaltext', 'text', 'original']:
+            text_idx = i
+    
+    return id_idx, text_idx
+
+
+def validate_suggestion(suggestion: dict, file_lines: list[str], file_name: str, id_idx: int, text_idx: int) -> tuple[bool, str]:
     """
     Valida uma sugestão individual.
     
@@ -83,16 +110,19 @@ def validate_suggestion(suggestion: dict, file_lines: list[str], file_name: str)
     # Obter a linha (índice 0-based)
     line = file_lines[line_number - 1]
     
-    # Verificar estrutura TSV - deve ter exatamente um TAB
+    # Verificar estrutura TSV
     if '\t' not in line:
         return False, f"Linha {line_number} não tem estrutura TSV válida"
     
     parts = line.split('\t')
-    if len(parts) != 2:
-        return False, f"Linha {line_number} tem {len(parts)} colunas, esperado 2"
+    
+    # Verificar se tem colunas suficientes
+    required_cols = max(id_idx, text_idx) + 1
+    if len(parts) < required_cols:
+        return False, f"Linha {line_number} tem {len(parts)} colunas, esperado mínimo {required_cols}"
     
     # Verificar se o ID corresponde
-    line_id = parts[0].strip()
+    line_id = parts[id_idx].strip()
     if line_id != suggestion_id:
         return False, f"ID não corresponde na linha {line_number}: esperado '{suggestion_id}', encontrado '{line_id}'"
     
@@ -111,18 +141,23 @@ def validate_suggestion(suggestion: dict, file_lines: list[str], file_name: str)
     return True, ""
 
 
-def apply_suggestion(file_lines: list[str], suggestion: dict) -> str:
+def apply_suggestion(file_lines: list[str], suggestion: dict, id_idx: int, text_idx: int) -> str:
     """
     Aplica uma sugestão, retornando a nova linha.
-    Mantém a estrutura ID\tTexto exatamente.
+    Preserva todas as colunas, apenas atualiza a coluna de texto.
     """
     line_number = suggestion['line']
-    suggestion_id = suggestion['id']
     new_text = suggestion['suggestion']
     
-    # Construir a nova linha mantendo estrutura TSV
-    # Formato: ID<TAB>Texto
-    new_line = f"{suggestion_id}\t{new_text}"
+    # Obter linha atual e suas colunas
+    current_line = file_lines[line_number - 1]
+    parts = current_line.split('\t')
+    
+    # Atualizar apenas a coluna de texto
+    parts[text_idx] = new_text
+    
+    # Reconstruir a linha
+    new_line = '\t'.join(parts)
     
     return new_line
 
@@ -146,6 +181,10 @@ def process_file(file_path: Path, suggestions: list[dict]) -> tuple[int, int, li
     # Remover newlines para processamento, preservando estrutura
     lines = [line.rstrip('\r\n') for line in lines]
     
+    # Detectar formato do TSV
+    id_idx, text_idx = detect_tsv_format(lines)
+    print(f"   Formato detectado: ID na coluna {id_idx}, Texto na coluna {text_idx}")
+    
     file_name = file_path.name
     applied = 0
     skipped = 0
@@ -155,7 +194,7 @@ def process_file(file_path: Path, suggestions: list[dict]) -> tuple[int, int, li
     sorted_suggestions = sorted(suggestions, key=lambda x: x.get('line', 0))
     
     for suggestion in sorted_suggestions:
-        is_valid, error = validate_suggestion(suggestion, lines, file_name)
+        is_valid, error = validate_suggestion(suggestion, lines, file_name, id_idx, text_idx)
         
         if not is_valid:
             errors.append(f"Sugestão ignorada (ID: {suggestion.get('id', '?')}): {error}")
@@ -165,7 +204,7 @@ def process_file(file_path: Path, suggestions: list[dict]) -> tuple[int, int, li
         # Aplicar a sugestão
         line_idx = suggestion['line'] - 1
         old_line = lines[line_idx]
-        new_line = apply_suggestion(lines, suggestion)
+        new_line = apply_suggestion(lines, suggestion, id_idx, text_idx)
         
         # Verificar se realmente mudou algo
         if old_line == new_line:
@@ -176,8 +215,8 @@ def process_file(file_path: Path, suggestions: list[dict]) -> tuple[int, int, li
         lines[line_idx] = new_line
         applied += 1
         print(f"✅ Aplicado: linha {suggestion['line']} - ID '{suggestion['id']}'")
-        print(f"   Antes: {old_line[:80]}...")
-        print(f"   Depois: {new_line[:80]}...")
+        print(f"   Antes: {old_line[:100]}...")
+        print(f"   Depois: {new_line[:100]}...")
     
     # Salvar arquivo se houve alterações
     if applied > 0:
@@ -205,6 +244,12 @@ def main():
     # Obter corpo da Issue
     issue_body = os.environ.get('ISSUE_BODY', '')
     issue_number = os.environ.get('ISSUE_NUMBER', 'unknown')
+    
+    # Base path para os arquivos de tradução (pode ser configurado via env)
+    target_repo_path = os.environ.get('TARGET_REPO_PATH', 'translation-repo')
+    base_path = Path(target_repo_path)
+    
+    print(f"📂 Diretório de tradução: {base_path.absolute()}")
     
     if not issue_body:
         print("ERRO: ISSUE_BODY não definido")
@@ -236,6 +281,8 @@ def main():
     print(f"📊 Total de sugestões: {total}")
     print(f"📅 Versão do formato: {data.get('version', 'unknown')}")
     print(f"⏰ Timestamp: {data.get('timestamp', 'unknown')}")
+    print(f"🎯 Target Repo: {data.get('targetRepo', 'não especificado')}")
+    print(f"🌿 Target Branch: {data.get('targetBranch', 'não especificado')}")
     
     if total == 0:
         print("⚠️ Nenhuma sugestão para processar")
@@ -246,15 +293,12 @@ def main():
     # Agrupar sugestões por arquivo
     by_file = {}
     for suggestion in suggestions:
-        file_name = suggestion.get('file', 'unknown')
+        file_name = suggestion.get('file', 'pt-br.tsv')  # Default: pt-br.tsv
         if file_name not in by_file:
             by_file[file_name] = []
         by_file[file_name].append(suggestion)
     
     print(f"📁 Arquivos afetados: {list(by_file.keys())}")
-    
-    # Base path para os arquivos de tradução
-    base_path = Path('community/translate')
     
     total_applied = 0
     total_skipped = 0
@@ -264,6 +308,7 @@ def main():
     for file_name, file_suggestions in by_file.items():
         print(f"\n📄 Processando: {file_name} ({len(file_suggestions)} sugestões)")
         
+        # O arquivo está na raiz do repositório de tradução
         file_path = base_path / file_name
         applied, skipped, errors = process_file(file_path, file_suggestions)
         

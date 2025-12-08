@@ -1,4 +1,5 @@
 const CONFIG = {
+    // Repositório principal (issues, hall da fama)
     GITHUB_REPO: 'rodrigomiquilino/wwm_brasileiro',
     GITHUB_OWNER: 'rodrigomiquilino',
     GITHUB_OWNER_ID: 22358284, // ID numérico imutável - segurança extra
@@ -6,14 +7,14 @@ const CONFIG = {
     // OAuth
     GITHUB_CLIENT_ID: 'Ov23liLPua7ghOOFV8WG',
     OAUTH_PROXY_URL: 'https://wwm-github-oauth.rodrigomiquilino.workers.dev',
-    // Arquivos originais em inglês (referência)
-    ORIGINAL_MAIN: 'community/original/translate_words_map_en.tsv',
-    ORIGINAL_DIFF: 'community/original/translate_words_map_en_diff.tsv',
-    // Arquivos traduzidos em PT-BR (para edição)
-    TRANSLATE_MAIN: 'community/translate/translate_words_map_en.tsv',
-    TRANSLATE_DIFF: 'community/translate/translate_words_map_en_diff.tsv',
+    // Repositório de traduções (arquivos TSV)
+    TRANSLATION_REPO: 'rodrigomiquilino/wwm_brasileiro_auto_path',
+    TRANSLATION_REPO_NAME: 'wwm_brasileiro_auto_path',
+    TRANSLATION_BRANCH: 'dev',      // Branch para leitura e escrita
+    // Arquivos TSV (novo formato: ID\tOriginalText)
+    ENGLISH_FILE: 'en.tsv',         // Original em inglês
+    PTBR_FILE: 'pt-br.tsv',         // Traduções PT-BR
     ITEMS_PER_PAGE: 50,
-    BRANCH: 'main',
     // Cache settings
     CACHE_DURATION: 15 * 60 * 1000, // 15 minutos em ms
     CACHE_PREFIX: 'wwm_cache_'
@@ -158,17 +159,15 @@ async function cachedFetch(url, cacheKey, options = {}) {
 let githubUser = null;
 let githubToken = localStorage.getItem('github_token') || null;
 
-let mainData = [];
-let diffData = [];
+// Dados de tradução (removido Main/Diff - agora é um único arquivo)
 let allData = [];
 let filteredData = [];
 let currentPage = 1;
 let currentFilter = 'all';
-let currentFile = 'main'; // 'main' ou 'diff'
 
-// Fetch TSV file from GitHub
+// Fetch TSV file from GitHub (repositório de traduções)
 async function fetchTSV(filename) {
-    const url = `https://raw.githubusercontent.com/${CONFIG.GITHUB_REPO}/${CONFIG.BRANCH}/${filename}`;
+    const url = `https://raw.githubusercontent.com/${CONFIG.TRANSLATION_REPO}/${CONFIG.TRANSLATION_BRANCH}/${filename}`;
     try {
         const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to fetch');
@@ -179,21 +178,34 @@ async function fetchTSV(filename) {
     }
 }
 
-// Parse TSV content para Map - formato: ID\tText
+// Parse TSV content para Map - novo formato: ID\tOriginalText
 function parseTSVtoMap(content) {
     const lines = content.trim().split('\n');
     const map = new Map();
     
-    // Skip header
-    for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        const tabIndex = line.indexOf('\t');
-        if (tabIndex > 0) {
-            const id = line.substring(0, tabIndex).trim();
-            const text = line.substring(tabIndex + 1).trim();
-            if (id && id !== '0000000000000000') {
-                map.set(id, { text, lineNumber: i + 1 });
-            }
+    if (lines.length === 0) return map;
+    
+    // Detecta colunas do header
+    const header = lines[0].split('\t').map(h => h.trim().toLowerCase());
+    const idIndex = header.findIndex(h => h === 'id');
+    const textIndex = header.findIndex(h => 
+        h === 'originaltext' || h === 'text' || h === 'original'
+    );
+    
+    // Fallback para formato antigo (ID\tText sem header explícito)
+    const useIdIdx = idIndex >= 0 ? idIndex : 0;
+    const useTextIdx = textIndex >= 0 ? textIndex : 1;
+    
+    // Parse das linhas (começa de 1 se tem header, 0 se não)
+    const startLine = (idIndex >= 0 || textIndex >= 0) ? 1 : 0;
+    
+    for (let i = startLine; i < lines.length; i++) {
+        const cols = lines[i].split('\t');
+        const id = cols[useIdIdx]?.trim();
+        const text = cols[useTextIdx]?.trim();
+        
+        if (id && id !== '0000000000000000' && id.toLowerCase() !== 'id') {
+            map.set(id, { text: text || '', lineNumber: i + 1 });
         }
     }
     
@@ -204,6 +216,7 @@ function parseTSVtoMap(content) {
 function compareTranslations(originalMap, translateMap) {
     const data = [];
     
+    // Itera sobre o arquivo PT-BR (que é a base)
     translateMap.forEach((translateItem, id) => {
         const originalItem = originalMap.get(id);
         const originalText = originalItem ? originalItem.text : '';
@@ -225,77 +238,66 @@ function compareTranslations(originalMap, translateMap) {
     return data;
 }
 
-// Load translations
+// Load translations - simplificado para arquivos únicos
 async function loadTranslations() {
     document.getElementById('loading').innerHTML = `
         <div class="spinner"></div>
         <p>Carregando traduções... (isso pode demorar um pouco)</p>
     `;
     
-    // Carrega os 4 arquivos em paralelo
-    const [origMainContent, origDiffContent, transMainContent, transDiffContent] = await Promise.all([
-        fetchTSV(CONFIG.ORIGINAL_MAIN),
-        fetchTSV(CONFIG.ORIGINAL_DIFF),
-        fetchTSV(CONFIG.TRANSLATE_MAIN),
-        fetchTSV(CONFIG.TRANSLATE_DIFF)
+    // Carrega os 2 arquivos em paralelo (en.tsv e pt-br.tsv)
+    const [englishContent, ptbrContent] = await Promise.all([
+        fetchTSV(CONFIG.ENGLISH_FILE),
+        fetchTSV(CONFIG.PTBR_FILE)
     ]);
     
-    if (!transMainContent) {
+    if (!ptbrContent) {
         document.getElementById('loading').innerHTML = `
             <p style="color: var(--red-primary);">
                 <i class="fas fa-exclamation-triangle"></i> 
-                Erro ao carregar arquivo de tradução
+                Erro ao carregar arquivo de tradução (${CONFIG.PTBR_FILE})
+            </p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                Verifique se o repositório ${CONFIG.TRANSLATION_REPO} está acessível.
             </p>
         `;
         return;
     }
     
     // Parse dos arquivos
-    const origMainMap = origMainContent ? parseTSVtoMap(origMainContent) : new Map();
-    const origDiffMap = origDiffContent ? parseTSVtoMap(origDiffContent) : new Map();
-    const transMainMap = parseTSVtoMap(transMainContent);
-    const transDiffMap = transDiffContent ? parseTSVtoMap(transDiffContent) : new Map();
+    const englishMap = englishContent ? parseTSVtoMap(englishContent) : new Map();
+    const ptbrMap = parseTSVtoMap(ptbrContent);
     
     // Compara originais com traduzidos
-    mainData = compareTranslations(origMainMap, transMainMap);
-    diffData = compareTranslations(origDiffMap, transDiffMap);
+    allData = compareTranslations(englishMap, ptbrMap);
     
-    // Atualiza contadores nas tabs
-    document.getElementById('main-count').textContent = mainData.length.toLocaleString('pt-BR');
-    document.getElementById('diff-count').textContent = diffData.length.toLocaleString('pt-BR');
+    console.log(`[Translate] Carregadas ${allData.length} linhas de tradução`);
     
-    // Carrega dados do arquivo principal por padrão
-    switchFile('main');
+    // Atualiza estatísticas e renderiza
+    updateStats();
+    applyFilter();
     
     document.getElementById('loading').classList.add('hidden');
     document.getElementById('table-scroll').classList.remove('hidden');
 }
 
-// Switch between files
-function switchFile(file) {
-    currentFile = file;
-    if (file === 'admin') {
-        allData = [];
-        // mostra painel admin
-        document.getElementById('admin-panel').classList.remove('hidden');
-        document.getElementById('table-scroll').classList.add('hidden');
-        // Inicia auto-refresh
+// Exibe painel admin (apenas para o owner)
+function showAdminPanel(show = true) {
+    const adminPanel = document.getElementById('admin-panel');
+    const tableScroll = document.getElementById('table-scroll');
+    const adminTab = document.getElementById('admin-tab');
+    
+    if (show) {
+        if (adminPanel) adminPanel.classList.remove('hidden');
+        if (tableScroll) tableScroll.classList.add('hidden');
+        if (adminTab) adminTab.classList.add('active');
         startAdminPolling();
     } else {
-        allData = file === 'main' ? mainData : diffData;
-        document.getElementById('admin-panel').classList.add('hidden');
-        document.getElementById('table-scroll').classList.remove('hidden');
-        // Para auto-refresh quando sai do admin
+        if (adminPanel) adminPanel.classList.add('hidden');
+        if (tableScroll) tableScroll.classList.remove('hidden');
+        if (adminTab) adminTab.classList.remove('active');
         stopAdminPolling();
     }
-    
-    // Atualiza tabs
-    document.querySelectorAll('.file-tab').forEach(tab => {
-        tab.classList.toggle('active', tab.dataset.file === file);
-    });
-    
-    updateStats();
-    applyFilter();
 }
 
 // Update statistics
@@ -365,8 +367,8 @@ function renderTable() {
         return;
     }
     
-    // Arquivo de tradução (PT-BR) para edição
-    const translateFile = currentFile === 'main' ? CONFIG.TRANSLATE_MAIN : CONFIG.TRANSLATE_DIFF;
+    // Arquivo de tradução (PT-BR) - agora é único
+    const translateFile = CONFIG.PTBR_FILE;
     
     tbody.innerHTML = pageData.map((item, index) => {
         const statusClass = item.isTranslated ? 'status-done' : 'status-pending';
@@ -775,7 +777,7 @@ function openSuggestionModal(id, originalEncoded, currentEncoded, lineNumber) {
     document.getElementById('modal-original').value = original;
     document.getElementById('modal-current').value = current || '(sem tradução atual)';
     document.getElementById('modal-suggestion').value = current; // Pré-preenche com a tradução atual
-    document.getElementById('modal-file').value = currentFile;
+    document.getElementById('modal-file').value = CONFIG.PTBR_FILE; // Arquivo único de tradução
     document.getElementById('modal-line').value = lineNumber;
     
     document.getElementById('suggestion-modal').classList.add('active');
@@ -1157,7 +1159,7 @@ async function showAdminTabIfOwner() {
             adminTab.style.display = '';
             // Remove listener antigo para evitar duplicatas
             adminTab.onclick = () => {
-                switchFile('admin');
+                showAdminPanel(true);
                 loadAdminIssues();
             };
             console.log('✅ Admin access granted');
@@ -1632,35 +1634,22 @@ async function openAdminIssueModal(issueNumber) {
     }
 }
 
-// Busca textos originais para comparação - CONSIDERA O ARQUIVO DE ORIGEM
-// Recebe array de sugestões (com campo 'file') para buscar no array correto
+// Busca textos originais para comparação no admin
+// Simplificado: agora usa allData (único array)
 async function fetchOriginalTexts(suggestions) {
     const results = [];
     
     // Se os dados não foram carregados ainda, aguardar carregamento
-    if (mainData.length === 0 && diffData.length === 0) {
+    if (allData.length === 0) {
         await loadTranslationsIfNeeded();
     }
     
-    // Mapear nome do arquivo para array de dados
-    const fileNameToData = {
-        'translate_words_map_en.tsv': mainData,
-        'translate_words_map_en_diff.tsv': diffData
-    };
-    
     suggestions.forEach(sug => {
         const id = sug.id;
-        const fileName = sug.file;
+        const fileName = sug.file || CONFIG.PTBR_FILE;
         
-        // Determinar em qual array buscar baseado no arquivo da sugestão
-        let targetData = fileNameToData[fileName];
-        
-        // Fallback: se não encontrar ou arquivo não especificado, busca em ambos
-        if (!targetData || targetData.length === 0) {
-            targetData = [...mainData, ...diffData];
-        }
-        
-        const found = targetData.find(item => item.id === id);
+        // Buscar no array único
+        const found = allData.find(item => item.id === id);
         if (found) {
             results.push({
                 id: found.id,
@@ -1669,25 +1658,13 @@ async function fetchOriginalTexts(suggestions) {
                 translatedText: found.translatedText
             });
         } else {
-            // Não encontrado no arquivo específico - tentar no outro como fallback
-            const allData = [...mainData, ...diffData];
-            const fallbackFound = allData.find(item => item.id === id);
-            if (fallbackFound) {
-                results.push({
-                    id: fallbackFound.id,
-                    file: fileName,
-                    originalText: fallbackFound.originalText,
-                    translatedText: fallbackFound.translatedText
-                });
-            } else {
-                // Realmente não encontrado
-                results.push({
-                    id: id,
-                    file: fileName,
-                    originalText: '(não encontrado)',
-                    translatedText: ''
-                });
-            }
+            // Não encontrado
+            results.push({
+                id: id,
+                file: fileName,
+                originalText: '(não encontrado)',
+                translatedText: ''
+            });
         }
     });
     
@@ -1696,26 +1673,18 @@ async function fetchOriginalTexts(suggestions) {
 
 // Função auxiliar para carregar traduções se necessário
 async function loadTranslationsIfNeeded() {
-    if (mainData.length > 0 || diffData.length > 0) return;
+    if (allData.length > 0) return;
     
     try {
-        const [origMainContent, origDiffContent, transMainContent, transDiffContent] = await Promise.all([
-            fetchTSV(CONFIG.ORIGINAL_MAIN),
-            fetchTSV(CONFIG.ORIGINAL_DIFF),
-            fetchTSV(CONFIG.TRANSLATE_MAIN),
-            fetchTSV(CONFIG.TRANSLATE_DIFF)
+        const [englishContent, ptbrContent] = await Promise.all([
+            fetchTSV(CONFIG.ENGLISH_FILE),
+            fetchTSV(CONFIG.PTBR_FILE)
         ]);
         
-        if (transMainContent) {
-            const origMainMap = origMainContent ? parseTSVtoMap(origMainContent) : new Map();
-            const transMainMap = parseTSVtoMap(transMainContent);
-            mainData = compareTranslations(origMainMap, transMainMap);
-        }
-        
-        if (transDiffContent) {
-            const origDiffMap = origDiffContent ? parseTSVtoMap(origDiffContent) : new Map();
-            const transDiffMap = parseTSVtoMap(transDiffContent);
-            diffData = compareTranslations(origDiffMap, transDiffMap);
+        if (ptbrContent) {
+            const englishMap = englishContent ? parseTSVtoMap(englishContent) : new Map();
+            const ptbrMap = parseTSVtoMap(ptbrContent);
+            allData = compareTranslations(englishMap, ptbrMap);
         }
     } catch (e) {
         console.error('Erro ao carregar traduções:', e);
@@ -2537,12 +2506,15 @@ async function submitAllSuggestions() {
         
         // Monta o JSON estruturado para o GitHub Action processar
         const jsonData = {
-            version: "1.0",
+            version: "2.0",  // Nova versão do formato
             timestamp: new Date().toISOString(),
             total: suggestionCart.length,
+            // Informações do repositório de tradução
+            targetRepo: CONFIG.TRANSLATION_REPO,
+            targetBranch: CONFIG.TRANSLATION_BRANCH,
             suggestions: suggestionCart.map(item => ({
                 id: item.id,
-                file: item.file === 'main' ? 'translate_words_map_en.tsv' : 'translate_words_map_en_diff.tsv',
+                file: CONFIG.PTBR_FILE,  // Arquivo único de tradução
                 line: item.lineNumber,
                 suggestion: item.suggestion
             }))

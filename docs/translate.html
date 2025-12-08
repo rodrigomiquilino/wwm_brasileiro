@@ -75,24 +75,16 @@
             <div class="how-to-help">
                 <h3><i class="fas fa-question-circle"></i> Como ajudar?</h3>
                 <ol>
-                    <li>Escolha o arquivo que deseja traduzir (Principal ou Diff)</li>
-                    <li>Encontre uma linha pendente usando a busca ou filtros</li>
-                    <li>Clique no botão <strong>"Sugerir"</strong> ao lado da linha</li>
+                    <li>Use os filtros para encontrar linhas <strong>Pendentes</strong> ou busque por ID/texto</li>
+                    <li>Clique no botão <strong>"Sugerir"</strong> ao lado da linha que deseja traduzir</li>
                     <li>Digite sua sugestão e clique em <strong>"Adicionar ao Lote"</strong></li>
                     <li>Repita para quantas linhas quiser</li>
                     <li>Clique no <strong>botão dourado</strong> no canto inferior direito para enviar todas!</li>
                 </ol>
             </div>
             
-            <div class="file-tabs">
-                <button class="file-tab active" data-file="main">
-                    <i class="fas fa-file-alt"></i> Arquivo Principal
-                    <span class="tab-count" id="main-count">-</span>
-                </button>
-                <button class="file-tab" data-file="diff">
-                    <i class="fas fa-code-branch"></i> Arquivo Diff (Novos)
-                    <span class="tab-count" id="diff-count">-</span>
-                </button>
+            <!-- Aba Admin (apenas visível para owner) -->
+            <div class="admin-tab-container">
                 <button class="file-tab" data-file="admin" id="admin-tab" style="display: none;">
                     <i class="fas fa-user-shield"></i> Admin Issues
                 </button>

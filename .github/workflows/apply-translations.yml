@@ -11,14 +11,24 @@ jobs:
     runs-on: ubuntu-latest
     
     permissions:
-      contents: write
+      contents: read
       issues: write
     
     steps:
-      - name: Checkout repository
+      # Checkout do repositório de traduções (wwm_brasileiro_auto_path)
+      - name: Checkout translation repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: rodrigomiquilino/wwm_brasileiro_auto_path
+          ref: dev
+          token: ${{ secrets.TRANSLATION_PAT }}
+          path: translation-repo
+      
+      # Checkout do repositório principal (para o script Python)
+      - name: Checkout main repository
+        uses: actions/checkout@v4
+        with:
+          path: main-repo
       
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -31,21 +41,23 @@ jobs:
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+          TARGET_REPO_PATH: translation-repo
         run: |
-          python .github/scripts/apply_translations.py
+          python main-repo/.github/scripts/apply_translations.py
       
       - name: Commit Changes
         if: steps.apply.outputs.changes_made == 'true'
+        working-directory: translation-repo
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add community/translate/*.tsv
+          git add pt-br.tsv
           git commit -m "feat(translation): aplicar sugestões da Issue #${{ github.event.issue.number }}
 
           Contribuição de @${{ github.event.issue.user.login }}
           
           Co-authored-by: ${{ github.event.issue.user.login }} <${{ github.event.issue.user.id }}+${{ github.event.issue.user.login }}@users.noreply.github.com>"
-          git push
+          git push origin dev
       
       - name: Close Issue with Success
         if: steps.apply.outputs.changes_made == 'true'
@@ -67,7 +79,7 @@ jobs:
               
               Obrigado pela contribuição, @${context.payload.issue.user.login}! 🎉
               
-              As alterações já estão disponíveis no repositório.`
+              As alterações foram aplicadas na branch \`dev\` do repositório de traduções.`
             });
             
             await github.rest.issues.update({
