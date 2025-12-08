@@ -144,8 +144,8 @@
                     <div class="stat-label">Strings Traduzidas</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value" id="stat-version">—</div>
-                    <div class="stat-label">Versão Atual</div>
+                    <div class="stat-value" id="stat-hash">—</div>
+                    <div class="stat-label">Última Atualização</div>
                 </div>
             </div>
         </div>
@@ -162,18 +162,18 @@
             <div class="download-grid">
                 <!-- Launcher -->
                 <div class="download-card featured">
+                    <!-- <div class="download-badge-new">🔥 NOVA VERSÃO</div> -->
                     <div class="download-icon">
                         <i class="fas fa-rocket"></i>
                     </div>
                     <h3>WWM Tradutor PT-BR</h3>
-                    <p>Instalador automático com interface gráfica moderna. Instala e atualiza a tradução com um clique. <strong>~40MB</strong></p>
+                    <p>Instalador automático com <strong>auto-update</strong>! Instala, atualiza e mantém sua tradução sempre em dia. <strong>~40MB</strong></p>
                     
                     <ul class="download-features">
+                        <li style="display: block;"><i class="fas fa-check"></i> <strong>Auto-Update</strong> — sempre atualizado automaticamente!</li>
                         <li style="display: block;"><i class="fas fa-check"></i> <strong>Auto-Detecção</strong> de Steam, Epic e Standalone</li>
                         <li><i class="fas fa-check"></i> Instalação com <strong>1 clique</strong></li>
-                        <li><i class="fas fa-check"></i> Suporte a <strong>4 arquivos</strong> de tradução</li>
                         <li><i class="fas fa-check"></i> Backup e restauração de originais</li>
-                        <li><i class="fas fa-check"></i> Solicita admin quando necessário</li>
                         <li><i class="fas fa-check"></i> Suporte a escalas de DPI</li>
                     </ul>
                     
@@ -304,18 +304,19 @@
             
             <!-- Manual Installation -->
             <div class="opensource-banner mt-3">
-                <h3><i class="fas fa-wrench"></i> Instalação Manual (4 arquivos)</h3>
+                <h3><i class="fas fa-wrench"></i> Instalação Manual (3 arquivos)</h3>
                 <p>
                     Se preferir instalar manualmente, baixe o ZIP e extraia os arquivos para as <strong>2 pastas</strong> do jogo:
                 </p>
                 <code>
-                    <strong>Pasta 1 (Steam/Epic):</strong> ...\Package\HD\oversea\locale\<br>
-                    <strong>Pasta 2 (Steam/Epic):</strong> ...\Package\HD\locale\<br><br>
-                    <strong>Pasta 1 (Standalone):</strong> ...\LocalData\Patch\HD\oversea\locale\<br>
-                    <strong>Pasta 2 (Standalone):</strong> ...\LocalData\Patch\HD\locale\
+                    <strong>Pasta 1 (Steam/Epic):</strong> ...\Package\HD\oversea\locale\ <em>(2 arquivos: en + en_diff)</em><br>
+                    <strong>Pasta 2 (Steam/Epic):</strong> ...\Package\HD\locale\ <em>(1 arquivo: en)</em><br><br>
+                    <strong>Pasta 1 (Standalone):</strong> ...\LocalData\Patch\HD\oversea\locale\ <em>(2 arquivos)</em><br>
+                    <strong>Pasta 2 (Standalone):</strong> ...\LocalData\Patch\HD\locale\ <em>(1 arquivo)</em>
                 </code>
                 <p class="small">
-                    Substitua os arquivos <strong>translate_words_map_en</strong> e <strong>translate_words_map_en_diff</strong> em ambas as pastas.
+                    <strong>oversea/locale:</strong> translate_words_map_en + translate_words_map_en_diff<br>
+                    <strong>locale:</strong> apenas translate_words_map_en
                 </p>
             </div>
         </div>
@@ -510,12 +511,11 @@
                         <div class="platform-name"><i class="fas fa-folder-tree"></i> Conteúdo do HD.zip</div>
                         <code>
                             <strong>HD/</strong><br>
-                            ├── <strong>oversea/locale/</strong><br>
+                            ├── <strong>oversea/locale/</strong> <em>(2 arquivos)</em><br>
                             │&nbsp;&nbsp;&nbsp;&nbsp;├── translate_words_map_en<br>
                             │&nbsp;&nbsp;&nbsp;&nbsp;└── translate_words_map_en_diff<br>
-                            └── <strong>locale/</strong><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── translate_words_map_en<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── translate_words_map_en_diff
+                            └── <strong>locale/</strong> <em>(1 arquivo)</em><br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── translate_words_map_en
                         </code>
                     </div>
                 </div>
@@ -526,18 +526,18 @@
                     <div class="path-box">
                         <div class="platform-name"><i class="fab fa-steam"></i> Steam / <i class="fas fa-gamepad"></i> Epic</div>
                         <code>
-                            <strong>Pasta 1:</strong> ...\Package\<strong>HD\oversea\locale\</strong><br>
-                            <strong>Pasta 2:</strong> ...\Package\<strong>HD\locale\</strong><br><br>
-                            <em>Copie os 2 arquivos para cada pasta (total: 4 arquivos)</em>
+                            <strong>Pasta 1:</strong> ...\Package\<strong>HD\oversea\locale\</strong> → <em>2 arquivos (en + en_diff)</em><br>
+                            <strong>Pasta 2:</strong> ...\Package\<strong>HD\locale\</strong> → <em>1 arquivo (en)</em><br><br>
+                            <em>Total: 3 arquivos</em>
                         </code>
                     </div>
                     
                     <div class="path-box">
                         <div class="platform-name"><i class="fas fa-desktop"></i> Standalone</div>
                         <code>
-                            <strong>Pasta 1:</strong> ...\LocalData\Patch\<strong>HD\oversea\locale\</strong><br>
-                            <strong>Pasta 2:</strong> ...\LocalData\Patch\<strong>HD\locale\</strong><br><br>
-                            <em>Copie os 2 arquivos para cada pasta (total: 4 arquivos)</em>
+                            <strong>Pasta 1:</strong> ...\LocalData\Patch\<strong>HD\oversea\locale\</strong> → <em>2 arquivos (en + en_diff)</em><br>
+                            <strong>Pasta 2:</strong> ...\LocalData\Patch\<strong>HD\locale\</strong> → <em>1 arquivo (en)</em><br><br>
+                            <em>Total: 3 arquivos</em>
                         </code>
                     </div>
                 </div>

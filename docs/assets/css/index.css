@@ -604,6 +604,50 @@ body {
     width: 100%;
 }
 
+/* Download Badge - NOVA VERSÃO */
+.download-badge-new {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: linear-gradient(135deg, #ff6b35, #ff4500);
+    color: white;
+    padding: 0.4rem 1rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 0 0 12px 0;
+    box-shadow: 0 2px 10px rgba(255, 107, 53, 0.4);
+    animation: badgeFlame 2s ease-in-out infinite;
+    z-index: 2;
+}
+
+@keyframes badgeFlame {
+    0%, 100% { 
+        box-shadow: 0 2px 10px rgba(255, 107, 53, 0.4);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 4px 20px rgba(255, 107, 53, 0.7);
+        transform: scale(1.02);
+    }
+}
+
+/* Hash Display in Stats */
+.hash-value {
+    display: block;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+    color: var(--gold-primary);
+}
+
+.hash-date {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
 /* ========== FEATURES ========== */
 .features-grid {
     display: grid;

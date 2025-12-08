@@ -74,9 +74,6 @@ function updateDownloadLinks() {
             modalManualDownload.href = translationUrl;
             modalManualDownload.innerHTML = `<i class="fas fa-file-archive"></i> Baixar Tradução v${translationVersion}`;
         }
-        
-        const statVersion = document.getElementById('stat-version');
-        if (statVersion) statVersion.textContent = `v${translationVersion}`;
     }
 }
 
@@ -130,6 +127,38 @@ async function fetchReleases() {
         if (container) {
             container.innerHTML = '<div class="loading"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar releases</div>';
         }
+    }
+}
+
+// ========== FETCH TRANSLATION HASH ==========
+async function fetchTranslationHash() {
+    try {
+        // Buscar version.json do repositório wwm_brasileiro_auto_path
+        const versionUrl = 'https://raw.githubusercontent.com/rodrigomiquilino/wwm_brasileiro_auto_path/main/version.json';
+        const response = await fetch(versionUrl);
+        
+        if (!response.ok) throw new Error('Failed to fetch version.json');
+        
+        const versionData = await response.json();
+        const hash = versionData.version_hash?.substring(0, 7) || '—';
+        const updatedAt = versionData.updated_at || '';
+        
+        // Formatar data para pt-BR
+        let formattedDate = '';
+        if (updatedAt) {
+            const dateParts = updatedAt.split(' ')[0]; // "2025-12-08"
+            const [year, month, day] = dateParts.split('-');
+            formattedDate = `${day}/${month}/${year}`;
+        }
+        
+        const statHash = document.getElementById('stat-hash');
+        if (statHash) {
+            statHash.innerHTML = `<span class="hash-value">${hash}</span><span class="hash-date">${formattedDate}</span>`;
+        }
+    } catch (error) {
+        console.error('Error fetching translation hash:', error);
+        const statHash = document.getElementById('stat-hash');
+        if (statHash) statHash.textContent = '—';
     }
 }
 
@@ -428,6 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Releases e commits - carregar imediatamente
     fetchReleases();
     fetchCommits();
+    fetchTranslationHash();
     
     // Lazy load para Hall da Fama e Traduções Recentes
     const lazyLoadObserver = new IntersectionObserver((entries) => {
