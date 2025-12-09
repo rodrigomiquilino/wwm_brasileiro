@@ -644,6 +644,63 @@ tr:hover .btn-copy-id {
     color: #69db7c;
 }
 
+/* ========== CART INDICATOR STYLES ========== */
+/* Row when item is in cart */
+tr.in-cart {
+    background: rgba(74, 222, 128, 0.06) !important;
+    border-left: 3px solid #4ade80;
+}
+
+tr.in-cart:hover {
+    background: rgba(74, 222, 128, 0.12) !important;
+}
+
+/* Badge inline next to ID */
+.cart-badge-inline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    font-size: 0.6rem;
+    border-radius: 4px;
+    margin-right: 0.4rem;
+    animation: badgePop 0.3s ease;
+}
+
+@keyframes badgePop {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Button when item is in cart */
+.btn-in-cart {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-in-cart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+}
+
+.btn-in-cart i {
+    font-size: 0.75rem;
+}
+
 /* ========== PAGINATION ========== */
 .pagination {
     display: flex;

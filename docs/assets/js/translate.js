@@ -170,6 +170,24 @@ let glossaryData = null;
 let glossaryIndex = {}; // Índice para busca rápida de termos
 let duplicatesMap = {}; // Mapa de textos originais -> array de IDs
 
+// ========== CART INDICATOR - Set para O(1) lookup ==========
+let cartIdSet = new Set(); // IDs no carrinho para verificação rápida
+
+// Verificar se ID está no carrinho - O(1)
+function isInCart(id) {
+    return cartIdSet.has(id);
+}
+
+// Obter item do carrinho por ID
+function getCartItem(id) {
+    return suggestionCart.find(item => item.id === id);
+}
+
+// Atualizar Set de IDs do carrinho
+function updateCartIdSet() {
+    cartIdSet = new Set(suggestionCart.map(item => item.id));
+}
+
 
 // Fetch TSV file from GitHub (repositório de traduções)
 async function fetchTSV(filename) {
@@ -691,16 +709,32 @@ function renderTable() {
         const displayTranslation = item.translatedText || '(vazio)';
         
         // Dados para o modal - usando encodeURIComponent para TODOS os valores
-        // Isso garante que aspas, caracteres especiais etc. não quebrem o HTML
         const safeId = encodeURIComponent(item.id || '');
         const dataOriginal = encodeURIComponent(item.originalText || '');
         const dataCurrent = encodeURIComponent(item.translatedText || '');
         
+        // ========== CART INDICATOR ==========
+        const inCart = isInCart(item.id);
+        const cartItem = inCart ? getCartItem(item.id) : null;
+        const rowClass = inCart ? 'in-cart' : '';
+        const cartBadge = inCart ? '<span class="cart-badge-inline" title="Já está no lote"><i class="fas fa-clipboard-check"></i></span>' : '';
+        
+        // Botão muda baseado no estado do carrinho
+        const btnClass = inCart ? 'btn-in-cart' : 'btn-edit';
+        const btnIcon = inCart ? 'fa-check' : 'fa-lightbulb';
+        const btnText = inCart ? 'No Lote' : 'Sugerir';
+        
+        // Tooltip com preview da sugestão
+        const tooltipText = inCart && cartItem 
+            ? `Sugestão: ${cartItem.suggestion.substring(0, 50)}${cartItem.suggestion.length > 50 ? '...' : ''}`
+            : 'Sugerir tradução';
+        
         return `
-            <tr>
+            <tr class="${rowClass}">
                 <td class="col-id">
                     <span class="status-badge ${statusClass}">${statusText}</span>
                     <div class="id-wrapper">
+                        ${cartBadge}
                         <code>${escapeHtml(item.id)}</code>
                         <button class="btn-copy-id" data-copy="${safeId}" title="Copiar ID">
                             <i class="fas fa-copy"></i>
@@ -714,13 +748,13 @@ function renderTable() {
                     <div class="text-cell ${translationClass}">${escapeHtml(displayTranslation)}</div>
                 </td>
                 <td class="col-actions">
-                    <button class="btn-edit" 
+                    <button class="${btnClass}" 
                             data-id="${safeId}" 
                             data-original="${dataOriginal}" 
                             data-current="${dataCurrent}" 
                             data-line="${item.lineNumber}"
-                            title="Sugerir tradução">
-                        <i class="fas fa-lightbulb"></i> Sugerir
+                            title="${tooltipText}">
+                        <i class="fas ${btnIcon}"></i> ${btnText}
                     </button>
                 </td>
             </tr>
@@ -1428,6 +1462,9 @@ function updateCartUI() {
     const items = document.getElementById('cart-items');
     const submit = document.getElementById('cart-submit');
     
+    // Atualiza Set de IDs para O(1) lookup
+    updateCartIdSet();
+    
     // Atualiza contador
     badge.textContent = suggestionCart.length;
     count.textContent = suggestionCart.length;
@@ -1437,7 +1474,10 @@ function updateCartUI() {
     // Salvar no localStorage
     saveCartToStorage();
     
-    // Renderiza itens
+    // Re-renderiza a tabela para atualizar indicadores de carrinho
+    renderTable();
+    
+    // Renderiza itens no painel do carrinho
     if (suggestionCart.length === 0) {
         items.innerHTML = `
             <div class="cart-empty">
@@ -1451,7 +1491,7 @@ function updateCartUI() {
                 <button class="cart-item-remove" onclick="removeFromCart(${index})" title="Remover">
                     <i class="fas fa-times"></i>
                 </button>
-                <div class="cart-item-id">${item.id}</div>
+                <div class="cart-item-id">${escapeHtml(item.id)}</div>
                 <div class="cart-item-text">${escapeHtml(item.suggestion)}</div>
             </div>
         `).join('');
