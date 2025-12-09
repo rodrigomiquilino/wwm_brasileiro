@@ -218,56 +218,72 @@
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label><i class="fas fa-fingerprint"></i> ID da Linha</label>
-                    <div class="id-display" id="modal-id">-</div>
-                    <input type="hidden" id="modal-file">
-                    <input type="hidden" id="modal-line">
-                </div>
-                
-                <div class="form-group">
-                    <label><i class="fas fa-globe"></i> Texto Original (Inglês)</label>
-                    <textarea class="form-control readonly-text" id="modal-original" readonly></textarea>
-                </div>
-                
-                <!-- Glossário Hints -->
-                <div class="form-group glossary-hints" id="glossary-hints" style="display: none;">
-                    <label><i class="fas fa-book"></i> Termos do Glossário</label>
-                    <div class="glossary-terms-list" id="glossary-terms-list"></div>
-                </div>
-                
-                <!-- Edição em Massa (Duplicatas) -->
-                <div class="form-group bulk-edit-section" id="bulk-edit-section" style="display: none;">
-                    <div class="bulk-edit-header">
-                        <i class="fas fa-clone"></i>
-                        <span>Texto encontrado em <strong id="duplicate-count">0</strong> linhas</span>
+                <!-- LEFT PANEL - Source Info -->
+                <div class="left-panel">
+                    <div class="panel-title source">
+                        <i class="fas fa-file-alt"></i> Texto Original
                     </div>
-                    <label class="bulk-checkbox">
-                        <input type="checkbox" id="apply-to-all"> 
-                        Aplicar tradução a todas as linhas iguais
-                    </label>
-                    <div class="duplicate-ids-list" id="duplicate-ids-list"></div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-fingerprint"></i> ID da Linha</label>
+                        <div class="id-display" id="modal-id">-</div>
+                        <input type="hidden" id="modal-file">
+                        <input type="hidden" id="modal-line">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-globe"></i> Texto Original (Inglês)</label>
+                        <textarea class="form-control readonly-text" id="modal-original" readonly></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-language"></i> Tradução Atual (PT-BR)</label>
+                        <textarea class="form-control readonly-text" id="modal-current" readonly></textarea>
+                    </div>
+                    
+                    <!-- Glossário Hints -->
+                    <div class="form-group glossary-hints" id="glossary-hints" style="display: none;">
+                        <label><i class="fas fa-book"></i> Termos do Glossário</label>
+                        <div class="glossary-terms-list" id="glossary-terms-list"></div>
+                    </div>
+                    
+                    <!-- Edição em Massa (Duplicatas) -->
+                    <div class="form-group bulk-edit-section" id="bulk-edit-section" style="display: none;">
+                        <div class="bulk-edit-header">
+                            <i class="fas fa-clone"></i>
+                            <span>Texto encontrado em <strong id="duplicate-count">0</strong> linhas</span>
+                        </div>
+                        <label class="bulk-checkbox">
+                            <input type="checkbox" id="apply-to-all"> 
+                            Aplicar tradução a todas as linhas iguais
+                        </label>
+                        <div class="duplicate-ids-list" id="duplicate-ids-list"></div>
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label><i class="fas fa-language"></i> Tradução Atual (PT-BR)</label>
-                    <textarea class="form-control readonly-text" id="modal-current" readonly></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label><i class="fas fa-edit"></i> Sua Sugestão de Tradução</label>
-                    <textarea class="form-control suggestion-input" id="modal-suggestion" placeholder="Digite aqui sua sugestão de tradução..."></textarea>
-                    <p class="form-hint">💡 Mantenha a mesma formatação e símbolos especiais do original (ex: #Y, #E, \n)</p>
+                <!-- RIGHT PANEL - Translation Input -->
+                <div class="right-panel">
+                    <div class="panel-title translation">
+                        <i class="fas fa-edit"></i> Sua Tradução
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-pen"></i> Digite sua sugestão de tradução</label>
+                        <textarea class="form-control suggestion-input" id="modal-suggestion" placeholder="Digite aqui sua sugestão de tradução..."></textarea>
+                        <p class="form-hint">💡 Mantenha a mesma formatação e símbolos especiais do original (ex: #Y, #E, \n)</p>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <div class="keyboard-hint">
                     <kbd>Enter</kbd> adicionar • <kbd>Esc</kbd> fechar
                 </div>
-                <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-                <button class="btn-submit" onclick="addToCart()">
-                    <i class="fas fa-plus"></i> Adicionar ao Lote
-                </button>
+                <div class="btn-group">
+                    <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button class="btn-submit" onclick="addToCart()">
+                        <i class="fas fa-plus"></i> Adicionar ao Lote
+                    </button>
+                </div>
             </div>
         </div>
     </div>

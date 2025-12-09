@@ -321,6 +321,17 @@ async function loadGlossary() {
         });
         
         console.log(`[Glossary] Carregados ${glossaryData.terms.length} termos`);
+        
+        // Constrói índice de NPCs para filtragem
+        buildNpcIndex();
+        
+        // Detecta diferenças de NPCs e cria issue automaticamente
+        setTimeout(() => detectNpcDifferences(), 1000);
+        
+        // Re-aplica filtro para ocultar NPCs
+        if (allData.length > 0) {
+            applyFilter();
+        }
     } catch (error) {
         console.warn('[Glossary] Erro ao carregar glossário:', error);
         glossaryData = null;
@@ -359,6 +370,161 @@ function findGlossaryTerms(text) {
     }
     
     return found;
+}
+
+// ========== NPC DETECTION ==========
+// Lista de NPCs do glossário (category='npcs' com doNotTranslate=true)
+let npcNames = new Set();
+let npcIndex = {};  // original lowercase -> term
+
+// Constrói índice de nomes de NPCs
+function buildNpcIndex() {
+    npcNames = new Set();
+    npcIndex = {};
+    
+    if (!glossaryData || !glossaryData.terms) return;
+    
+    glossaryData.terms
+        .filter(term => term.category === 'npcs' && term.doNotTranslate === true)
+        .forEach(term => {
+            const nameLower = term.original.toLowerCase();
+            npcNames.add(nameLower);
+            npcIndex[nameLower] = term;
+            
+            // Também adiciona aliases
+            if (term.aliases) {
+                term.aliases.forEach(alias => {
+                    const aliasLower = alias.toLowerCase();
+                    npcNames.add(aliasLower);
+                    npcIndex[aliasLower] = term;
+                });
+            }
+        });
+    
+    console.log(`[NPC] Indexados ${npcNames.size} nomes de NPC para ocultar`);
+}
+
+// Verifica se um texto é um nome de NPC (para ocultar da tradução)
+function isNpcName(originalText) {
+    if (!originalText || npcNames.size === 0) return false;
+    
+    const textLower = originalText.trim().toLowerCase();
+    
+    // Verifica correspondência exata
+    if (npcNames.has(textLower)) return true;
+    
+    // Verifica se o texto é apenas o nome do NPC (sem texto adicional)
+    for (const npcName of npcNames) {
+        if (textLower === npcName) return true;
+    }
+    
+    return false;
+}
+
+// Detecta diferenças nos nomes de NPCs entre EN e PT-BR e cria issue automaticamente
+let npcDifferences = [];
+
+async function detectNpcDifferences() {
+    npcDifferences = [];
+    
+    if (!glossaryData || !allData) return;
+    
+    // Busca por linhas onde o texto é um NPC e a tradução PT-BR é diferente
+    for (const item of allData) {
+        if (!item.originalText) continue;
+        
+        const textLower = item.originalText.trim().toLowerCase();
+        const npcTerm = npcIndex[textLower];
+        
+        if (npcTerm && item.isTranslated) {
+            // O NPC deveria manter o nome original, mas foi traduzido
+            const expectedName = npcTerm.original;
+            const actualTranslation = item.translatedText.trim();
+            
+            // Se o nome no PT-BR é diferente do esperado (nome original)
+            if (actualTranslation.toLowerCase() !== expectedName.toLowerCase()) {
+                npcDifferences.push({
+                    id: item.id,
+                    npcName: npcTerm.original,
+                    englishText: item.originalText,
+                    ptbrText: item.translatedText,
+                    expected: expectedName,
+                    lineNumber: item.lineNumber
+                });
+            }
+        }
+    }
+    
+    if (npcDifferences.length > 0) {
+        console.log(`[NPC] Detectadas ${npcDifferences.length} diferenças nos nomes de NPCs`);
+        // Auto-cria issue se for admin
+        if (githubUser && githubUser.id === CONFIG.GITHUB_OWNER_ID) {
+            await autoCreateNpcIssue();
+        }
+    }
+}
+
+// Cria issue automaticamente com as diferenças de NPC
+async function autoCreateNpcIssue() {
+    if (npcDifferences.length === 0 || !githubToken) return;
+    
+    // Verifica se já existe uma issue aberta sobre NPCs
+    try {
+        const existingIssuesResult = await cachedFetch(
+            `https://api.github.com/repos/${CONFIG.GITHUB_REPO}/issues?state=open&labels=npc-review&per_page=10`,
+            'npc_issues_check'
+        );
+        
+        if (existingIssuesResult.ok && existingIssuesResult.data.length > 0) {
+            console.log('[NPC] Já existe uma issue aberta para revisão de NPCs');
+            return;
+        }
+    } catch (e) {
+        console.warn('[NPC] Erro ao verificar issues existentes:', e);
+    }
+    
+    // Cria o corpo da issue
+    const issueBody = `## 🔎 Diferenças Detectadas em Nomes de NPCs
+
+Os seguintes nomes de NPCs no arquivo **pt-br.tsv** estão diferentes do esperado:
+
+| ID | NPC | Esperado | Encontrado (PT-BR) |
+|---|---|---|---|
+${npcDifferences.slice(0, 50).map(d => 
+    `| \`${d.id}\` | ${d.npcName} | ${d.expected} | ${d.ptbrText} |`
+).join('\n')}
+
+${npcDifferences.length > 50 ? `\n*... e mais ${npcDifferences.length - 50} diferenças*` : ''}
+
+---
+**Ação necessária:** Revisar e corrigir os nomes de NPCs para manter consistência.
+
+*Issue criada automaticamente pelo sistema de detecção.*`;
+    
+    try {
+        const response = await fetch(`https://api.github.com/repos/${CONFIG.GITHUB_REPO}/issues`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${githubToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: `[Auto] 🔎 Revisão de Nomes de NPCs (${npcDifferences.length} diferenças)`,
+                body: issueBody,
+                labels: ['npc-review', 'automated']
+            })
+        });
+        
+        if (response.ok) {
+            const issue = await response.json();
+            console.log(`[NPC] Issue criada automaticamente: #${issue.number}`);
+            showNotification(`Issue #${issue.number} criada para revisão de NPCs`, 'success');
+        } else {
+            console.error('[NPC] Erro ao criar issue:', await response.text());
+        }
+    } catch (error) {
+        console.error('[NPC] Erro ao criar issue:', error);
+    }
 }
 
 // ========== DUPLICATAS ==========
@@ -443,6 +609,11 @@ function applyFilter() {
     const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
     
     filteredData = allData.filter(item => {
+        // Oculta NPCs automaticamente (não precisam de tradução)
+        if (isNpcName(item.originalText)) {
+            return false;
+        }
+        
         // Filter by status
         if (currentFilter === 'pending' && item.isTranslated) {
             return false;
@@ -494,7 +665,9 @@ function renderTable() {
         const translationClass = item.isTranslated ? 'text-translated' : 'text-empty';
         const displayTranslation = item.translatedText || '(vazio)';
         
-        // Dados para o modal (escapados para atributo data-)
+        // Dados para o modal - usando encodeURIComponent para TODOS os valores
+        // Isso garante que aspas, caracteres especiais etc. não quebrem o HTML
+        const safeId = encodeURIComponent(item.id || '');
         const dataOriginal = encodeURIComponent(item.originalText || '');
         const dataCurrent = encodeURIComponent(item.translatedText || '');
         
@@ -502,7 +675,7 @@ function renderTable() {
             <tr>
                 <td class="col-id">
                     <span class="status-badge ${statusClass}">${statusText}</span>
-                    <code>${item.id}</code>
+                    <code>${escapeHtml(item.id)}</code>
                 </td>
                 <td class="col-original">
                     <div class="text-cell text-original">${escapeHtml(item.originalText)}</div>
@@ -511,13 +684,29 @@ function renderTable() {
                     <div class="text-cell ${translationClass}">${escapeHtml(displayTranslation)}</div>
                 </td>
                 <td class="col-actions">
-                    <button class="btn-edit" onclick="openSuggestionModal('${item.id}', '${dataOriginal}', '${dataCurrent}', ${item.lineNumber})" title="Sugerir tradução">
+                    <button class="btn-edit" 
+                            data-id="${safeId}" 
+                            data-original="${dataOriginal}" 
+                            data-current="${dataCurrent}" 
+                            data-line="${item.lineNumber}"
+                            title="Sugerir tradução">
                         <i class="fas fa-lightbulb"></i> Sugerir
                     </button>
                 </td>
             </tr>
         `;
     }).join('');
+    
+    // Adiciona event listeners aos botões (mais seguro que onclick inline)
+    tbody.querySelectorAll('.btn-edit').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = decodeURIComponent(this.dataset.id);
+            const original = this.dataset.original; // Já está encoded
+            const current = this.dataset.current;   // Já está encoded  
+            const line = parseInt(this.dataset.line, 10);
+            openSuggestionModal(id, original, current, line);
+        });
+    });
 }
 
 // Escape HTML
