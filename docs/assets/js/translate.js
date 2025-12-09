@@ -486,15 +486,17 @@ function showGlossaryUpdateNotification() {
     setTimeout(() => notification.remove(), 30000);
 }
 
-// Hash simples para strings
-String.prototype.hashCode = function() {
-    let hash = 0;
-    for (let i = 0; i < this.length; i++) {
-        const char = this.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
+// Hash cyrb53 para strings (melhor distribuição, menos colisões que hashCode simples)
+String.prototype.hashCode = function(seed = 0) {
+    let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+    for (let i = 0, ch; i < this.length; i++) {
+        ch = this.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
     }
-    return hash;
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 };
 
 // Substitui todas as variáveis {{VAR}} pelos valores reais
@@ -1043,14 +1045,24 @@ function validateVariableSyntax(text) {
     }
     
     // Verificar variáveis com formato inválido
-    // Procurar por {{ não seguido de letras/números/_
-    const badOpen = text.match(/\{\{(?![A-Z_0-9]+\}\})/g);
-    if (badOpen && badOpen.length > 0) {
-        // Verificar se não é apenas um caso de variável lowercase
-        const lowercaseVars = text.match(/\{\{[a-z_0-9]+\}\}/gi);
-        if (lowercaseVars) {
-            errors.push(`Variáveis devem estar em MAIÚSCULAS: ${lowercaseVars.slice(0, 3).join(', ')}`);
+    // Detectar qualquer variável que não está em MAIÚSCULAS (CamelCase, lowercase, mixed)
+    const allVarsPattern = /\{\{([^}]+)\}\}/g;
+    let match;
+    const invalidCaseVars = [];
+    
+    while ((match = allVarsPattern.exec(text)) !== null) {
+        const varContent = match[1];
+        // Variável válida: apenas letras maiúsculas, números e underscores
+        const isValidFormat = /^[A-Z_0-9]+$/.test(varContent);
+        
+        if (!isValidFormat && varContent.trim().length > 0) {
+            invalidCaseVars.push(`{{${varContent}}}`);
         }
+    }
+    
+    if (invalidCaseVars.length > 0) {
+        const examples = invalidCaseVars.slice(0, 3).join(', ');
+        errors.push(`Variáveis devem estar em MAIÚSCULAS: ${examples}`);
     }
     
     // Procurar por }} órfãos (sem {{ antes)
@@ -1980,6 +1992,8 @@ async function validateToken() {
         
         if (response.ok) {
             githubUser = await response.json();
+            // Salvar username no localStorage para uso em outras páginas (glossary-admin)
+            localStorage.setItem('github_username', githubUser.login);
             updateAuthButton();
         } else {
             // Token inválido
