@@ -165,6 +165,12 @@ let filteredData = [];
 let currentPage = 1;
 let currentFilter = 'all';
 
+// ========== GLOSSÁRIO E DUPLICATAS ==========
+let glossaryData = null;
+let glossaryIndex = {}; // Índice para busca rápida de termos
+let duplicatesMap = {}; // Mapa de textos originais -> array de IDs
+
+
 // Fetch TSV file from GitHub (repositório de traduções)
 async function fetchTSV(filename) {
     const url = `https://raw.githubusercontent.com/${CONFIG.TRANSLATION_REPO}/${CONFIG.TRANSLATION_BRANCH}/${filename}`;
@@ -245,11 +251,14 @@ async function loadTranslations() {
         <p>Carregando traduções... (isso pode demorar um pouco)</p>
     `;
     
-    // Carrega os 2 arquivos em paralelo (en.tsv e pt-br.tsv)
+    // Carrega os 2 arquivos em paralelo (en.tsv e pt-br.tsv) + glossário
     const [englishContent, ptbrContent] = await Promise.all([
         fetchTSV(CONFIG.ENGLISH_FILE),
         fetchTSV(CONFIG.PTBR_FILE)
     ]);
+    
+    // Carrega glossário em paralelo (não bloqueia o carregamento principal)
+    loadGlossary();
     
     if (!ptbrContent) {
         document.getElementById('loading').innerHTML = `
@@ -271,6 +280,9 @@ async function loadTranslations() {
     // Compara originais com traduzidos
     allData = compareTranslations(englishMap, ptbrMap);
     
+    // Constrói mapa de duplicatas
+    buildDuplicatesMap();
+    
     console.log(`[Translate] Carregadas ${allData.length} linhas de tradução`);
     
     // Atualiza estatísticas e renderiza
@@ -280,6 +292,112 @@ async function loadTranslations() {
     document.getElementById('loading').classList.add('hidden');
     document.getElementById('table-scroll').classList.remove('hidden');
 }
+
+// ========== GLOSSÁRIO ==========
+// Carrega dados do glossário
+async function loadGlossary() {
+    try {
+        const response = await fetch('glossary.json');
+        if (!response.ok) throw new Error('Failed to load glossary');
+        
+        glossaryData = await response.json();
+        
+        // Cria índice para busca rápida O(1)
+        glossaryIndex = {};
+        glossaryData.terms.forEach(term => {
+            // Indexa pelo original em lowercase
+            const originalKey = term.original.toLowerCase();
+            glossaryIndex[originalKey] = term;
+            
+            // Indexa pelos aliases
+            if (term.aliases) {
+                term.aliases.forEach(alias => {
+                    const aliasKey = alias.toLowerCase();
+                    if (!glossaryIndex[aliasKey]) {
+                        glossaryIndex[aliasKey] = term;
+                    }
+                });
+            }
+        });
+        
+        console.log(`[Glossary] Carregados ${glossaryData.terms.length} termos`);
+    } catch (error) {
+        console.warn('[Glossary] Erro ao carregar glossário:', error);
+        glossaryData = null;
+        glossaryIndex = {};
+    }
+}
+
+// Encontra termos do glossário no texto
+function findGlossaryTerms(text) {
+    if (!glossaryData || !text) return [];
+    
+    const found = [];
+    const textLower = text.toLowerCase();
+    
+    // Busca cada termo do glossário no texto
+    for (const term of glossaryData.terms) {
+        // Verifica o termo original
+        if (textLower.includes(term.original.toLowerCase())) {
+            if (!found.some(t => t.id === term.id)) {
+                found.push(term);
+            }
+            continue;
+        }
+        
+        // Verifica aliases
+        if (term.aliases) {
+            for (const alias of term.aliases) {
+                if (textLower.includes(alias.toLowerCase())) {
+                    if (!found.some(t => t.id === term.id)) {
+                        found.push(term);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    
+    return found;
+}
+
+// ========== DUPLICATAS ==========
+// Constrói mapa de textos idênticos (para edição em massa)
+function buildDuplicatesMap() {
+    duplicatesMap = {};
+    
+    allData.forEach(item => {
+        if (!item.originalText) return;
+        
+        const key = item.originalText.trim().toLowerCase();
+        if (!duplicatesMap[key]) {
+            duplicatesMap[key] = [];
+        }
+        duplicatesMap[key].push({
+            id: item.id,
+            lineNumber: item.lineNumber,
+            isTranslated: item.isTranslated
+        });
+    });
+    
+    // Conta duplicatas reais (>1 ocorrência)
+    const duplicateCount = Object.values(duplicatesMap).filter(arr => arr.length > 1).length;
+    console.log(`[Duplicates] Encontrados ${duplicateCount} textos com múltiplas ocorrências`);
+}
+
+// Obtém IDs duplicados para um determinado texto original
+function getDuplicateIds(originalText) {
+    if (!originalText) return [];
+    const key = originalText.trim().toLowerCase();
+    return duplicatesMap[key] || [];
+}
+
+// Conta quantas linhas têm o mesmo texto original
+function getDuplicateCount(originalText) {
+    return getDuplicateIds(originalText).length;
+}
+
+
 
 // Exibe painel admin (apenas para o owner)
 function showAdminPanel(show = true) {
@@ -780,6 +898,77 @@ function openSuggestionModal(id, originalEncoded, currentEncoded, lineNumber) {
     document.getElementById('modal-file').value = CONFIG.PTBR_FILE; // Arquivo único de tradução
     document.getElementById('modal-line').value = lineNumber;
     
+    // ========== GLOSSÁRIO ==========
+    const glossaryHints = document.getElementById('glossary-hints');
+    const glossaryTermsList = document.getElementById('glossary-terms-list');
+    
+    if (glossaryHints && glossaryTermsList) {
+        const terms = findGlossaryTerms(original);
+        
+        if (terms.length > 0) {
+            glossaryHints.style.display = 'block';
+            glossaryTermsList.innerHTML = terms.map(term => {
+                const category = glossaryData?.categories[term.category];
+                const categoryColor = category?.color || '#c9a227';
+                const statusClass = term.doNotTranslate ? 'no-translate' : 'translate';
+                const statusIcon = term.doNotTranslate ? 'fa-ban' : 'fa-check';
+                
+                return `
+                    <div class="glossary-term-hint" style="--term-color: ${categoryColor}">
+                        <div class="term-hint-header">
+                            <span class="term-hint-original">${escapeHtml(term.original)}</span>
+                            ${term.chinese ? `<span class="term-hint-chinese">${term.chinese}</span>` : ''}
+                        </div>
+                        <div class="term-hint-translation">
+                            <i class="fas ${statusIcon} ${statusClass}"></i>
+                            ${escapeHtml(term.translation)}
+                        </div>
+                        ${term.context ? `<div class="term-hint-context">${escapeHtml(term.context)}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        } else {
+            glossaryHints.style.display = 'none';
+            glossaryTermsList.innerHTML = '';
+        }
+    }
+    
+    // ========== DUPLICATAS ==========
+    const bulkEditSection = document.getElementById('bulk-edit-section');
+    const duplicateCountEl = document.getElementById('duplicate-count');
+    const duplicateIdsList = document.getElementById('duplicate-ids-list');
+    const applyToAllCheckbox = document.getElementById('apply-to-all');
+    
+    if (bulkEditSection) {
+        const duplicates = getDuplicateIds(original);
+        
+        if (duplicates.length > 1) {
+            bulkEditSection.style.display = 'block';
+            duplicateCountEl.textContent = duplicates.length;
+            
+            // Mostra lista de IDs (limitado a 10 para não sobrecarregar)
+            const displayDuplicates = duplicates.slice(0, 10);
+            const hasMore = duplicates.length > 10;
+            
+            duplicateIdsList.innerHTML = displayDuplicates.map(dup => {
+                const statusClass = dup.isTranslated ? 'translated' : 'pending';
+                const currentItem = dup.id === id;
+                return `
+                    <span class="duplicate-id ${statusClass} ${currentItem ? 'current' : ''}" title="Linha ${dup.lineNumber}">
+                        ${dup.id.substring(0, 8)}...
+                    </span>
+                `;
+            }).join('') + (hasMore ? `<span class="duplicate-more">+${duplicates.length - 10} mais</span>` : '');
+            
+            // Reseta checkbox
+            if (applyToAllCheckbox) {
+                applyToAllCheckbox.checked = false;
+            }
+        } else {
+            bulkEditSection.style.display = 'none';
+        }
+    }
+    
     document.getElementById('suggestion-modal').classList.add('active');
     document.body.style.overflow = 'hidden';
     
@@ -788,6 +977,7 @@ function openSuggestionModal(id, originalEncoded, currentEncoded, lineNumber) {
         document.getElementById('modal-suggestion').focus();
     }, 100);
 }
+
 
 function closeModal() {
     document.getElementById('suggestion-modal').classList.remove('active');
@@ -804,6 +994,10 @@ async function addToCart() {
     const file = document.getElementById('modal-file').value;
     const lineNumber = parseInt(document.getElementById('modal-line').value);
     
+    // Verifica se deve aplicar a todas as duplicatas
+    const applyToAllCheckbox = document.getElementById('apply-to-all');
+    const applyToAll = applyToAllCheckbox && applyToAllCheckbox.checked;
+    
     if (!suggestion) {
         await showAlert('Por favor, digite sua sugestão de tradução.', 'Campo Obrigatório', 'warning');
         return;
@@ -815,7 +1009,40 @@ async function addToCart() {
         return;
     }
     
-    // Verifica se já existe no carrinho
+    // Se aplicar a todas as duplicatas
+    if (applyToAll) {
+        const duplicates = getDuplicateIds(original);
+        let addedCount = 0;
+        
+        for (const dup of duplicates) {
+            // Verifica se já existe no carrinho
+            const existingIndex = suggestionCart.findIndex(item => item.id === dup.id);
+            
+            if (existingIndex >= 0) {
+                suggestionCart[existingIndex].suggestion = suggestion;
+            } else {
+                suggestionCart.push({
+                    id: dup.id,
+                    original,
+                    current: currentClean,
+                    suggestion,
+                    file,
+                    lineNumber: dup.lineNumber,
+                    bulkApplied: true // Marca como aplicado em massa
+                });
+                addedCount++;
+            }
+        }
+        
+        updateCartUI();
+        closeModal();
+        
+        // Mostra feedback especial para edição em massa
+        showToast(`${duplicates.length} sugestões adicionadas em massa! (${suggestionCart.length} no lote)`);
+        return;
+    }
+    
+    // Comportamento normal (uma sugestão)
     const existingIndex = suggestionCart.findIndex(item => item.id === id);
     if (existingIndex >= 0) {
         suggestionCart[existingIndex].suggestion = suggestion;
@@ -836,6 +1063,7 @@ async function addToCart() {
     // Mostra feedback
     showToast(`Sugestão adicionada! (${suggestionCart.length} no lote)`);
 }
+
 
 // Toggle carrinho
 function toggleCart() {

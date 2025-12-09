@@ -55,6 +55,7 @@
             <div class="nav-links">
                 <a href="index"><i class="fas fa-home"></i> Início</a>
                 <a href="index#download"><i class="fas fa-download"></i> Download</a>
+                <a href="glossary"><i class="fas fa-book"></i> Glossário</a>
                 <a href="https://github.com/rodrigomiquilino/wwm_brasileiro" target="_blank" rel="noopener">
                     <i class="fab fa-github"></i> GitHub
                 </a>
@@ -227,6 +228,25 @@
                 <div class="form-group">
                     <label><i class="fas fa-globe"></i> Texto Original (Inglês)</label>
                     <textarea class="form-control readonly-text" id="modal-original" readonly></textarea>
+                </div>
+                
+                <!-- Glossário Hints -->
+                <div class="form-group glossary-hints" id="glossary-hints" style="display: none;">
+                    <label><i class="fas fa-book"></i> Termos do Glossário</label>
+                    <div class="glossary-terms-list" id="glossary-terms-list"></div>
+                </div>
+                
+                <!-- Edição em Massa (Duplicatas) -->
+                <div class="form-group bulk-edit-section" id="bulk-edit-section" style="display: none;">
+                    <div class="bulk-edit-header">
+                        <i class="fas fa-clone"></i>
+                        <span>Texto encontrado em <strong id="duplicate-count">0</strong> linhas</span>
+                    </div>
+                    <label class="bulk-checkbox">
+                        <input type="checkbox" id="apply-to-all"> 
+                        Aplicar tradução a todas as linhas iguais
+                    </label>
+                    <div class="duplicate-ids-list" id="duplicate-ids-list"></div>
                 </div>
                 
                 <div class="form-group">

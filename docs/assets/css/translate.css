@@ -1779,3 +1779,161 @@ footer a {
     from { opacity: 0; }
     to { opacity: 1; }
 }
+
+/* ========== GLOSSARY HINTS (Modal) ========== */
+.glossary-hints {
+    background: rgba(201, 162, 39, 0.08);
+    border: 1px solid rgba(201, 162, 39, 0.25);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.glossary-hints label {
+    color: var(--gold-primary) !important;
+    margin-bottom: 0.75rem !important;
+}
+
+.glossary-terms-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.glossary-term-hint {
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 3px solid var(--term-color, var(--gold-primary));
+    border-radius: 6px;
+    padding: 0.75rem;
+}
+
+.term-hint-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.35rem;
+}
+
+.term-hint-original {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.term-hint-chinese {
+    font-size: 1rem;
+    color: var(--gold-primary);
+}
+
+.term-hint-translation {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--success);
+    font-size: 0.9rem;
+    margin-bottom: 0.35rem;
+}
+
+.term-hint-translation i.no-translate {
+    color: #ef4444;
+}
+
+.term-hint-translation i.translate {
+    color: var(--success);
+}
+
+.term-hint-context {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.4;
+}
+
+/* ========== BULK EDIT SECTION (Modal) ========== */
+.bulk-edit-section {
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.bulk-edit-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #60a5fa;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+}
+
+.bulk-edit-header i {
+    font-size: 1.1rem;
+}
+
+.bulk-edit-header strong {
+    color: #93c5fd;
+    font-weight: 700;
+}
+
+.bulk-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s;
+}
+
+.bulk-checkbox:hover {
+    background: rgba(59, 130, 246, 0.15);
+}
+
+.bulk-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #3b82f6;
+    cursor: pointer;
+}
+
+.duplicate-ids-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.duplicate-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    color: var(--text-muted);
+}
+
+.duplicate-id.translated {
+    border-left: 2px solid var(--success);
+}
+
+.duplicate-id.pending {
+    border-left: 2px solid #f59e0b;
+}
+
+.duplicate-id.current {
+    background: rgba(201, 162, 39, 0.2);
+    color: var(--gold-primary);
+    font-weight: 600;
+}
+
+.duplicate-more {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    padding: 0.2rem 0.5rem;
+    font-style: italic;
+}
+

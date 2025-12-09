@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Glossário de termos do Where Winds Meet - Terminologia Wuxia, NPCs, Locais e muito mais">
+    <meta name="keywords" content="Where Winds Meet, WWM, glossário, wuxia, tradução, português, Brasil, PT-BR">
+    <meta name="author" content="rodrigomiquilino">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="https://rodrigomiquilino.github.io/wwm_brasileiro/assets/og-image.png">
+    
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rodrigomiquilino.github.io/wwm_brasileiro/glossary">
+    <meta property="og:site_name" content="WWM Brasileiro ⚔️">
+    <meta property="og:title" content="Glossário • WWM Brasileiro">
+    <meta property="og:description" content="📚 Glossário completo de termos do Where Winds Meet - Wuxia, NPCs, Locais e mais!">
+    <meta property="og:image" content="https://rodrigomiquilino.github.io/wwm_brasileiro/assets/og-image.png">
+    <meta property="og:locale" content="pt_BR">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Glossário • WWM Brasileiro">
+    <meta name="twitter:description" content="📚 Glossário completo de termos do Where Winds Meet">
+    <meta name="twitter:image" content="https://rodrigomiquilino.github.io/wwm_brasileiro/assets/og-image.png">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#c9a227">
+    
+    <title>Glossário | WWM Brasileiro</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Shared Styles -->
+    <link rel="stylesheet" href="assets/css/shared.css">
+    <!-- Page Specific Styles -->
+    <link rel="stylesheet" href="assets/css/glossary.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index" class="nav-logo">
+                <i class="fas fa-torii-gate"></i>
+                WWM Brasileiro
+            </a>
+            <div class="nav-links">
+                <a href="index"><i class="fas fa-home"></i> Início</a>
+                <a href="translate"><i class="fas fa-language"></i> Traduzir</a>
+                <a href="https://github.com/rodrigomiquilino/wwm_brasileiro" target="_blank" rel="noopener">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-book-open"></i> Glossário do Jogo</h1>
+                <p>Terminologia Wuxia, NPCs, Locais e referências culturais de Where Winds Meet</p>
+            </div>
+            
+            <!-- Stats -->
+            <div class="glossary-stats">
+                <div class="stat-card">
+                    <i class="fas fa-scroll"></i>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-total">-</span>
+                        <span class="stat-label">Total de Termos</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-user-secret"></i>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-npcs">-</span>
+                        <span class="stat-label">NPCs</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-fist-raised"></i>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-combat">-</span>
+                        <span class="stat-label">Termos de Combate</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-ban"></i>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-notranslate">-</span>
+                        <span class="stat-label">Não Traduzir</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Controls -->
+            <div class="glossary-controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Buscar por termo, chinês, pinyin ou tradução...">
+                    <button class="clear-search" id="clear-search" style="display: none;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="category-filters" id="category-filters">
+                    <button class="category-btn active" data-category="all">
+                        <i class="fas fa-globe"></i> Todos
+                    </button>
+                    <!-- Categories will be dynamically inserted here -->
+                </div>
+            </div>
+            
+            <!-- Filter Tags -->
+            <div class="filter-tags">
+                <button class="filter-tag active" data-filter="all">
+                    <i class="fas fa-list"></i> Todos
+                </button>
+                <button class="filter-tag" data-filter="translate">
+                    <i class="fas fa-language"></i> Traduzir
+                </button>
+                <button class="filter-tag" data-filter="notranslate">
+                    <i class="fas fa-ban"></i> Não Traduzir
+                </button>
+            </div>
+            
+            <!-- Glossary Grid -->
+            <div class="glossary-grid" id="glossary-grid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Carregando glossário...</p>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination" id="pagination"></div>
+            
+            <!-- Empty State -->
+            <div class="empty-state hidden" id="empty-state">
+                <i class="fas fa-search"></i>
+                <h3>Nenhum termo encontrado</h3>
+                <p>Tente buscar com outros termos ou remova os filtros</p>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Term Detail Modal -->
+    <div class="modal-overlay" id="term-modal">
+        <div class="term-modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Termo</h3>
+                <button class="modal-close" onclick="closeTermModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="term-detail-grid">
+                    <div class="detail-section">
+                        <label><i class="fas fa-font"></i> Original</label>
+                        <div class="detail-value" id="modal-original">-</div>
+                    </div>
+                    <div class="detail-section">
+                        <label><i class="fas fa-language"></i> Tradução</label>
+                        <div class="detail-value translation" id="modal-translation">-</div>
+                    </div>
+                    <div class="detail-section" id="modal-chinese-section">
+                        <label><i class="fas fa-yin-yang"></i> Chinês</label>
+                        <div class="detail-value chinese" id="modal-chinese">-</div>
+                    </div>
+                    <div class="detail-section" id="modal-pinyin-section">
+                        <label><i class="fas fa-spell-check"></i> Pinyin</label>
+                        <div class="detail-value" id="modal-pinyin">-</div>
+                    </div>
+                    <div class="detail-section full-width">
+                        <label><i class="fas fa-info-circle"></i> Contexto</label>
+                        <div class="detail-value context" id="modal-context">-</div>
+                    </div>
+                    <div class="detail-section" id="modal-aliases-section">
+                        <label><i class="fas fa-tags"></i> Variações / Aliases</label>
+                        <div class="detail-value aliases" id="modal-aliases">-</div>
+                    </div>
+                    <div class="detail-section">
+                        <label><i class="fas fa-folder"></i> Categoria</label>
+                        <div class="detail-value">
+                            <span class="category-badge" id="modal-category">-</span>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <label><i class="fas fa-check-circle"></i> Status</label>
+                        <div class="detail-value">
+                            <span class="status-badge" id="modal-status">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-copy" onclick="copyTerm()">
+                    <i class="fas fa-copy"></i> Copiar Tradução
+                </button>
+                <button class="btn-close" onclick="closeTermModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>
+            Feito com ❤️ pela comunidade brasileira de Where Winds Meet<br>
+            <a href="https://github.com/rodrigomiquilino/wwm_brasileiro" target="_blank" rel="noopener">GitHub</a> •
+            <a href="index">Voltar ao início</a>
+        </p>
+    </footer>
+    
+    <script src="assets/js/shared.js"></script>
+    <script src="assets/js/glossary.js"></script>
+</body>
+</html>
