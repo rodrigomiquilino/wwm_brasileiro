@@ -1,0 +1,67 @@
+# Recebe solicitação de renomeação de variável do repositório wwm_brasileiro
+# e atualiza o pt-br.tsv na branch dev
+#
+# REPOSITÓRIO: wwm_brasileiro_auto_path
+# IMPORTANTE: Coloque este arquivo em wwm_brasileiro_auto_path/.github/workflows/
+
+name: Rename Variable
+
+on:
+  repository_dispatch:
+    types: [rename-variable]
+
+jobs:
+  rename:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout dev branch
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+      
+      - name: Display rename info
+        run: |
+          echo "🔄 Renomeando variável..."
+          echo "   DE: ${{ github.event.client_payload.old_var }}"
+          echo "PARA: ${{ github.event.client_payload.new_var }}"
+      
+      - name: Rename variable in pt-br.tsv
+        run: |
+          OLD_VAR="${{ github.event.client_payload.old_var }}"
+          NEW_VAR="${{ github.event.client_payload.new_var }}"
+          
+          # Conta ocorrências antes
+          COUNT_BEFORE=$(grep -o "$OLD_VAR" pt-br.tsv | wc -l)
+          echo "📊 Ocorrências encontradas: $COUNT_BEFORE"
+          
+          # Substitui
+          sed -i "s/$OLD_VAR/$NEW_VAR/g" pt-br.tsv
+          
+          # Conta ocorrências depois (deve ser 0)
+          COUNT_AFTER=$(grep -o "$OLD_VAR" pt-br.tsv | wc -l)
+          echo "✅ Substituições feitas: $((COUNT_BEFORE - COUNT_AFTER))"
+      
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --quiet pt-br.tsv && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+      
+      - name: Commit changes
+        if: steps.git-check.outputs.changed == 'true'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add pt-br.tsv
+          git commit -m "🔄 Renomear variável: ${{ github.event.client_payload.old_var }} → ${{ github.event.client_payload.new_var }}
+
+          Disparado via glossary-admin por @${{ github.event.client_payload.triggered_by }}"
+          git push origin dev
+      
+      - name: No changes needed
+        if: steps.git-check.outputs.changed == 'false'
+        run: |
+          echo "ℹ️ Nenhuma ocorrência de ${{ github.event.client_payload.old_var }} encontrada no arquivo."

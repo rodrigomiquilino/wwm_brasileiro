@@ -170,6 +170,10 @@ let glossaryData = null;
 let glossaryIndex = {}; // Índice para busca rápida de termos
 let duplicatesMap = {}; // Mapa de textos originais -> array de IDs
 
+// ========== SISTEMA DE VARIÁVEIS ==========
+let variableIndex = {}; // Mapa {{VARIABLE}} -> { translation, term }
+let variableList = [];  // Lista de todas as variáveis para autocomplete
+
 // ========== CART INDICATOR - Set para O(1) lookup ==========
 let cartIdSet = new Set(); // IDs no carrinho para verificação rápida
 
@@ -368,6 +372,9 @@ async function loadGlossary() {
         // Constrói índice de NPCs para filtragem
         buildNpcIndex();
         
+        // Constrói índice de variáveis
+        buildVariableIndex();
+        
         // Detecta diferenças de NPCs e cria issue automaticamente
         setTimeout(() => detectNpcDifferences(), 1000);
         
@@ -380,6 +387,162 @@ async function loadGlossary() {
         glossaryData = null;
         glossaryIndex = {};
     }
+}
+
+// ========== SISTEMA DE VARIÁVEIS ==========
+// Constrói índice de variáveis a partir do glossário
+function buildVariableIndex() {
+    if (!glossaryData) return;
+    
+    variableIndex = {};
+    variableList = [];
+    
+    glossaryData.terms.forEach(term => {
+        // Gera nome da variável a partir do ID (uppercase, underscores)
+        // Ex: "jianghu" -> "{{JIANGHU}}"
+        const varName = `{{${term.id.toUpperCase().replace(/-/g, '_')}}}`;
+        
+        variableIndex[varName] = {
+            translation: term.translation,
+            original: term.original,
+            term: term
+        };
+        
+        variableList.push({
+            variable: varName,
+            translation: term.translation,
+            original: term.original,
+            category: term.category
+        });
+    });
+    
+    console.log(`[Variables] Indexadas ${variableList.length} variáveis`);
+    
+    // ========== VERIFICAR VERSÃO DO GLOSSÁRIO ==========
+    checkGlossaryVersion();
+}
+
+// Verifica se o glossário mudou desde a última vez
+function checkGlossaryVersion() {
+    if (!glossaryData) return;
+    
+    // Gera hash simples baseado em IDs e datas
+    const currentVersion = `${glossaryData.lastUpdated}_${glossaryData.terms.length}_${glossaryData.terms.map(t => t.id).join(',')}`.hashCode();
+    const storedVersion = localStorage.getItem('glossary_version');
+    
+    if (storedVersion && storedVersion !== currentVersion.toString()) {
+        // Glossário mudou desde a última sessão
+        showGlossaryUpdateNotification();
+    }
+    
+    // Salva versão atual
+    localStorage.setItem('glossary_version', currentVersion.toString());
+}
+
+// Notificação de atualização do glossário
+function showGlossaryUpdateNotification() {
+    const notification = document.createElement('div');
+    notification.id = 'glossary-update-notification';
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #7c3aed, #a78bfa);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(124, 58, 237, 0.4);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        z-index: 1000;
+        animation: slideDown 0.5s ease;
+    `;
+    notification.innerHTML = `
+        <i class="fas fa-sync-alt"></i>
+        <span>O glossário foi atualizado! Algumas variáveis podem ter mudado.</span>
+        <button onclick="this.parentElement.remove(); location.reload();" style="
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        ">Recarregar</button>
+        <button onclick="this.parentElement.remove();" style="
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.25rem;
+        "><i class="fas fa-times"></i></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remove automaticamente após 30 segundos
+    setTimeout(() => notification.remove(), 30000);
+}
+
+// Hash simples para strings
+String.prototype.hashCode = function() {
+    let hash = 0;
+    for (let i = 0; i < this.length; i++) {
+        const char = this.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return hash;
+};
+
+// Substitui todas as variáveis {{VAR}} pelos valores reais
+function replaceVariables(text) {
+    if (!text || variableList.length === 0) return text;
+    
+    let result = text;
+    
+    // Regex para encontrar todas as variáveis {{NOME}}
+    const varPattern = /\{\{([A-Z_0-9]+)\}\}/g;
+    
+    result = result.replace(varPattern, (match, varName) => {
+        const fullVar = `{{${varName}}}`;
+        const varData = variableIndex[fullVar];
+        
+        if (varData) {
+            return varData.translation;
+        }
+        
+        // Variável não encontrada - mantém original
+        console.warn(`[Variables] Variável não encontrada: ${fullVar}`);
+        return match;
+    });
+    
+    return result;
+}
+
+// Verifica quais variáveis estão presentes no texto
+function findVariablesInText(text) {
+    if (!text) return [];
+    
+    const found = [];
+    const varPattern = /\{\{([A-Z_0-9]+)\}\}/g;
+    let match;
+    
+    while ((match = varPattern.exec(text)) !== null) {
+        const fullVar = `{{${match[1]}}}`;
+        const varData = variableIndex[fullVar];
+        
+        found.push({
+            variable: fullVar,
+            found: !!varData,
+            translation: varData?.translation || null,
+            position: match.index
+        });
+    }
+    
+    return found;
 }
 
 // Encontra termos do glossário no texto
@@ -788,6 +951,124 @@ function renderTable() {
             });
         });
     });
+    
+    // Event listeners para botões "No Lote" (também abre modal)
+    tbody.querySelectorAll('.btn-in-cart').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = decodeURIComponent(this.dataset.id);
+            const original = this.dataset.original;
+            const current = this.dataset.current;
+            const line = parseInt(this.dataset.line, 10);
+            openSuggestionModal(id, original, current, line);
+        });
+    });
+}
+
+// ========== PREVIEW DE VARIÁVEIS EM TEMPO REAL ==========
+function updateVariablePreview() {
+    const suggestionEl = document.getElementById('modal-suggestion');
+    let previewEl = document.getElementById('variable-preview');
+    
+    // Cria o elemento se não existir
+    if (!previewEl) {
+        previewEl = document.createElement('div');
+        previewEl.id = 'variable-preview';
+        previewEl.className = 'variable-preview';
+        const charCounter = document.getElementById('char-counter');
+        if (charCounter) {
+            charCounter.parentNode.insertBefore(previewEl, charCounter);
+        } else {
+            suggestionEl.parentNode.appendChild(previewEl);
+        }
+    }
+    
+    const text = suggestionEl.value;
+    const variables = findVariablesInText(text);
+    
+    if (variables.length === 0) {
+        previewEl.style.display = 'none';
+        return;
+    }
+    
+    // Mostra preview com variáveis substituídas
+    const replacedText = replaceVariables(text);
+    const validVars = variables.filter(v => v.found);
+    const invalidVars = variables.filter(v => !v.found);
+    
+    previewEl.style.display = 'block';
+    
+    // ========== VALIDAÇÃO DE SINTAXE DE VARIÁVEIS ==========
+    const syntaxErrors = validateVariableSyntax(text);
+    
+    if (syntaxErrors.length > 0) {
+        // Mostrar erros de sintaxe em vermelho
+        previewEl.innerHTML = `
+            <div class="preview-header preview-error">
+                <i class="fas fa-exclamation-circle"></i> Erro de Sintaxe
+            </div>
+            <div class="preview-errors">
+                ${syntaxErrors.map(err => `<div class="preview-error-item"><i class="fas fa-times-circle"></i> ${err}</div>`).join('')}
+            </div>
+            <div class="preview-help">
+                <strong>Formato correto:</strong> <code>{{NOME_VARIAVEL}}</code>
+            </div>
+        `;
+        return;
+    }
+    
+    previewEl.innerHTML = `
+        <div class="preview-header">
+            <i class="fas fa-eye"></i> Preview (${validVars.length} variável${validVars.length !== 1 ? 'eis' : ''})
+            ${invalidVars.length > 0 ? `<span class="preview-warning"><i class="fas fa-exclamation-triangle"></i> ${invalidVars.length} não encontrada${invalidVars.length !== 1 ? 's' : ''}</span>` : ''}
+        </div>
+        <div class="preview-content">${escapeHtml(replacedText)}</div>
+    `;
+}
+
+// ========== VALIDAÇÃO DE SINTAXE DE VARIÁVEIS ==========
+// Detecta variáveis mal-formadas ({{ sem }} ou vice-versa)
+function validateVariableSyntax(text) {
+    const errors = [];
+    
+    // Contar ocorrências de {{ e }}
+    const openCount = (text.match(/\{\{/g) || []).length;
+    const closeCount = (text.match(/\}\}/g) || []).length;
+    
+    if (openCount !== closeCount) {
+        if (openCount > closeCount) {
+            errors.push(`Encontrado ${openCount} abertura(s) "{{" mas apenas ${closeCount} fechamento(s) "}}" - faltam ${openCount - closeCount} fechamento(s)`);
+        } else {
+            errors.push(`Encontrado ${closeCount} fechamento(s) "}}" mas apenas ${openCount} abertura(s) "{{" - faltam ${closeCount - openCount} abertura(s)`);
+        }
+    }
+    
+    // Verificar variáveis com formato inválido
+    // Procurar por {{ não seguido de letras/números/_
+    const badOpen = text.match(/\{\{(?![A-Z_0-9]+\}\})/g);
+    if (badOpen && badOpen.length > 0) {
+        // Verificar se não é apenas um caso de variável lowercase
+        const lowercaseVars = text.match(/\{\{[a-z_0-9]+\}\}/gi);
+        if (lowercaseVars) {
+            errors.push(`Variáveis devem estar em MAIÚSCULAS: ${lowercaseVars.slice(0, 3).join(', ')}`);
+        }
+    }
+    
+    // Procurar por }} órfãos (sem {{ antes)
+    let tempText = text;
+    while (tempText.includes('{{') && tempText.includes('}}')) {
+        const openIdx = tempText.indexOf('{{');
+        const closeIdx = tempText.indexOf('}}');
+        
+        if (closeIdx < openIdx) {
+            errors.push(`Fechamento "}}" encontrado antes da abertura "{{" na posição ${closeIdx}`);
+            break;
+        }
+        
+        // Remove o par encontrado e continua
+        tempText = tempText.substring(0, openIdx) + '____' + tempText.substring(closeIdx + 2);
+    }
+    
+    return errors;
 }
 
 // Escape HTML
@@ -1254,9 +1535,11 @@ function openSuggestionModal(id, originalEncoded, currentEncoded, lineNumber) {
     const suggestionInput = document.getElementById('modal-suggestion');
     suggestionInput.addEventListener('input', function() {
         updateCharCounter(original.length);
+        // Atualiza preview de variáveis em tempo real
+        updateVariablePreview();
     });
     
-    // ========== GLOSSÁRIO ==========
+    // ========== GLOSSÁRIO COM VARIÁVEIS ==========
     const glossaryHints = document.getElementById('glossary-hints');
     const glossaryTermsList = document.getElementById('glossary-terms-list');
     
@@ -1271,6 +1554,9 @@ function openSuggestionModal(id, originalEncoded, currentEncoded, lineNumber) {
                 const statusClass = term.doNotTranslate ? 'no-translate' : 'translate';
                 const statusIcon = term.doNotTranslate ? 'fa-ban' : 'fa-check';
                 
+                // Gera nome da variável
+                const varName = `{{${term.id.toUpperCase().replace(/-/g, '_')}}}`;
+                
                 return `
                     <div class="glossary-term-hint" style="--term-color: ${categoryColor}">
                         <div class="term-hint-header">
@@ -1281,10 +1567,29 @@ function openSuggestionModal(id, originalEncoded, currentEncoded, lineNumber) {
                             <i class="fas ${statusIcon} ${statusClass}"></i>
                             ${escapeHtml(term.translation)}
                         </div>
+                        <div class="term-hint-variable">
+                            <code class="variable-name">${varName}</code>
+                            <button class="btn-copy-var" data-var="${varName}" title="Copiar variável">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
                         ${term.context ? `<div class="term-hint-context">${escapeHtml(term.context)}</div>` : ''}
                     </div>
                 `;
             }).join('');
+            
+            // Event listeners para copiar variáveis
+            glossaryTermsList.querySelectorAll('.btn-copy-var').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const varName = this.dataset.var;
+                    navigator.clipboard.writeText(varName).then(() => {
+                        this.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(() => {
+                            this.innerHTML = '<i class="fas fa-copy"></i>';
+                        }, 1000);
+                    });
+                });
+            });
         } else {
             glossaryHints.style.display = 'none';
             glossaryTermsList.innerHTML = '';
@@ -1344,6 +1649,9 @@ function closeModal() {
 }
 
 // Adiciona ao carrinho
+// ========== LIMITE MÁXIMO DO CARRINHO ==========
+const MAX_CART_SIZE = 200; // Limite para evitar ultrapassar 65KB do GitHub
+
 async function addToCart() {
     const id = currentSuggestionId;
     const original = document.getElementById('modal-original').value;
@@ -1358,6 +1666,74 @@ async function addToCart() {
     
     if (!suggestion) {
         await showAlert('Por favor, digite sua sugestão de tradução.', 'Campo Obrigatório', 'warning');
+        return;
+    }
+    
+    // ========== VERIFICAR LIMITE DO CARRINHO ==========
+    if (suggestionCart.length >= MAX_CART_SIZE) {
+        await showAlert(
+            `Seu lote atingiu o limite máximo de **${MAX_CART_SIZE} sugestões**.\n\n` +
+            `**Por que existe este limite?**\n` +
+            `O GitHub limita o tamanho das issues a ~65KB. Lotes muito grandes causam erro "Validation Failed".\n\n` +
+            `**O que fazer:**\n` +
+            `1. Envie este lote primeiro\n` +
+            `2. Depois adicione mais sugestões`,
+            'Lote Cheio',
+            'warning'
+        );
+        return;
+    }
+    
+    // Verificar se aplicar em massa ultrapassaria o limite
+    if (applyToAll) {
+        const duplicates = getDuplicateIds(original);
+        const newItemsCount = duplicates.filter(d => !suggestionCart.some(c => c.id === d.id)).length;
+        
+        if (suggestionCart.length + newItemsCount > MAX_CART_SIZE) {
+            await showAlert(
+                `Aplicar a todas as ${duplicates.length} duplicatas ultrapassaria o limite de ${MAX_CART_SIZE} sugestões.\n\n` +
+                `Você tem ${suggestionCart.length} sugestões no lote.\n` +
+                `Espaço disponível: ${MAX_CART_SIZE - suggestionCart.length}\n\n` +
+                `**Opções:**\n` +
+                `• Desmarque "Aplicar a todas" e adicione esta única\n` +
+                `• Ou envie o lote atual primeiro`,
+                'Limite Excedido',
+                'warning'
+            );
+            return;
+        }
+    }
+    
+    // ========== VALIDAÇÃO DE VARIÁVEIS ==========
+    // 1. Verificar erros de sintaxe
+    const syntaxErrors = validateVariableSyntax(suggestion);
+    if (syntaxErrors.length > 0) {
+        await showAlert(
+            `Sua sugestão contém erros de sintaxe em variáveis:\n\n` +
+            syntaxErrors.map(e => `• ${e}`).join('\n') +
+            `\n\n**Formato correto:** \`{{NOME_VARIAVEL}}\``,
+            'Erro de Sintaxe',
+            'error'
+        );
+        return;
+    }
+    
+    // 2. Verificar se todas as variáveis existem no glossário
+    const varsInText = findVariablesInText(suggestion);
+    const unknownVars = varsInText.filter(v => !v.found);
+    
+    if (unknownVars.length > 0) {
+        const varNames = unknownVars.map(v => v.variable).join(', ');
+        await showAlert(
+            `As seguintes variáveis não existem no glossário:\n\n` +
+            `**${varNames}**\n\n` +
+            `**Como resolver:**\n` +
+            `• Verifique a grafia da variável (deve ser MAIÚSCULAS)\n` +
+            `• Adicione o termo ao glossário primeiro\n` +
+            `• Use o botão de copiar no painel de glossário`,
+            'Variável Não Encontrada',
+            'warning'
+        );
         return;
     }
     
@@ -1790,7 +2166,10 @@ function startAdminPolling() {
     
     // Countdown visual
     countdownInterval = setInterval(() => {
-        if (document.visibilityState === 'visible' && currentFile === 'admin') {
+        const adminPanel = document.getElementById('admin-panel');
+        const isAdminVisible = adminPanel && !adminPanel.classList.contains('hidden');
+        
+        if (document.visibilityState === 'visible' && isAdminVisible) {
             countdownSeconds--;
             updateCountdownDisplay();
             
@@ -3170,13 +3549,93 @@ ${suggestionCart.map((item, i) => `${i+1}. \`${item.id}\` → ${item.suggestion.
             const error = await response.json();
             console.error('Erro ao criar issue:', error);
             
+            // ========== TRATAMENTO DETALHADO DE ERROS ==========
             if (response.status === 401) {
                 logout();
-                showToast('Token expirado. Faça login novamente.', 'error');
+                await showAlert(
+                    'Seu token de acesso expirou. Por favor, faça login novamente para continuar.',
+                    'Token Expirado',
+                    'error'
+                );
             } else if (response.status === 403) {
-                showToast('Sem permissão. Verifique se o token tem permissão "public_repo".', 'error');
+                await showAlert(
+                    `Você não tem permissão para criar issues neste repositório.\n\n` +
+                    `**Possíveis causas:**\n` +
+                    `• Seu token não tem a permissão "public_repo"\n` +
+                    `• Você precisa fazer logout e login novamente\n\n` +
+                    `**Como resolver:**\n` +
+                    `1. Clique no seu avatar e faça logout\n` +
+                    `2. Faça login novamente pelo GitHub`,
+                    'Sem Permissão',
+                    'error'
+                );
+            } else if (response.status === 422) {
+                // Validation Failed - analisar motivo específico
+                const errorMessage = error.message || '';
+                const errors = error.errors || [];
+                
+                let detailedMessage = '';
+                let title = 'Erro de Validação';
+                
+                // Verificar se é título duplicado
+                if (errors.some(e => e.code === 'custom' && e.message?.includes('already exists'))) {
+                    title = 'Issue Duplicada';
+                    detailedMessage = 
+                        `Já existe uma issue aberta com este título ou conteúdo similar.\n\n` +
+                        `**Como resolver:**\n` +
+                        `• Aguarde a aprovação da issue anterior\n` +
+                        `• Ou modifique alguma sugestão do seu lote\n` +
+                        `• Verifique se você já não enviou essas sugestões`;
+                }
+                // Verificar se body é muito grande
+                else if (errorMessage.includes('body is too long') || 
+                         errors.some(e => e.field === 'body' && e.code === 'too_long')) {
+                    title = 'Lote Muito Grande';
+                    const bodySizeKB = Math.round(issueBody.length / 1024);
+                    detailedMessage = 
+                        `O corpo da issue excedeu o limite de 65.536 caracteres (${bodySizeKB}KB usado).\n\n` +
+                        `**Como resolver:**\n` +
+                        `• Divida seu lote em partes menores\n` +
+                        `• Remova algumas sugestões e envie em lotes separados\n` +
+                        `• Limite recomendado: ~200 sugestões por lote`;
+                }
+                // Labels não encontradas
+                else if (errors.some(e => e.field === 'labels')) {
+                    title = 'Labels Inválidas';
+                    detailedMessage = 
+                        `As labels necessárias não existem no repositório.\n\n` +
+                        `**Como resolver:**\n` +
+                        `Este é um erro de configuração. Entre em contato com o administrador.`;
+                }
+                // Erro genérico
+                else {
+                    detailedMessage = 
+                        `O GitHub rejeitou a criação da issue.\n\n` +
+                        `**Detalhes técnicos:**\n` +
+                        `${errorMessage}\n\n` +
+                        `${errors.map(e => `• ${e.field}: ${e.message || e.code}`).join('\n')}`;
+                }
+                
+                await showAlert(detailedMessage, title, 'error');
+                
+            } else if (response.status === 404) {
+                await showAlert(
+                    `O repositório não foi encontrado ou você não tem acesso.\n\n` +
+                    `**Repositório:** ${CONFIG.GITHUB_OWNER}/${CONFIG.GITHUB_REPO_NAME}\n\n` +
+                    `Verifique se o repositório existe e é público.`,
+                    'Repositório Não Encontrado',
+                    'error'
+                );
             } else {
-                showToast(`Erro: ${error.message || 'Falha ao criar issue'}`, 'error');
+                // Erro desconhecido
+                await showAlert(
+                    `Ocorreu um erro inesperado ao criar a issue.\n\n` +
+                    `**Status:** ${response.status}\n` +
+                    `**Mensagem:** ${error.message || 'Erro desconhecido'}\n\n` +
+                    `Se o problema persistir, entre em contato com o administrador.`,
+                    'Erro ao Enviar',
+                    'error'
+                );
             }
         }
         
@@ -3492,9 +3951,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Pausar polling quando página fica invisível (economia de API)
     document.addEventListener('visibilitychange', () => {
+        const adminPanel = document.getElementById('admin-panel');
+        const isAdminVisible = adminPanel && !adminPanel.classList.contains('hidden');
+        
         if (document.visibilityState === 'hidden') {
             stopAdminPolling();
-        } else if (currentFile === 'admin') {
+        } else if (isAdminVisible) {
             startAdminPolling();
         }
     });

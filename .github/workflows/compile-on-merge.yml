@@ -1,0 +1,137 @@
+# Compila variáveis {{VAR}} para valores reais ao fazer merge para main
+# 
+# REPOSITÓRIO: wwm_brasileiro_auto_path
+# 
+# FLUXO:
+# 1. Dev branch tem pt-br.tsv com variáveis {{JIANGHU}}, {{QINGGONG}}...
+# 2. Quando faz merge dev → main, esta action executa
+# 3. Busca glossary.json do repositório wwm_brasileiro
+# 4. Substitui as variáveis pelos valores reais
+# 5. Commit automático no main com o arquivo compilado
+#
+# IMPORTANTE: Coloque este arquivo em wwm_brasileiro_auto_path/.github/workflows/
+
+name: Compile Translations on Merge
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'pt-br.tsv'
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout wwm_brasileiro_auto_path
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Download glossary.json from wwm_brasileiro
+        run: |
+          echo "📥 Baixando glossary.json do repositório wwm_brasileiro..."
+          curl -sSL "https://raw.githubusercontent.com/rodrigomiquilino/wwm_brasileiro/main/docs/glossary.json" -o glossary.json
+          
+          if [ ! -f glossary.json ]; then
+            echo "❌ Falha ao baixar glossary.json"
+            exit 1
+          fi
+          
+          echo "✅ Glossário baixado com sucesso"
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Check for variables in pt-br.tsv
+        id: check-vars
+        run: |
+          if grep -q '{{[A-Z_0-9]*}}' pt-br.tsv 2>/dev/null; then
+            echo "has_variables=true" >> $GITHUB_OUTPUT
+            echo "✅ Variáveis encontradas - compilação necessária"
+          else
+            echo "has_variables=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ Nenhuma variável encontrada - pulando compilação"
+          fi
+      
+      - name: Compile translations
+        if: steps.check-vars.outputs.has_variables == 'true'
+        run: |
+          python << 'EOF'
+          import json
+          import re
+          
+          # Carregar glossário (baixado do wwm_brasileiro)
+          with open('glossary.json', 'r', encoding='utf-8') as f:
+              glossary = json.load(f)
+          
+          # Criar mapa de variáveis
+          variable_map = {}
+          for term in glossary.get('terms', []):
+              var_name = f"{{{{{term['id'].upper().replace('-', '_')}}}}}"
+              variable_map[var_name] = term['translation']
+          
+          print(f"📚 Carregadas {len(variable_map)} variáveis do glossário")
+          
+          # Ler pt-br.tsv
+          with open('pt-br.tsv', 'r', encoding='utf-8') as f:
+              content = f.read()
+          
+          # Contar linhas originais
+          original_lines = len(content.split('\n'))
+          
+          # Substituir variáveis
+          replaced_count = 0
+          unknown_vars = set()
+          
+          def replace_var(match):
+              global replaced_count
+              full_var = match.group(0)
+              if full_var in variable_map:
+                  replaced_count += 1
+                  return variable_map[full_var]
+              else:
+                  unknown_vars.add(full_var)
+                  return full_var
+          
+          compiled = re.sub(r'\{\{([A-Z_0-9]+)\}\}', replace_var, content)
+          
+          # Salvar arquivo compilado
+          with open('pt-br.tsv', 'w', encoding='utf-8') as f:
+              f.write(compiled)
+          
+          print(f"✅ Compilação concluída!")
+          print(f"   📄 {original_lines:,} linhas processadas")
+          print(f"   🔄 {replaced_count:,} variáveis substituídas")
+          
+          if unknown_vars:
+              print(f"   ⚠️ {len(unknown_vars)} variáveis não encontradas:")
+              for v in sorted(unknown_vars)[:10]:
+                  print(f"      - {v}")
+          EOF
+      
+      - name: Cleanup glossary
+        run: rm -f glossary.json
+      
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --quiet pt-br.tsv && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+      
+      - name: Commit compiled translations
+        if: steps.git-check.outputs.changed == 'true'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add pt-br.tsv
+          git commit -m "🔄 Auto-compile: variáveis {{VAR}} substituídas por valores reais
+
+          Glossário usado: rodrigomiquilino/wwm_brasileiro/docs/glossary.json
+          Compilado automaticamente via GitHub Actions"
+          git push

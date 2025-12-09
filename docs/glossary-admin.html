@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin Glossário | WWM Brasileiro</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/shared.css">
+    
+    <style>
+        :root {
+            --purple-primary: #a78bfa;
+            --purple-dark: #7c3aed;
+            --green-primary: #4ade80;
+            --red-primary: #f87171;
+        }
+        
+        body {
+            padding-top: 80px;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .admin-header h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .admin-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: #0a0a0f;
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--text-secondary);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--green-primary), #16a34a);
+            color: #0a0a0f;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--red-primary), #dc2626);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        /* Stats */
+        .stats-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat-box {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .stat-box i {
+            font-size: 1.5rem;
+            color: var(--gold-primary);
+        }
+        
+        .stat-box .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .stat-box .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        
+        /* Table */
+        .terms-table-wrapper {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.15);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            width: 300px;
+            max-width: 100%;
+        }
+        
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            width: 100%;
+            outline: none;
+        }
+        
+        .search-box i {
+            color: var(--text-muted);
+        }
+        
+        .terms-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .terms-table th {
+            background: rgba(201, 162, 39, 0.1);
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gold-primary);
+            text-align: left;
+        }
+        
+        .terms-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .terms-table tr:hover {
+            background: rgba(255,255,255,0.03);
+        }
+        
+        .term-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .term-original {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .term-translation {
+            color: var(--gold-primary);
+        }
+        
+        .term-variable {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--purple-primary);
+            background: rgba(139, 92, 246, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .term-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .term-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .term-actions button {
+            padding: 0.4rem 0.6rem;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .term-actions button:hover {
+            background: rgba(201, 162, 39, 0.2);
+            border-color: var(--gold-primary);
+            color: var(--gold-primary);
+        }
+        
+        .term-actions button.delete:hover {
+            background: rgba(248, 113, 113, 0.2);
+            border-color: var(--red-primary);
+            color: var(--red-primary);
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            place-items: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+        
+        .modal-overlay.active {
+            display: grid;
+        }
+        
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .modal-header h2 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-primary);
+            font-size: 1.2rem;
+        }
+        
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 1.25rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--gold-primary);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--gold-primary);
+        }
+        
+        .checkbox-group label {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: none;
+        }
+        
+        .variable-preview {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--purple-primary);
+            font-size: 0.85rem;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            padding: 1.25rem;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        /* Compile Section */
+        .compile-section {
+            background: var(--bg-card);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .compile-section h3 {
+            color: var(--purple-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .compile-section p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .compile-code {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #4ade80;
+            overflow-x: auto;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+        }
+        
+        .pagination button {
+            padding: 0.5rem 0.75rem;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        
+        .pagination button:hover {
+            border-color: var(--gold-primary);
+            color: var(--gold-primary);
+        }
+        
+        .pagination button.active {
+            background: var(--gold-primary);
+            color: #0a0a0f;
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index" class="nav-logo">
+                <i class="fas fa-torii-gate"></i>
+                WWM Brasileiro
+            </a>
+            <div class="nav-links">
+                <a href="index"><i class="fas fa-home"></i> Início</a>
+                <a href="glossary"><i class="fas fa-book"></i> Glossário</a>
+                <a href="translate"><i class="fas fa-language"></i> Traduzir</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="admin-header">
+                <h1><i class="fas fa-cog"></i> Admin - Glossário</h1>
+                <div class="admin-actions">
+                    <button class="btn btn-secondary" onclick="exportGlossary()">
+                        <i class="fas fa-download"></i> Exportar JSON
+                    </button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">
+                        <i class="fas fa-upload"></i> Importar JSON
+                    </button>
+                    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importGlossary(event)">
+                    <button class="btn btn-primary" onclick="openAddModal()">
+                        <i class="fas fa-plus"></i> Adicionar Termo
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-box">
+                    <i class="fas fa-scroll"></i>
+                    <div>
+                        <div class="value" id="stat-total">0</div>
+                        <div class="label">Total</div>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <i class="fas fa-code"></i>
+                    <div>
+                        <div class="value" id="stat-variables">0</div>
+                        <div class="label">Variáveis</div>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <i class="fas fa-ban"></i>
+                    <div>
+                        <div class="value" id="stat-notranslate">0</div>
+                        <div class="label">Não Traduzir</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Table -->
+            <div class="terms-table-wrapper">
+                <div class="table-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-input" placeholder="Buscar termos..." oninput="filterTerms()">
+                    </div>
+                    <select id="category-filter" onchange="filterTerms()">
+                        <option value="">Todas as categorias</option>
+                    </select>
+                </div>
+                
+                <table class="terms-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Original</th>
+                            <th>Tradução</th>
+                            <th>Variável</th>
+                            <th>Categoria</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="terms-body">
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Carregando glossário...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="pagination" id="pagination"></div>
+            </div>
+            
+            <!-- Compile Section -->
+            <div class="compile-section">
+                <h3><i class="fas fa-terminal"></i> Script de Compilação</h3>
+                <p>Para substituir as variáveis <code>{{VAR}}</code> pelos valores reais no arquivo pt-br.tsv, execute:</p>
+                <div class="compile-code">
+                    <code>python scripts/compile_translations.py</code>
+                </div>
+                <p style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+                    Isso gerará o arquivo <code>pt-br-compiled.tsv</code> pronto para uso no jogo.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="term-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-title">Adicionar Termo</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="term-edit-id">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>ID (única)</label>
+                        <input type="text" id="term-id" placeholder="ex: martial_arts">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select id="term-category"></select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Termo Original (Inglês)</label>
+                    <input type="text" id="term-original" placeholder="ex: Martial Arts">
+                </div>
+                
+                <div class="form-group">
+                    <label>Tradução (PT-BR)</label>
+                    <input type="text" id="term-translation" placeholder="ex: Artes Marciais">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Chinês (opcional)</label>
+                        <input type="text" id="term-chinese" placeholder="ex: 武术">
+                    </div>
+                    <div class="form-group">
+                        <label>Pinyin (opcional)</label>
+                        <input type="text" id="term-pinyin" placeholder="ex: Wǔshù">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Contexto / Descrição</label>
+                    <textarea id="term-context" placeholder="Explique o significado ou uso do termo..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Aliases (separados por vírgula)</label>
+                    <input type="text" id="term-aliases" placeholder="ex: wu shu, wushu, martial art">
+                </div>
+                
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="term-notranslate">
+                    <label for="term-notranslate">Não Traduzir (manter original)</label>
+                </div>
+                
+                <div class="form-group">
+                    <label>Variável Gerada</label>
+                    <div class="variable-preview" id="variable-preview">{{...}}</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button class="btn btn-success" onclick="saveTerm()">
+                    <i class="fas fa-save"></i> Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/glossary-admin.js"></script>
+</body>
+</html>
