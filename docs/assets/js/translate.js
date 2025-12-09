@@ -246,22 +246,40 @@ function compareTranslations(originalMap, translateMap) {
 
 // Load translations - simplificado para arquivos únicos
 async function loadTranslations() {
-    document.getElementById('loading').innerHTML = `
+    const loadingEl = document.getElementById('loading');
+    
+    // Step 1: Iniciando
+    loadingEl.innerHTML = `
         <div class="spinner"></div>
-        <p>Carregando traduções... (isso pode demorar um pouco)</p>
+        <p>📥 Conectando ao repositório...</p>
+        <div class="loading-progress">
+            <div class="loading-step active"><i class="fas fa-plug"></i> Conectando</div>
+            <div class="loading-step"><i class="fas fa-file-alt"></i> en.tsv</div>
+            <div class="loading-step"><i class="fas fa-language"></i> pt-br.tsv</div>
+            <div class="loading-step"><i class="fas fa-cogs"></i> Processando</div>
+        </div>
     `;
     
-    // Carrega os 2 arquivos em paralelo (en.tsv e pt-br.tsv) + glossário
+    // Step 2: Carregando arquivos
+    setTimeout(() => {
+        loadingEl.querySelector('.loading-step:nth-child(2)')?.classList.add('active');
+        loadingEl.querySelector('p').textContent = '📥 Baixando en.tsv...';
+    }, 300);
+    
     const [englishContent, ptbrContent] = await Promise.all([
         fetchTSV(CONFIG.ENGLISH_FILE),
         fetchTSV(CONFIG.PTBR_FILE)
     ]);
     
+    // Update progress
+    loadingEl.querySelector('.loading-step:nth-child(3)')?.classList.add('active');
+    loadingEl.querySelector('p').textContent = '📥 Baixando pt-br.tsv...';
+    
     // Carrega glossário em paralelo (não bloqueia o carregamento principal)
     loadGlossary();
     
     if (!ptbrContent) {
-        document.getElementById('loading').innerHTML = `
+        loadingEl.innerHTML = `
             <p style="color: var(--red-primary);">
                 <i class="fas fa-exclamation-triangle"></i> 
                 Erro ao carregar arquivo de tradução (${CONFIG.PTBR_FILE})
@@ -273,9 +291,16 @@ async function loadTranslations() {
         return;
     }
     
+    // Step 4: Processando
+    loadingEl.querySelector('.loading-step:nth-child(4)')?.classList.add('active');
+    loadingEl.querySelector('p').textContent = '⚙️ Processando dados...';
+    
     // Parse dos arquivos
     const englishMap = englishContent ? parseTSVtoMap(englishContent) : new Map();
     const ptbrMap = parseTSVtoMap(ptbrContent);
+    
+    // Atualiza com contagem
+    loadingEl.querySelector('p').textContent = `⚙️ Processando ${ptbrMap.size.toLocaleString('pt-BR')} linhas...`;
     
     // Compara originais com traduzidos
     allData = compareTranslations(englishMap, ptbrMap);
@@ -289,7 +314,7 @@ async function loadTranslations() {
     updateStats();
     applyFilter();
     
-    document.getElementById('loading').classList.add('hidden');
+    loadingEl.classList.add('hidden');
     document.getElementById('table-scroll').classList.remove('hidden');
 }
 
@@ -675,7 +700,12 @@ function renderTable() {
             <tr>
                 <td class="col-id">
                     <span class="status-badge ${statusClass}">${statusText}</span>
-                    <code>${escapeHtml(item.id)}</code>
+                    <div class="id-wrapper">
+                        <code>${escapeHtml(item.id)}</code>
+                        <button class="btn-copy-id" data-copy="${safeId}" title="Copiar ID">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
                 </td>
                 <td class="col-original">
                     <div class="text-cell text-original">${escapeHtml(item.originalText)}</div>
@@ -707,6 +737,23 @@ function renderTable() {
             openSuggestionModal(id, original, current, line);
         });
     });
+    
+    // Event listeners para botões de copiar ID
+    tbody.querySelectorAll('.btn-copy-id').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Evita abrir modal
+            const id = decodeURIComponent(this.dataset.copy);
+            navigator.clipboard.writeText(id).then(() => {
+                // Feedback visual
+                this.innerHTML = '<i class="fas fa-check"></i>';
+                this.classList.add('copied');
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-copy"></i>';
+                    this.classList.remove('copied');
+                }, 1500);
+            });
+        });
+    });
 }
 
 // Escape HTML
@@ -715,6 +762,46 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = String(text);
     return div.innerHTML.replace(/\n/g, '<br>');
+}
+
+// ========== CONTADOR DE CARACTERES ==========
+function updateCharCounter(originalLength) {
+    const suggestionEl = document.getElementById('modal-suggestion');
+    let counterEl = document.getElementById('char-counter');
+    
+    // Cria o elemento se não existir
+    if (!counterEl) {
+        counterEl = document.createElement('div');
+        counterEl.id = 'char-counter';
+        counterEl.className = 'char-counter';
+        suggestionEl.parentNode.insertBefore(counterEl, suggestionEl.nextSibling);
+    }
+    
+    const currentLength = suggestionEl.value.length;
+    const diff = currentLength - originalLength;
+    const diffPercent = originalLength > 0 ? Math.round((diff / originalLength) * 100) : 0;
+    
+    let statusClass = 'neutral';
+    let statusIcon = 'fa-equals';
+    
+    if (diff > 0) {
+        statusClass = diff > originalLength * 0.3 ? 'warning' : 'longer';
+        statusIcon = 'fa-arrow-up';
+    } else if (diff < 0) {
+        statusClass = diff < -originalLength * 0.3 ? 'warning' : 'shorter';
+        statusIcon = 'fa-arrow-down';
+    }
+    
+    counterEl.className = `char-counter ${statusClass}`;
+    counterEl.innerHTML = `
+        <span class="counter-current">${currentLength}</span>
+        <span class="counter-separator">/</span>
+        <span class="counter-original">${originalLength}</span>
+        <span class="counter-diff">
+            <i class="fas ${statusIcon}"></i>
+            ${diff >= 0 ? '+' : ''}${diff} (${diffPercent >= 0 ? '+' : ''}${diffPercent}%)
+        </span>
+    `;
 }
 
 // Render pagination
@@ -1016,11 +1103,52 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     });
 });
 
-// File tab listeners
-document.querySelectorAll('.file-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-        switchFile(tab.dataset.file);
-    });
+// ========== KEYBOARD SHORTCUTS ==========
+document.addEventListener('keydown', (e) => {
+    // Ignora se estiver em input/textarea
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        // Esc fecha modal mesmo em inputs
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+        return;
+    }
+    
+    switch (e.key) {
+        case '/':
+            // Focar na busca
+            e.preventDefault();
+            document.getElementById('search-input').focus();
+            break;
+        case 'ArrowLeft':
+            // Página anterior
+            if (currentPage > 1) goToPage(currentPage - 1);
+            break;
+        case 'ArrowRight':
+            // Próxima página
+            const totalPages = Math.ceil(filteredData.length / CONFIG.ITEMS_PER_PAGE);
+            if (currentPage < totalPages) goToPage(currentPage + 1);
+            break;
+        case 'p':
+        case 'P':
+            // Filtro Pendentes
+            document.querySelector('.filter-btn[data-filter="pending"]')?.click();
+            break;
+        case 't':
+        case 'T':
+            // Filtro Traduzidos
+            document.querySelector('.filter-btn[data-filter="translated"]')?.click();
+            break;
+        case 'a':
+        case 'A':
+            // Filtro Todos
+            document.querySelector('.filter-btn[data-filter="all"]')?.click();
+            break;
+        case 'Escape':
+            // Fechar modal
+            closeModal();
+            break;
+    }
 });
 
 // Debounce function
@@ -1086,6 +1214,13 @@ function openSuggestionModal(id, originalEncoded, currentEncoded, lineNumber) {
     document.getElementById('modal-suggestion').value = current; // Pré-preenche com a tradução atual
     document.getElementById('modal-file').value = CONFIG.PTBR_FILE; // Arquivo único de tradução
     document.getElementById('modal-line').value = lineNumber;
+    
+    // ========== CONTADOR DE CARACTERES ==========
+    updateCharCounter(original.length);
+    const suggestionInput = document.getElementById('modal-suggestion');
+    suggestionInput.addEventListener('input', function() {
+        updateCharCounter(original.length);
+    });
     
     // ========== GLOSSÁRIO ==========
     const glossaryHints = document.getElementById('glossary-hints');

@@ -31,6 +31,49 @@ main {
     color: var(--text-secondary);
 }
 
+#loading p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-top: 1rem;
+}
+
+/* Loading progress steps */
+.loading-progress {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.loading-step {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+}
+
+.loading-step.active {
+    background: rgba(201, 162, 39, 0.15);
+    border-color: var(--gold-primary);
+    color: var(--gold-primary);
+}
+
+.loading-step.active i {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
 /* ========== STATS BAR ========== */
 .stats-bar {
     display: flex;
@@ -517,6 +560,47 @@ tr:hover {
 .text-empty {
     color: var(--text-muted);
     font-style: italic;
+}
+
+/* ========== ID WRAPPER WITH COPY ========== */
+.id-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn-copy-id {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+tr:hover .btn-copy-id {
+    opacity: 1;
+}
+
+.btn-copy-id:hover {
+    background: rgba(201, 162, 39, 0.15);
+    border-color: var(--gold-primary);
+    color: var(--gold-primary);
+}
+
+.btn-copy-id.copied {
+    background: rgba(34, 197, 94, 0.2);
+    border-color: #4ade80;
+    color: #4ade80;
+    opacity: 1;
 }
 
 /* ========== ACTION BUTTONS ========== */
@@ -2031,6 +2115,62 @@ footer a {
 
 .suggestion-box .btn-submit:active {
     transform: translateY(0);
+}
+
+/* ========== CHARACTER COUNTER ========== */
+.char-counter {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.char-counter .counter-current {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.char-counter .counter-separator {
+    color: var(--text-muted);
+}
+
+.char-counter .counter-original {
+    color: var(--text-secondary);
+}
+
+.char-counter .counter-diff {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+.char-counter.neutral .counter-diff {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+}
+
+.char-counter.longer .counter-diff {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+}
+
+.char-counter.shorter .counter-diff {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+}
+
+.char-counter.warning .counter-diff {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
 }
 
 /* ===== MOBILE LAYOUT - Stacked & Compact ===== */

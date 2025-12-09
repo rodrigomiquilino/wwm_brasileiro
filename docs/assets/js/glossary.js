@@ -37,6 +37,16 @@ async function loadGlossary() {
         // Initial render
         applyFilters();
         
+        // ========== DEEP-LINK SUPPORT ==========
+        // Check if URL has #term_id to open modal directly
+        if (window.location.hash) {
+            const termId = decodeURIComponent(window.location.hash.slice(1));
+            const term = glossaryData.terms.find(t => t.id === termId);
+            if (term) {
+                setTimeout(() => openTermModal(termId), 300);
+            }
+        }
+        
     } catch (error) {
         console.error('Error loading glossary:', error);
         
@@ -228,10 +238,11 @@ function renderGrid() {
         const category = glossaryData.categories[term.category];
         const categoryColor = category?.color || '#c9a227';
         
+        // Usar data-id para evitar problemas com aspas no onclick
         return `
             <div class="term-card ${term.doNotTranslate ? 'no-translate' : ''}" 
                  style="--category-color: ${categoryColor}"
-                 onclick="openTermModal('${term.id}')">
+                 data-term-id="${encodeURIComponent(term.id)}">
                 <div class="term-header">
                     <span class="term-original">${escapeHtml(term.original)}</span>
                     ${term.chinese ? `<span class="term-chinese">${term.chinese}</span>` : ''}
@@ -250,6 +261,14 @@ function renderGrid() {
             </div>
         `;
     }).join('');
+    
+    // Event delegation para cards
+    grid.querySelectorAll('.term-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const termId = decodeURIComponent(this.dataset.termId);
+            openTermModal(termId);
+        });
+    });
 }
 
 // ========== RENDER PAGINATION ==========
@@ -326,6 +345,9 @@ function openTermModal(termId) {
     currentTermId = termId;
     const category = glossaryData.categories[term.category];
     
+    // Update URL hash for sharing
+    history.replaceState(null, '', `#${encodeURIComponent(termId)}`);
+    
     // Populate modal
     document.getElementById('modal-title').textContent = term.original;
     document.getElementById('modal-original').textContent = term.original;
@@ -383,6 +405,9 @@ function closeTermModal() {
     document.getElementById('term-modal').classList.remove('active');
     document.body.style.overflow = '';
     currentTermId = null;
+    
+    // Clear URL hash
+    history.replaceState(null, '', window.location.pathname);
 }
 
 function copyTerm() {
