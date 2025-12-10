@@ -1856,7 +1856,8 @@ footer a {
     width: 100%;
     max-width: 70rem;
     max-height: 100vh;
-    overflow: hidden;
+    overflow: auto;
+    clip-path: content-box;
     box-shadow: 
         0 32px 64px -16px rgba(0, 0, 0, 0.8),
         0 0 0 1px rgba(255, 255, 255, 0.05),
