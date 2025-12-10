@@ -10,6 +10,12 @@ on:
   repository_dispatch:
     types: [update-glossary]
 
+# ========== FILA AUTOMÁTICA ==========
+# Evita conflitos quando várias edições são feitas rapidamente
+concurrency:
+  group: update-glossary-queue
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -82,11 +88,27 @@ jobs:
           git commit -m "$MSG
 
           Disparado via glossary-admin por @${{ github.event.client_payload.triggered_by }}"
-          git push origin main
           
-          echo "✅ Commit realizado!"
+          # ========== PUSH COM RETRY ==========
+          for attempt in 1 2 3; do
+            echo "📤 Tentativa $attempt de push..."
+            git pull --rebase origin main 2>/dev/null || true
+            if git push origin main; then
+              echo "✅ Push realizado com sucesso!"
+              break
+            else
+              if [ $attempt -lt 3 ]; then
+                echo "⚠️ Falha no push, aguardando $((attempt * 2))s..."
+                sleep $((attempt * 2))
+              else
+                echo "❌ Falha após 3 tentativas"
+                exit 1
+              fi
+            fi
+          done
       
       - name: No changes needed
         if: steps.git-check.outputs.changed == 'false'
         run: |
           echo "ℹ️ Nenhuma alteração detectada no glossário."
+

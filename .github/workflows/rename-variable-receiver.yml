@@ -10,6 +10,12 @@ on:
   repository_dispatch:
     types: [rename-variable]
 
+# ========== FILA AUTOMÁTICA ==========
+# Evita conflitos quando várias renomeações são feitas em sequência
+concurrency:
+  group: rename-variable-queue
+  cancel-in-progress: false
+
 jobs:
   rename:
     runs-on: ubuntu-latest
@@ -59,9 +65,27 @@ jobs:
           git commit -m "🔄 Renomear variável: ${{ github.event.client_payload.old_var }} → ${{ github.event.client_payload.new_var }}
 
           Disparado via glossary-admin por @${{ github.event.client_payload.triggered_by }}"
-          git push origin dev
+          
+          # ========== PUSH COM RETRY ==========
+          for attempt in 1 2 3; do
+            echo "📤 Tentativa $attempt de push..."
+            git pull --rebase origin dev 2>/dev/null || true
+            if git push origin dev; then
+              echo "✅ Push realizado com sucesso!"
+              break
+            else
+              if [ $attempt -lt 3 ]; then
+                echo "⚠️ Falha no push, aguardando $((attempt * 2))s..."
+                sleep $((attempt * 2))
+              else
+                echo "❌ Falha após 3 tentativas"
+                exit 1
+              fi
+            fi
+          done
       
       - name: No changes needed
         if: steps.git-check.outputs.changed == 'false'
         run: |
           echo "ℹ️ Nenhuma ocorrência de ${{ github.event.client_payload.old_var }} encontrada no arquivo."
+

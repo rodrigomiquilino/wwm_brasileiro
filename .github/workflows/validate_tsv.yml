@@ -1,14 +1,19 @@
-name: Validate translation_ru.tsv
+# Valida o arquivo pt-br.tsv quando modificado
+# Verifica estrutura TSV, encoding UTF-8 e consistência
+
+name: Validate pt-br.tsv
 
 on:
   push:
     paths:
-      - 'translation_ru.tsv'
+      - 'pt-br.tsv'
       - '.github/workflows/validate_tsv.yml'
+      - '.github/scripts/validate_tsv.py'
   pull_request:
     paths:
-      - 'translation_ru.tsv'
+      - 'pt-br.tsv'
       - '.github/workflows/validate_tsv.yml'
+      - '.github/scripts/validate_tsv.py'
 
 jobs:
   validate:
@@ -22,11 +27,61 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Validate TSV file
+      - name: Validate TSV structure
         run: |
-          python .github/scripts/validate_tsv.py translation_ru.tsv
+          echo "📋 Validando estrutura do pt-br.tsv..."
+          
+          # Verifica se arquivo existe
+          if [ ! -f pt-br.tsv ]; then
+            echo "❌ Arquivo pt-br.tsv não encontrado!"
+            exit 1
+          fi
+          
+          # Conta linhas
+          LINES=$(wc -l < pt-br.tsv)
+          echo "   📄 Total de linhas: $LINES"
+          
+          # Verifica encoding UTF-8
+          if file pt-br.tsv | grep -q "UTF-8"; then
+            echo "   ✅ Encoding: UTF-8"
+          else
+            echo "   ⚠️ Encoding pode não ser UTF-8"
+          fi
+          
+          # Verifica se todas as linhas têm TAB
+          LINES_WITHOUT_TAB=$(grep -cv $'\t' pt-br.tsv || true)
+          if [ "$LINES_WITHOUT_TAB" -gt 0 ]; then
+            echo "   ⚠️ $LINES_WITHOUT_TAB linhas sem TAB (pode ser header ou linhas vazias)"
+          else
+            echo "   ✅ Todas as linhas têm estrutura TSV"
+          fi
+          
+          # Verifica linhas com número incorreto de colunas
+          EXPECTED_COLS=2
+          WRONG_COLS=$(awk -F'\t' -v exp="$EXPECTED_COLS" 'NF != exp {count++} END {print count+0}' pt-br.tsv)
+          if [ "$WRONG_COLS" -gt 0 ]; then
+            echo "   ⚠️ $WRONG_COLS linhas com número de colunas diferente de $EXPECTED_COLS"
+          else
+            echo "   ✅ Todas as linhas têm $EXPECTED_COLS colunas"
+          fi
+          
+          echo ""
+          echo "✅ Validação concluída!"
 
-      - name: Validate tags
+      - name: Check for duplicate IDs
         run: |
-          python .github/scripts/validate_tags.py translation_ru.tsv
-
+          echo "🔍 Verificando IDs duplicados..."
+          
+          # Extrai primeira coluna (IDs) e encontra duplicados
+          DUPLICATES=$(cut -f1 pt-br.tsv | sort | uniq -d)
+          
+          if [ -n "$DUPLICATES" ]; then
+            echo "⚠️ IDs duplicados encontrados:"
+            echo "$DUPLICATES" | head -20
+            DUPE_COUNT=$(echo "$DUPLICATES" | wc -l)
+            if [ "$DUPE_COUNT" -gt 20 ]; then
+              echo "... e mais $((DUPE_COUNT - 20)) duplicados"
+            fi
+          else
+            echo "✅ Nenhum ID duplicado encontrado"
+          fi

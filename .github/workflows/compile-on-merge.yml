@@ -20,6 +20,12 @@ on:
     paths:
       - 'pt-br.tsv'
 
+# ========== FILA AUTOMÁTICA ==========
+# Evita conflitos quando múltiplos merges são feitos em sequência
+concurrency:
+  group: compile-translations-queue
+  cancel-in-progress: false
+
 jobs:
   compile:
     runs-on: ubuntu-latest
@@ -135,6 +141,21 @@ jobs:
           Glossário usado: rodrigomiquilino/wwm_brasileiro/docs/glossary.json
           Compilado automaticamente via GitHub Actions"
           
-          # Pull com rebase para evitar conflitos de race condition
-          git pull --rebase origin main || true
-          git push origin main
+          # ========== PUSH COM RETRY ==========
+          for attempt in 1 2 3; do
+            echo "📤 Tentativa $attempt de push..."
+            git pull --rebase origin main 2>/dev/null || true
+            if git push origin main; then
+              echo "✅ Push realizado com sucesso!"
+              break
+            else
+              if [ $attempt -lt 3 ]; then
+                echo "⚠️ Falha no push, aguardando $((attempt * 2))s..."
+                sleep $((attempt * 2))
+              else
+                echo "❌ Falha após 3 tentativas"
+                exit 1
+              fi
+            fi
+          done
+
