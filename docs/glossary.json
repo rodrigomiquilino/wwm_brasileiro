@@ -47,12 +47,12 @@
     {
       "id": "jianghu",
       "original": "Jianghu",
+      "translation": "Jianghu",
+      "category": "combat",
+      "doNotTranslate": true,
       "chinese": "江湖",
       "pinyin": "Jianghu",
-      "translation": "Jianghu (mundo das artes marciais)",
-      "category": "combat",
       "context": "O mundo das artes marciais, literalmente 'rios e lagos'. Sociedade submundo marcial onde artistas marciais vivem e interagem.",
-      "doNotTranslate": false,
       "aliases": [
         "jianghu",
         "Jiang Hu",
