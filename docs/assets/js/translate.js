@@ -1529,6 +1529,70 @@ function clearCartFromStorage() {
     }
 }
 
+// ========== VERIFICAÇÃO DE ISSUES EXISTENTES ==========
+// Cache para evitar múltiplas requisições
+let existingIssuesCache = null;
+let existingIssuesCacheTime = 0;
+const ISSUES_CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+// Verifica se já existem issues abertas para uma linha específica
+async function checkExistingIssues(lineId) {
+    const warningSection = document.getElementById('existing-issues-warning');
+    const countEl = document.getElementById('existing-issues-count');
+    const listEl = document.getElementById('existing-issues-list');
+    
+    if (!warningSection || !countEl || !listEl) return;
+    
+    // Esconde inicialmente
+    warningSection.style.display = 'none';
+    
+    try {
+        // Verifica cache
+        const now = Date.now();
+        if (!existingIssuesCache || now - existingIssuesCacheTime > ISSUES_CACHE_DURATION) {
+            // Busca issues abertas com label 'translation'
+            const response = await cachedFetch(
+                `https://api.github.com/repos/${CONFIG.GITHUB_REPO}/issues?state=open&labels=translation&per_page=100`,
+                'existing_issues_check'
+            );
+            
+            if (response.ok) {
+                existingIssuesCache = response.data;
+                existingIssuesCacheTime = now;
+            } else {
+                return; // Falha silenciosa
+            }
+        }
+        
+        // Procura issues que mencionam este ID
+        const matchingIssues = existingIssuesCache.filter(issue => {
+            if (!issue.body) return false;
+            // Verifica se o corpo da issue contém este ID (de forma mais precisa)
+            return issue.body.includes(`ID: ${lineId}`) || 
+                   issue.body.includes(`\`${lineId}\``) ||
+                   issue.body.includes(`| ${lineId} |`);
+        });
+        
+        if (matchingIssues.length > 0) {
+            countEl.textContent = matchingIssues.length;
+            
+            // Mostra até 3 issues
+            listEl.innerHTML = matchingIssues.slice(0, 3).map(issue => `
+                <a href="${issue.html_url}" target="_blank" class="existing-issue-tag" title="${escapeHtml(issue.title)}">
+                    <i class="fas fa-external-link-alt"></i>
+                    #${issue.number} por @${escapeHtml(issue.user.login)}
+                </a>
+            `).join('') + (matchingIssues.length > 3 ? `<span class="existing-issue-tag">+${matchingIssues.length - 3} mais</span>` : '');
+            
+            warningSection.style.display = 'block';
+            console.log(`[Issues] Encontradas ${matchingIssues.length} issue(s) para ID: ${lineId}`);
+        }
+    } catch (error) {
+        console.warn('[Issues] Erro ao verificar issues existentes:', error);
+        // Falha silenciosa - não impede o usuário de continuar
+    }
+}
+
 function openSuggestionModal(id, originalEncoded, currentEncoded, lineNumber) {
     currentSuggestionId = id;
     
@@ -1584,6 +1648,9 @@ function openSuggestionModal(id, originalEncoded, currentEncoded, lineNumber) {
                             <button class="btn-copy-var" data-var="${varName}" title="Copiar variável">
                                 <i class="fas fa-copy"></i>
                             </button>
+                            <a href="glossary#${encodeURIComponent(term.id)}" class="btn-view-glossary" target="_blank" title="Ver detalhes no Glossário">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
                         </div>
                         ${term.context ? `<div class="term-hint-context">${escapeHtml(term.context)}</div>` : ''}
                     </div>
@@ -1634,15 +1701,13 @@ function openSuggestionModal(id, originalEncoded, currentEncoded, lineNumber) {
                     </span>
                 `;
             }).join('') + (hasMore ? `<span class="duplicate-more">+${duplicates.length - 10} mais</span>` : '');
-            
-            // Reseta checkbox
-            if (applyToAllCheckbox) {
-                applyToAllCheckbox.checked = false;
-            }
         } else {
             bulkEditSection.style.display = 'none';
         }
     }
+    
+    // ========== VERIFICAR ISSUES EXISTENTES (não bloqueante) ==========
+    checkExistingIssues(id);
     
     document.getElementById('suggestion-modal').classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -1721,10 +1786,14 @@ async function addToCart() {
     const syntaxErrors = validateVariableSyntax(suggestion);
     if (syntaxErrors.length > 0) {
         await showAlert(
-            `Sua sugestão contém erros de sintaxe em variáveis:\n\n` +
+            `🚫 **Oops! Sintaxe incorreta**\n\n` +
+            `Encontramos alguns problemas nas suas variáveis:\n\n` +
             syntaxErrors.map(e => `• ${e}`).join('\n') +
-            `\n\n**Formato correto:** \`{{NOME_VARIAVEL}}\``,
-            'Erro de Sintaxe',
+            `\n\n💡 **Dica:** O formato correto é \`{{NOME_VARIAVEL}}\`\n` +
+            `• Use APENAS letras MAIÚSCULAS\n` +
+            `• Separe palavras com underscore (\_)\n` +
+            `• Exemplo: \`{{JIANGHU}}\` ou \`{{MERIDIAN_SYSTEM}}\``,
+            '⚠️ Erro de Sintaxe',
             'error'
         );
         return;
@@ -1737,13 +1806,15 @@ async function addToCart() {
     if (unknownVars.length > 0) {
         const varNames = unknownVars.map(v => v.variable).join(', ');
         await showAlert(
-            `As seguintes variáveis não existem no glossário:\n\n` +
-            `**${varNames}**\n\n` +
-            `**Como resolver:**\n` +
-            `• Verifique a grafia da variável (deve ser MAIÚSCULAS)\n` +
-            `• Adicione o termo ao glossário primeiro\n` +
-            `• Use o botão de copiar no painel de glossário`,
-            'Variável Não Encontrada',
+            `🔍 **Variável não reconhecida!**\n\n` +
+            `As seguintes variáveis ainda não existem no glossário:\n\n` +
+            `🎯 **${varNames}**\n\n` +
+            `💡 **Como resolver:**\n` +
+            `• Confira a grafia (use MAIÚSCULAS e underscores)\n` +
+            `• Copie a variável diretamente do painel de glossário\n` +
+            `• Se o termo deveria existir, peça a um admin para adicioná-lo\n\n` +
+            `📖 **Precisa consultar?** [Abra o Glossário](glossary) para ver todas as variáveis disponíveis.`,
+            '🎮 Variável Desconhecida',
             'warning'
         );
         return;
