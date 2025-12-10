@@ -4,6 +4,13 @@ on:
   issues:
     types: [labeled]
 
+# ========== FILA AUTOMÁTICA ==========
+# Quando várias issues são aprovadas rapidamente, os workflows
+# entram numa fila e são executados em sequência (não em paralelo)
+concurrency:
+  group: apply-translations-queue
+  cancel-in-progress: false  # Espera o anterior terminar, NÃO cancela
+
 jobs:
   apply-translations:
     # Só executa quando a label "approved" é adicionada
@@ -57,7 +64,25 @@ jobs:
           Contribuição de @${{ github.event.issue.user.login }}
           
           Co-authored-by: ${{ github.event.issue.user.login }} <${{ github.event.issue.user.id }}+${{ github.event.issue.user.login }}@users.noreply.github.com>"
-          git push origin dev
+          
+          # ========== PUSH COM RETRY ==========
+          # Sincroniza antes do push e tenta 3x com backoff exponencial
+          for attempt in 1 2 3; do
+            echo "📤 Tentativa $attempt de push..."
+            git pull --rebase origin dev 2>/dev/null || true
+            if git push origin dev; then
+              echo "✅ Push realizado com sucesso!"
+              break
+            else
+              if [ $attempt -lt 3 ]; then
+                echo "⚠️ Falha no push, aguardando $((attempt * 2))s..."
+                sleep $((attempt * 2))
+              else
+                echo "❌ Falha após 3 tentativas"
+                exit 1
+              fi
+            fi
+          done
       
       - name: Close Issue with Success
         if: steps.apply.outputs.changes_made == 'true'
