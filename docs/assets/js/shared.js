@@ -323,3 +323,100 @@ function initSmoothScroll() {
         });
     });
 }
+
+// ========== CELEBRATION MODAL - LOAD CONTRIBUTORS RANKING ==========
+async function loadCelebrationContributors() {
+    const container = document.getElementById('celebration-contributors-list');
+    if (!container) return;
+    
+    const LEAD_DEV = 'rodrigomiquilino';
+    const SECONDARY_DEV = 'DOG729';
+    
+    // Mensagens de agradecimento aleatórias
+    const thanksMessages = [
+        'Guerreiro(a) lendário(a)!',
+        'Herói(na) da tradução!',
+        'Muito obrigado! ❤️',
+        'Você fez a diferença!',
+        'Gratidão eterna!',
+        'Mestre tradutor(a)!',
+        'Contribuição épica!',
+        'Valeu demais!',
+        'Incrível dedicação!',
+        'Força e honra!'
+    ];
+    
+    // Medalhas por posição
+    const rankMedals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+    
+    try {
+        // Buscar issues aplicadas para pegar contribuidores
+        const issues = await cachedApiCall('applied_issues', 
+            'https://api.github.com/repos/rodrigomiquilino/wwm_brasileiro/issues?state=closed&labels=applied&per_page=100'
+        );
+        
+        // Contar contribuições por usuário
+        const contributorsMap = new Map();
+        
+        issues.forEach(issue => {
+            if (issue.user && issue.user.type === 'User' && 
+                issue.user.login !== LEAD_DEV && issue.user.login !== SECONDARY_DEV) {
+                const login = issue.user.login;
+                
+                if (!contributorsMap.has(login)) {
+                    contributorsMap.set(login, {
+                        login: login,
+                        avatar_url: issue.user.avatar_url,
+                        html_url: issue.user.html_url,
+                        contributions: 0
+                    });
+                }
+                
+                // Tentar extrair quantidade de traduções da issue
+                try {
+                    const jsonMatch = issue.body?.match(/"total"\s*:\s*(\d+)/);
+                    const count = jsonMatch ? parseInt(jsonMatch[1]) : 1;
+                    contributorsMap.get(login).contributions += count;
+                } catch (e) {
+                    contributorsMap.get(login).contributions += 1;
+                }
+            }
+        });
+        
+        // Ordenar por contribuições e pegar todos
+        const contributors = Array.from(contributorsMap.values())
+            .sort((a, b) => b.contributions - a.contributions);
+        
+        if (contributors.length === 0) {
+            container.innerHTML = '<span style="color: var(--text-muted); padding: 0.5rem; display: block; text-align: center;">Obrigado a todos que participaram! ❤️</span>';
+            return;
+        }
+        
+        container.innerHTML = contributors.map((c, index) => {
+            const medal = rankMedals[index] || `${index + 1}º`;
+            const thanks = thanksMessages[index % thanksMessages.length];
+            
+            return `
+                <a href="${escapeHtml(c.html_url)}" target="_blank" rel="noopener" class="celebration-contributor">
+                    <span class="celebration-contributor-rank">${medal}</span>
+                    <img src="${escapeHtml(c.avatar_url)}" alt="${escapeHtml(c.login)}" loading="lazy">
+                    <div class="celebration-contributor-info">
+                        <div class="celebration-contributor-name">@${escapeHtml(c.login)}</div>
+                        <div class="celebration-contributor-thanks">${thanks}</div>
+                    </div>
+                    <span class="celebration-contributor-score">${c.contributions}</span>
+                </a>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error loading celebration contributors:', error);
+        container.innerHTML = '<span style="color: var(--text-muted); padding: 0.5rem; display: block; text-align: center;">Obrigado a todos os heróis! ❤️</span>';
+    }
+}
+
+// Inicializar modal de celebração quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    loadCelebrationContributors();
+});
+
