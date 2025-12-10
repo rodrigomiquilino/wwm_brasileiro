@@ -1855,8 +1855,8 @@ footer a {
     border-radius: 20px;
     width: 100%;
     max-width: 70rem;
-    max-height: 100vh;
-    overflow: auto;
+    max-height: 90vh;
+    overflow: hidden;
     clip-path: content-box;
     box-shadow: 
         0 32px 64px -16px rgba(0, 0, 0, 0.8),
@@ -1930,8 +1930,8 @@ footer a {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0;
-    /* max-height: calc(85vh - 160px); */
-    overflow: hidden;
+    max-height: calc(85vh - 160px);
+    overflow: auto;
 }
 
 /* Left Panel - Source Text */
