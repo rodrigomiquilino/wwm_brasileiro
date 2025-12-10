@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastUpdated": "2024-12-09",
+  "lastUpdated": "2025-12-10",
   "categories": {
     "combat": {
       "name": "Combate e Habilidades",
@@ -45,7 +45,7 @@
   },
   "terms": [
     {
-      "id": "jianghu",
+      "id": "jianghuu",
       "original": "Jianghu",
       "chinese": "江湖",
       "pinyin": "Jianghu",
@@ -53,7 +53,12 @@
       "category": "combat",
       "context": "O mundo das artes marciais, literalmente 'rios e lagos'. Sociedade submundo marcial onde artistas marciais vivem e interagem.",
       "doNotTranslate": false,
-      "aliases": ["jianghu", "Jiang Hu", "jiang hu", "rivers and lakes"]
+      "aliases": [
+        "jianghu",
+        "Jiang Hu",
+        "jiang hu",
+        "rivers and lakes"
+      ]
     },
     {
       "id": "wulin",
@@ -64,7 +69,11 @@
       "category": "combat",
       "context": "Comunidade de artes marciais, sinônimo de Jianghu em alguns contextos.",
       "doNotTranslate": false,
-      "aliases": ["wulin", "Wu Lin", "martial world"]
+      "aliases": [
+        "wulin",
+        "Wu Lin",
+        "martial world"
+      ]
     },
     {
       "id": "xia",
@@ -75,7 +84,11 @@
       "category": "titles",
       "context": "Herói cavalheiresco que segue um código de honra.",
       "doNotTranslate": false,
-      "aliases": ["xia", "hero", "knight-errant"]
+      "aliases": [
+        "xia",
+        "hero",
+        "knight-errant"
+      ]
     },
     {
       "id": "xiake",
@@ -86,7 +99,10 @@
       "category": "titles",
       "context": "Artista marcial errante que viaja o Jianghu.",
       "doNotTranslate": false,
-      "aliases": ["xiake", "wandering warrior"]
+      "aliases": [
+        "xiake",
+        "wandering warrior"
+      ]
     },
     {
       "id": "qinggong",
@@ -97,7 +113,12 @@
       "category": "combat",
       "context": "Habilidade sobrenatural de se mover com extrema agilidade, incluindo saltar em telhados e planar no ar.",
       "doNotTranslate": false,
-      "aliases": ["qinggong", "lightness skill", "light skill", "leveza"]
+      "aliases": [
+        "qinggong",
+        "lightness skill",
+        "light skill",
+        "leveza"
+      ]
     },
     {
       "id": "neigong",
@@ -108,7 +129,11 @@
       "category": "combat",
       "context": "Cultivo de energia interna através de meditação e prática.",
       "doNotTranslate": false,
-      "aliases": ["neigong", "internal energy", "internal power"]
+      "aliases": [
+        "neigong",
+        "internal energy",
+        "internal power"
+      ]
     },
     {
       "id": "qi",
@@ -119,7 +144,11 @@
       "category": "combat",
       "context": "Energia vital que flui pelo corpo e natureza. Não traduzir.",
       "doNotTranslate": true,
-      "aliases": ["qi", "chi", "ki"]
+      "aliases": [
+        "qi",
+        "chi",
+        "ki"
+      ]
     },
     {
       "id": "jianfa",
@@ -130,7 +159,11 @@
       "category": "combat",
       "context": "Arte marcial focada no uso de espadas.",
       "doNotTranslate": false,
-      "aliases": ["jianfa", "sword technique", "swordsmanship"]
+      "aliases": [
+        "jianfa",
+        "sword technique",
+        "swordsmanship"
+      ]
     },
     {
       "id": "quanfa",
@@ -141,7 +174,11 @@
       "category": "combat",
       "context": "Arte marcial de punhos e golpes desarmados.",
       "doNotTranslate": false,
-      "aliases": ["quanfa", "fist technique", "boxing"]
+      "aliases": [
+        "quanfa",
+        "fist technique",
+        "boxing"
+      ]
     },
     {
       "id": "zhaoshi",
@@ -152,7 +189,11 @@
       "category": "combat",
       "context": "Movimento de combate específico dentro de uma técnica.",
       "doNotTranslate": false,
-      "aliases": ["zhaoshi", "move", "technique"]
+      "aliases": [
+        "zhaoshi",
+        "move",
+        "technique"
+      ]
     },
     {
       "id": "jueji",
@@ -163,7 +204,11 @@
       "category": "combat",
       "context": "Habilidade suprema, geralmente secreta ou lendária.",
       "doNotTranslate": false,
-      "aliases": ["jueji", "ultimate technique", "secret skill"]
+      "aliases": [
+        "jueji",
+        "ultimate technique",
+        "secret skill"
+      ]
     },
     {
       "id": "xinfa",
@@ -174,7 +219,11 @@
       "category": "combat",
       "context": "Técnica de cultivo mental e meditação.",
       "doNotTranslate": false,
-      "aliases": ["xinfa", "heart method", "mental cultivation"]
+      "aliases": [
+        "xinfa",
+        "heart method",
+        "mental cultivation"
+      ]
     },
     {
       "id": "shifu",
@@ -185,7 +234,12 @@
       "category": "titles",
       "context": "Título respeitoso para um mestre de artes marciais.",
       "doNotTranslate": false,
-      "aliases": ["shifu", "master", "teacher", "sifu"]
+      "aliases": [
+        "shifu",
+        "master",
+        "teacher",
+        "sifu"
+      ]
     },
     {
       "id": "zhangmen",
@@ -196,7 +250,11 @@
       "category": "titles",
       "context": "Líder de uma seita ou escola de artes marciais.",
       "doNotTranslate": false,
-      "aliases": ["zhangmen", "sect leader", "school leader"]
+      "aliases": [
+        "zhangmen",
+        "sect leader",
+        "school leader"
+      ]
     },
     {
       "id": "zhanglao",
@@ -207,7 +265,10 @@
       "category": "titles",
       "context": "Membro sênior e respeitado de uma seita.",
       "doNotTranslate": false,
-      "aliases": ["zhanglao", "elder"]
+      "aliases": [
+        "zhanglao",
+        "elder"
+      ]
     },
     {
       "id": "daxia",
@@ -218,7 +279,11 @@
       "category": "titles",
       "context": "Título honorífico para um grande herói do Jianghu.",
       "doNotTranslate": false,
-      "aliases": ["daxia", "great hero", "grand master"]
+      "aliases": [
+        "daxia",
+        "great hero",
+        "grand master"
+      ]
     },
     {
       "id": "shaoxia",
@@ -229,7 +294,11 @@
       "category": "titles",
       "context": "Título para um jovem herói promissor.",
       "doNotTranslate": false,
-      "aliases": ["shaoxia", "young hero", "young warrior"]
+      "aliases": [
+        "shaoxia",
+        "young hero",
+        "young warrior"
+      ]
     },
     {
       "id": "qianbei",
@@ -240,7 +309,11 @@
       "category": "titles",
       "context": "Tratamento respeitoso para alguém mais experiente.",
       "doNotTranslate": false,
-      "aliases": ["qianbei", "senior", "predecessor"]
+      "aliases": [
+        "qianbei",
+        "senior",
+        "predecessor"
+      ]
     },
     {
       "id": "wanbei",
@@ -251,7 +324,10 @@
       "category": "titles",
       "context": "Auto-referência humilde de alguém mais jovem/inexperiente.",
       "doNotTranslate": false,
-      "aliases": ["wanbei", "junior"]
+      "aliases": [
+        "wanbei",
+        "junior"
+      ]
     },
     {
       "id": "xiongdi",
@@ -262,7 +338,11 @@
       "category": "titles",
       "context": "Irmão (biológico ou jurado).",
       "doNotTranslate": false,
-      "aliases": ["xiongdi", "brother", "sworn brother"]
+      "aliases": [
+        "xiongdi",
+        "brother",
+        "sworn brother"
+      ]
     },
     {
       "id": "jiemei",
@@ -273,7 +353,11 @@
       "category": "titles",
       "context": "Irmã (biológica ou jurada).",
       "doNotTranslate": false,
-      "aliases": ["jiemei", "sister", "sworn sister"]
+      "aliases": [
+        "jiemei",
+        "sister",
+        "sworn sister"
+      ]
     },
     {
       "id": "shenbing",
@@ -284,7 +368,11 @@
       "category": "items",
       "context": "Arma divina ou lendária com poderes especiais.",
       "doNotTranslate": false,
-      "aliases": ["shenbing", "divine weapon", "legendary weapon"]
+      "aliases": [
+        "shenbing",
+        "divine weapon",
+        "legendary weapon"
+      ]
     },
     {
       "id": "baojian",
@@ -295,7 +383,11 @@
       "category": "items",
       "context": "Espada valiosa e de alta qualidade.",
       "doNotTranslate": false,
-      "aliases": ["baojian", "precious sword", "treasure sword"]
+      "aliases": [
+        "baojian",
+        "precious sword",
+        "treasure sword"
+      ]
     },
     {
       "id": "danyao",
@@ -306,7 +398,12 @@
       "category": "items",
       "context": "Pílula medicinal ou alquímica.",
       "doNotTranslate": false,
-      "aliases": ["danyao", "elixir", "pill", "medicine"]
+      "aliases": [
+        "danyao",
+        "elixir",
+        "pill",
+        "medicine"
+      ]
     },
     {
       "id": "miji",
@@ -317,7 +414,11 @@
       "category": "items",
       "context": "Manual secreto contendo técnicas marciais.",
       "doNotTranslate": false,
-      "aliases": ["miji", "secret manual", "martial arts manual"]
+      "aliases": [
+        "miji",
+        "secret manual",
+        "martial arts manual"
+      ]
     },
     {
       "id": "neidan",
@@ -328,7 +429,11 @@
       "category": "items",
       "context": "Elixir formado dentro do corpo através de cultivação.",
       "doNotTranslate": false,
-      "aliases": ["neidan", "internal elixir", "inner alchemy"]
+      "aliases": [
+        "neidan",
+        "internal elixir",
+        "inner alchemy"
+      ]
     },
     {
       "id": "simiao",
@@ -339,7 +444,11 @@
       "category": "locations",
       "context": "Templo religioso, frequentemente associado a artes marciais.",
       "doNotTranslate": false,
-      "aliases": ["simiao", "temple", "monastery"]
+      "aliases": [
+        "simiao",
+        "temple",
+        "monastery"
+      ]
     },
     {
       "id": "kezhan",
@@ -350,7 +459,11 @@
       "category": "locations",
       "context": "Hospedaria onde viajantes descansam.",
       "doNotTranslate": false,
-      "aliases": ["kezhan", "inn", "tavern"]
+      "aliases": [
+        "kezhan",
+        "inn",
+        "tavern"
+      ]
     },
     {
       "id": "shanmen",
@@ -361,7 +474,11 @@
       "category": "locations",
       "context": "Entrada principal de uma seita de artes marciais.",
       "doNotTranslate": false,
-      "aliases": ["shanmen", "mountain gate", "sect entrance"]
+      "aliases": [
+        "shanmen",
+        "mountain gate",
+        "sect entrance"
+      ]
     },
     {
       "id": "lianwuchang",
@@ -372,7 +489,11 @@
       "category": "locations",
       "context": "Campo de treinamento de artes marciais.",
       "doNotTranslate": false,
-      "aliases": ["lianwuchang", "training ground", "practice field"]
+      "aliases": [
+        "lianwuchang",
+        "training ground",
+        "practice field"
+      ]
     },
     {
       "id": "dao",
@@ -383,7 +504,12 @@
       "category": "philosophy",
       "context": "O Caminho, conceito filosófico taoísta fundamental.",
       "doNotTranslate": false,
-      "aliases": ["dao", "tao", "the way", "path"]
+      "aliases": [
+        "dao",
+        "tao",
+        "the way",
+        "path"
+      ]
     },
     {
       "id": "de",
@@ -394,7 +520,10 @@
       "category": "philosophy",
       "context": "Virtude moral no taoísmo e confucionismo.",
       "doNotTranslate": false,
-      "aliases": ["de", "virtue"]
+      "aliases": [
+        "de",
+        "virtue"
+      ]
     },
     {
       "id": "ren",
@@ -405,7 +534,11 @@
       "category": "philosophy",
       "context": "Conceito confucionista de humanidade e compaixão.",
       "doNotTranslate": false,
-      "aliases": ["ren", "benevolence", "humanity"]
+      "aliases": [
+        "ren",
+        "benevolence",
+        "humanity"
+      ]
     },
     {
       "id": "yi",
@@ -416,7 +549,11 @@
       "category": "philosophy",
       "context": "Senso de justiça e retidão moral.",
       "doNotTranslate": false,
-      "aliases": ["yi", "righteousness", "justice"]
+      "aliases": [
+        "yi",
+        "righteousness",
+        "justice"
+      ]
     },
     {
       "id": "li",
@@ -427,7 +564,12 @@
       "category": "philosophy",
       "context": "Rituais e etiqueta confucionistas.",
       "doNotTranslate": false,
-      "aliases": ["li", "ritual", "etiquette", "propriety"]
+      "aliases": [
+        "li",
+        "ritual",
+        "etiquette",
+        "propriety"
+      ]
     },
     {
       "id": "quest",
@@ -438,7 +580,10 @@
       "category": "ui",
       "context": "Termo de interface do jogo.",
       "doNotTranslate": false,
-      "aliases": ["quest", "mission"]
+      "aliases": [
+        "quest",
+        "mission"
+      ]
     },
     {
       "id": "skill",
@@ -449,7 +594,10 @@
       "category": "ui",
       "context": "Termo de interface do jogo.",
       "doNotTranslate": false,
-      "aliases": ["skill", "ability"]
+      "aliases": [
+        "skill",
+        "ability"
+      ]
     },
     {
       "id": "health",
@@ -460,7 +608,11 @@
       "category": "ui",
       "context": "HP - pontos de vida.",
       "doNotTranslate": false,
-      "aliases": ["health", "hp", "life"]
+      "aliases": [
+        "health",
+        "hp",
+        "life"
+      ]
     },
     {
       "id": "stamina",
@@ -471,7 +623,10 @@
       "category": "ui",
       "context": "Energia para ações físicas.",
       "doNotTranslate": false,
-      "aliases": ["stamina", "endurance"]
+      "aliases": [
+        "stamina",
+        "endurance"
+      ]
     },
     {
       "id": "guild",
@@ -482,7 +637,10 @@
       "category": "ui",
       "context": "Organização de jogadores.",
       "doNotTranslate": false,
-      "aliases": ["guild", "clan"]
+      "aliases": [
+        "guild",
+        "clan"
+      ]
     },
     {
       "id": "dungeon",
@@ -493,7 +651,10 @@
       "category": "ui",
       "context": "Instância de jogo.",
       "doNotTranslate": false,
-      "aliases": ["dungeon", "instance"]
+      "aliases": [
+        "dungeon",
+        "instance"
+      ]
     },
     {
       "id": "boss",
@@ -504,7 +665,10 @@
       "category": "ui",
       "context": "Inimigo poderoso.",
       "doNotTranslate": false,
-      "aliases": ["boss", "chefe"]
+      "aliases": [
+        "boss",
+        "chefe"
+      ]
     },
     {
       "id": "buff",
@@ -515,7 +679,9 @@
       "category": "ui",
       "context": "Efeito positivo temporário. Não traduzir.",
       "doNotTranslate": true,
-      "aliases": ["buff"]
+      "aliases": [
+        "buff"
+      ]
     },
     {
       "id": "debuff",
@@ -526,7 +692,9 @@
       "category": "ui",
       "context": "Efeito negativo temporário. Não traduzir.",
       "doNotTranslate": true,
-      "aliases": ["debuff"]
+      "aliases": [
+        "debuff"
+      ]
     },
     {
       "id": "cooldown",
@@ -537,7 +705,11 @@
       "category": "ui",
       "context": "Tempo de espera entre usos de habilidade.",
       "doNotTranslate": false,
-      "aliases": ["cooldown", "cd", "recarga"]
+      "aliases": [
+        "cooldown",
+        "cd",
+        "recarga"
+      ]
     },
     {
       "id": "mana",
@@ -548,7 +720,10 @@
       "category": "ui",
       "context": "Energia mágica. Não traduzir.",
       "doNotTranslate": true,
-      "aliases": ["mana", "mp"]
+      "aliases": [
+        "mana",
+        "mp"
+      ]
     },
     {
       "id": "combo",
@@ -559,7 +734,9 @@
       "category": "ui",
       "context": "Sequência de ataques. Não traduzir.",
       "doNotTranslate": true,
-      "aliases": ["combo"]
+      "aliases": [
+        "combo"
+      ]
     },
     {
       "id": "ultimate",
@@ -570,7 +747,10 @@
       "category": "ui",
       "context": "Habilidade suprema do personagem.",
       "doNotTranslate": false,
-      "aliases": ["ultimate", "ult"]
+      "aliases": [
+        "ultimate",
+        "ult"
+      ]
     },
     {
       "id": "blacksmith",
@@ -581,7 +761,10 @@
       "category": "professions",
       "context": "Profissão que forja armas e armaduras.",
       "doNotTranslate": false,
-      "aliases": ["blacksmith", "smith"]
+      "aliases": [
+        "blacksmith",
+        "smith"
+      ]
     },
     {
       "id": "alchemist",
@@ -592,7 +775,9 @@
       "category": "professions",
       "context": "Profissão que cria poções e elixires.",
       "doNotTranslate": false,
-      "aliases": ["alchemist"]
+      "aliases": [
+        "alchemist"
+      ]
     },
     {
       "id": "herbalist",
@@ -603,7 +788,9 @@
       "category": "professions",
       "context": "Profissão que coleta e processa ervas.",
       "doNotTranslate": false,
-      "aliases": ["herbalist"]
+      "aliases": [
+        "herbalist"
+      ]
     },
     {
       "id": "npc_jiang_yan",
@@ -614,7 +801,10 @@
       "category": "npcs",
       "context": "Salvador do protagonista que ajudou na fuga e depois desapareceu misteriosamente.",
       "doNotTranslate": true,
-      "aliases": ["Jiang Yan", "Jiangyan"]
+      "aliases": [
+        "Jiang Yan",
+        "Jiangyan"
+      ]
     },
     {
       "id": "npc_aunt_han",
@@ -625,7 +815,11 @@
       "category": "npcs",
       "context": "Mãe adotiva do protagonista após o desaparecimento de Jiang Yan.",
       "doNotTranslate": true,
-      "aliases": ["Aunt Han", "Auntie Han", "Han Ayi"]
+      "aliases": [
+        "Aunt Han",
+        "Auntie Han",
+        "Han Ayi"
+      ]
     },
     {
       "id": "npc_tian_ying",
@@ -636,7 +830,10 @@
       "category": "npcs",
       "context": "Assassino lendário cujas ações são centrais para a trama.",
       "doNotTranslate": true,
-      "aliases": ["Tian Ying", "Tianying"]
+      "aliases": [
+        "Tian Ying",
+        "Tianying"
+      ]
     },
     {
       "id": "npc_chen_zixi",
@@ -647,7 +844,9 @@
       "category": "npcs",
       "context": "Personagem da história principal.",
       "doNotTranslate": true,
-      "aliases": ["Chen Zixi"]
+      "aliases": [
+        "Chen Zixi"
+      ]
     },
     {
       "id": "npc_ruby",
@@ -658,7 +857,9 @@
       "category": "npcs",
       "context": "Personagem da história principal.",
       "doNotTranslate": true,
-      "aliases": ["Ruby"]
+      "aliases": [
+        "Ruby"
+      ]
     },
     {
       "id": "npc_yi_dao",
@@ -669,7 +870,10 @@
       "category": "npcs",
       "context": "Personagem da história principal.",
       "doNotTranslate": true,
-      "aliases": ["Yi Dao", "Yidao"]
+      "aliases": [
+        "Yi Dao",
+        "Yidao"
+      ]
     },
     {
       "id": "npc_han_xiangxun",
@@ -680,7 +884,9 @@
       "category": "npcs",
       "context": "Personagem da história principal.",
       "doNotTranslate": true,
-      "aliases": ["Han Xiangxun"]
+      "aliases": [
+        "Han Xiangxun"
+      ]
     },
     {
       "id": "npc_qianye",
@@ -691,7 +897,10 @@
       "category": "npcs",
       "context": "Personagem da história principal.",
       "doNotTranslate": true,
-      "aliases": ["Qianye", "Qian Ye"]
+      "aliases": [
+        "Qianye",
+        "Qian Ye"
+      ]
     },
     {
       "id": "npc_wen_wuque",
@@ -702,7 +911,9 @@
       "category": "npcs",
       "context": "Personagem da história principal.",
       "doNotTranslate": true,
-      "aliases": ["Wen Wuque"]
+      "aliases": [
+        "Wen Wuque"
+      ]
     },
     {
       "id": "npc_dalang",
@@ -713,7 +924,10 @@
       "category": "npcs",
       "context": "Personagem da história principal.",
       "doNotTranslate": true,
-      "aliases": ["Dalang", "Da Lang"]
+      "aliases": [
+        "Dalang",
+        "Da Lang"
+      ]
     },
     {
       "id": "npc_lie_yan",
@@ -724,7 +938,10 @@
       "category": "npcs",
       "context": "Personagem da história principal.",
       "doNotTranslate": true,
-      "aliases": ["Lie Yan", "Lieyan"]
+      "aliases": [
+        "Lie Yan",
+        "Lieyan"
+      ]
     },
     {
       "id": "npc_void_king",
@@ -735,7 +952,10 @@
       "category": "npcs",
       "context": "Personagem importante da história principal.",
       "doNotTranslate": true,
-      "aliases": ["The Void King", "Void King"]
+      "aliases": [
+        "The Void King",
+        "Void King"
+      ]
     },
     {
       "id": "npc_li_laizuo",
@@ -746,7 +966,9 @@
       "category": "npcs",
       "context": "NPC encontrado perto do Santuário do General.",
       "doNotTranslate": true,
-      "aliases": ["Li Laizuo"]
+      "aliases": [
+        "Li Laizuo"
+      ]
     },
     {
       "id": "npc_fang_xu",
@@ -757,7 +979,9 @@
       "category": "npcs",
       "context": "NPC no Santuário do General, requer luta antes de conversar.",
       "doNotTranslate": true,
-      "aliases": ["Fang Xu"]
+      "aliases": [
+        "Fang Xu"
+      ]
     },
     {
       "id": "npc_lie_buxi",
@@ -768,7 +992,9 @@
       "category": "npcs",
       "context": "NPC perto do rio, busca ajuda para encontrar seus irmãos.",
       "doNotTranslate": true,
-      "aliases": ["Lie Buxi"]
+      "aliases": [
+        "Lie Buxi"
+      ]
     },
     {
       "id": "npc_zhao_dali",
@@ -779,7 +1005,9 @@
       "category": "npcs",
       "context": "NPC no Santuário do General.",
       "doNotTranslate": true,
-      "aliases": ["Zhao Dali"]
+      "aliases": [
+        "Zhao Dali"
+      ]
     },
     {
       "id": "npc_fu_lubao",
@@ -790,7 +1018,9 @@
       "category": "npcs",
       "context": "NPC que também aparece como adivinho.",
       "doNotTranslate": true,
-      "aliases": ["Fu Lubao"]
+      "aliases": [
+        "Fu Lubao"
+      ]
     },
     {
       "id": "npc_wang_duobao",
@@ -801,7 +1031,9 @@
       "category": "npcs",
       "context": "NPC pescador na beira do rio.",
       "doNotTranslate": true,
-      "aliases": ["Wang Duobao"]
+      "aliases": [
+        "Wang Duobao"
+      ]
     },
     {
       "id": "npc_jin_chunniang",
@@ -812,7 +1044,9 @@
       "category": "npcs",
       "context": "NPC interativo (Jianghu Friend).",
       "doNotTranslate": true,
-      "aliases": ["Jin Chunniang"]
+      "aliases": [
+        "Jin Chunniang"
+      ]
     },
     {
       "id": "npc_chai_bakun",
@@ -823,7 +1057,9 @@
       "category": "npcs",
       "context": "NPC cortando lenha ao sul do Santuário do General.",
       "doNotTranslate": true,
-      "aliases": ["Chai Bakun"]
+      "aliases": [
+        "Chai Bakun"
+      ]
     },
     {
       "id": "npc_fu_lushou",
@@ -834,7 +1070,9 @@
       "category": "npcs",
       "context": "NPC perto do prédio à direita da entrada do Santuário.",
       "doNotTranslate": true,
-      "aliases": ["Fu Lushou"]
+      "aliases": [
+        "Fu Lushou"
+      ]
     },
     {
       "id": "npc_jin_xiaobao",
@@ -845,7 +1083,9 @@
       "category": "npcs",
       "context": "NPC no lamaçal ao sul de Verdant Wilds.",
       "doNotTranslate": true,
-      "aliases": ["Jin Xiaobao"]
+      "aliases": [
+        "Jin Xiaobao"
+      ]
     },
     {
       "id": "npc_adan",
@@ -856,7 +1096,11 @@
       "category": "npcs",
       "context": "NPC curandeira nas montanhas perto de Chunqiu Estate.",
       "doNotTranslate": true,
-      "aliases": ["A'dan", "Adan", "A Dan"]
+      "aliases": [
+        "A'dan",
+        "Adan",
+        "A Dan"
+      ]
     },
     {
       "id": "npc_sha_shuer",
@@ -867,7 +1111,10 @@
       "category": "npcs",
       "context": "NPC em missões de contos errantes.",
       "doNotTranslate": true,
-      "aliases": ["Sha Shu'er", "Sha Shuer"]
+      "aliases": [
+        "Sha Shu'er",
+        "Sha Shuer"
+      ]
     },
     {
       "id": "npc_grandpa_zhou",
@@ -878,7 +1125,10 @@
       "category": "npcs",
       "context": "NPC em missões de contos errantes.",
       "doNotTranslate": true,
-      "aliases": ["Grandpa Zhou", "Zhou Yeye"]
+      "aliases": [
+        "Grandpa Zhou",
+        "Zhou Yeye"
+      ]
     },
     {
       "id": "npc_mu_bai",
@@ -889,7 +1139,9 @@
       "category": "npcs",
       "context": "NPC em missões de contos errantes.",
       "doNotTranslate": true,
-      "aliases": ["Mu Bai"]
+      "aliases": [
+        "Mu Bai"
+      ]
     },
     {
       "id": "npc_yan_ming",
@@ -900,7 +1152,9 @@
       "category": "npcs",
       "context": "NPC em missões de contos errantes.",
       "doNotTranslate": true,
-      "aliases": ["Yan Ming"]
+      "aliases": [
+        "Yan Ming"
+      ]
     },
     {
       "id": "npc_ma_sizhong",
@@ -911,7 +1165,9 @@
       "category": "npcs",
       "context": "NPC envolvido em jogo de xadrez em Jadewood Court.",
       "doNotTranslate": true,
-      "aliases": ["Ma Sizhong"]
+      "aliases": [
+        "Ma Sizhong"
+      ]
     },
     {
       "id": "loc_yanyun",
@@ -922,7 +1178,11 @@
       "category": "locations",
       "context": "Região histórica central do jogo - Dezesseis Prefeituras de Yan e Yun.",
       "doNotTranslate": true,
-      "aliases": ["Yanyun", "Yan Yun", "Yan-Yun"]
+      "aliases": [
+        "Yanyun",
+        "Yan Yun",
+        "Yan-Yun"
+      ]
     },
     {
       "id": "loc_qinghe",
@@ -933,7 +1193,10 @@
       "category": "locations",
       "context": "Província proeminente no jogo, ligada a Yanyun.",
       "doNotTranslate": true,
-      "aliases": ["Qinghe", "Qing He"]
+      "aliases": [
+        "Qinghe",
+        "Qing He"
+      ]
     },
     {
       "id": "loc_battlecrest_slope",
@@ -944,7 +1207,9 @@
       "category": "locations",
       "context": "Área em Qinghe contendo as Ruínas do Voto do Norte.",
       "doNotTranslate": false,
-      "aliases": ["Battlecrest Slope"]
+      "aliases": [
+        "Battlecrest Slope"
+      ]
     },
     {
       "id": "loc_northern_vow_ruins",
@@ -955,7 +1220,9 @@
       "category": "locations",
       "context": "Local ligado à facção Northern Vow que jurou reclamar Yanyun.",
       "doNotTranslate": false,
-      "aliases": ["Northern Vow Ruins"]
+      "aliases": [
+        "Northern Vow Ruins"
+      ]
     },
     {
       "id": "loc_generals_shrine",
@@ -966,7 +1233,10 @@
       "category": "locations",
       "context": "Santuário associado à facção Northern Vow, ponto de encontro de muitos NPCs.",
       "doNotTranslate": false,
-      "aliases": ["General's Shrine", "Generals Shrine"]
+      "aliases": [
+        "General's Shrine",
+        "Generals Shrine"
+      ]
     },
     {
       "id": "loc_palace_of_annals",
@@ -977,7 +1247,9 @@
       "category": "locations",
       "context": "Local acessível via Moonveil Mountain onde se encontra a habilidade Mountain's Might.",
       "doNotTranslate": false,
-      "aliases": ["Palace of Annals"]
+      "aliases": [
+        "Palace of Annals"
+      ]
     },
     {
       "id": "loc_moonveil_mountain",
@@ -988,7 +1260,9 @@
       "category": "locations",
       "context": "Montanha em Qinghe.",
       "doNotTranslate": false,
-      "aliases": ["Moonveil Mountain"]
+      "aliases": [
+        "Moonveil Mountain"
+      ]
     },
     {
       "id": "loc_verdant_wilds",
@@ -999,7 +1273,9 @@
       "category": "locations",
       "context": "Região selvagem do jogo.",
       "doNotTranslate": false,
-      "aliases": ["Verdant Wilds"]
+      "aliases": [
+        "Verdant Wilds"
+      ]
     },
     {
       "id": "loc_chunqiu_estate",
@@ -1010,7 +1286,10 @@
       "category": "locations",
       "context": "Propriedade nas montanhas.",
       "doNotTranslate": false,
-      "aliases": ["Chunqiu Estate", "Chunqiu Zhuang"]
+      "aliases": [
+        "Chunqiu Estate",
+        "Chunqiu Zhuang"
+      ]
     },
     {
       "id": "loc_jadewood_court",
@@ -1021,7 +1300,9 @@
       "category": "locations",
       "context": "Local onde acontece o jogo de xadrez com Ma Sizhong.",
       "doNotTranslate": false,
-      "aliases": ["Jadewood Court"]
+      "aliases": [
+        "Jadewood Court"
+      ]
     }
   ]
 }
