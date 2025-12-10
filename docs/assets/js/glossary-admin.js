@@ -18,6 +18,124 @@ const SECURITY_CONFIG = {
 
 let isAdmin = false;
 let pendingIssues = [];
+let isSaving = false; // Flag para evitar saves simultâneos
+
+// ========== AUTO-SAVE TO GITHUB ==========
+async function saveGlossaryToGitHub(action, termId = null, oldId = null) {
+    const token = localStorage.getItem('github_token');
+    if (!token) {
+        showToast('⚠️ Token não encontrado. Faça login novamente.', 'warning');
+        return false;
+    }
+    
+    if (isSaving) {
+        console.log('[Glossary] Save já em progresso, ignorando...');
+        return false;
+    }
+    
+    isSaving = true;
+    
+    try {
+        // Converter glossaryData para base64
+        const glossaryJson = JSON.stringify(glossaryData, null, 2);
+        const glossaryBase64 = btoa(unescape(encodeURIComponent(glossaryJson)));
+        
+        const response = await fetch(
+            `https://api.github.com/repos/${SECURITY_CONFIG.REPO_OWNER}/${SECURITY_CONFIG.REPO_NAME}/dispatches`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    event_type: 'update-glossary',
+                    client_payload: {
+                        glossary_base64: glossaryBase64,
+                        terms_count: glossaryData.terms.length,
+                        action: action,
+                        term_id: termId,
+                        old_id: oldId,
+                        triggered_by: localStorage.getItem('github_username') || 'admin'
+                    }
+                })
+            }
+        );
+        
+        isSaving = false;
+        
+        if (response.status === 204 || response.ok) {
+            console.log(`[Glossary] Auto-save disparado: ${action} ${termId || ''}`);
+            return true;
+        } else {
+            console.error('[Glossary] Erro no auto-save:', response.status);
+            showToast('⚠️ Erro ao salvar no GitHub. Tente novamente.', 'error');
+            return false;
+        }
+    } catch (error) {
+        isSaving = false;
+        console.error('[Glossary] Erro ao salvar:', error);
+        showToast('⚠️ Erro de conexão ao salvar.', 'error');
+        return false;
+    }
+}
+
+// Toast notification
+function showToast(message, type = 'success') {
+    const existingToast = document.querySelector('.glossary-toast');
+    if (existingToast) existingToast.remove();
+    
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+    };
+    
+    const colors = {
+        success: 'linear-gradient(135deg, #10b981, #059669)',
+        error: 'linear-gradient(135deg, #ef4444, #dc2626)',
+        warning: 'linear-gradient(135deg, #f59e0b, #d97706)',
+        info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
+    };
+    
+    const toast = document.createElement('div');
+    toast.className = 'glossary-toast';
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: ${colors[type] || colors.info};
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        z-index: 1000;
+        font-weight: 500;
+        animation: slideIn 0.3s ease;
+    `;
+    toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i> ${message}`;
+    
+    // Add animation style
+    if (!document.getElementById('toast-style')) {
+        const style = document.createElement('style');
+        style.id = 'toast-style';
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+}
 
 // ========== INIT ==========
 document.addEventListener('DOMContentLoaded', async () => {
@@ -375,7 +493,7 @@ function setupEventListeners() {
 }
 
 // ========== SAVE TERM ==========
-function saveTerm() {
+async function saveTerm() {
     const editId = document.getElementById('term-edit-id').value;
     const id = document.getElementById('term-id').value.trim().toLowerCase().replace(/\s+/g, '_');
     const original = document.getElementById('term-original').value.trim();
@@ -415,7 +533,9 @@ function saveTerm() {
         term.aliases = aliasesRaw.split(',').map(a => a.trim()).filter(a => a);
     }
     
-    if (editId) {
+    const isEdit = !!editId;
+    
+    if (isEdit) {
         // Update existing
         const index = glossaryData.terms.findIndex(t => t.id === editId);
         if (index !== -1) {
@@ -434,17 +554,28 @@ function saveTerm() {
     filterTerms();
     closeModal();
     
-    // Show save reminder
-    showSaveReminder();
+    // Auto-save to GitHub
+    const action = isEdit ? 'edit' : 'add';
+    const saved = await saveGlossaryToGitHub(action, id);
+    if (saved) {
+        showToast(`✅ Termo ${isEdit ? 'editado' : 'adicionado'} e salvo!`, 'success');
+    }
 }
 
-function deleteTerm(id) {
+async function deleteTerm(id) {
     if (!confirm(`Tem certeza que deseja excluir o termo "${id}"?`)) return;
     
     glossaryData.terms = glossaryData.terms.filter(t => t.id !== id);
+    glossaryData.lastUpdated = new Date().toISOString().split('T')[0];
+    
     updateStats();
     filterTerms();
-    showSaveReminder();
+    
+    // Auto-save to GitHub
+    const saved = await saveGlossaryToGitHub('delete', id);
+    if (saved) {
+        showToast('✅ Termo excluído e salvo!', 'success');
+    }
 }
 
 // ========== RENOMEAR VARIÁVEL EM MASSA ==========
@@ -507,9 +638,8 @@ async function renameVariable(oldId) {
         `PARA: ${newVarName}` +
         warningMessage +
         `\n\nIsso irá:\n` +
-        `1. Atualizar o glossário local\n` +
-        `2. Disparar atualização no pt-br.tsv (branch dev)\n` +
-        `3. Você precisará exportar o glossary.json`
+        `1. Atualizar o glossário automaticamente\n` +
+        `2. Atualizar pt-br.tsv (branch dev)`
     );
     
     if (!confirmed) return;
@@ -567,17 +697,19 @@ async function renameVariable(oldId) {
                 glossaryData.terms[index].id = normalizedNewId;
             }
             
+            // Atualizar data
+            glossaryData.lastUpdated = new Date().toISOString().split('T')[0];
+            
             // Atualizar UI
             updateStats();
             filterTerms();
-            showSaveReminder();
             
-            alert(
-                `✅ Variável renomeada com sucesso!\n\n` +
-                `${oldVarName} → ${newVarName}\n\n` +
-                `📤 Workflow disparado no repositório wwm_brasileiro_auto_path.\n` +
-                `O pt-br.tsv (branch dev) será atualizado automaticamente.\n\n` +
-                `⚠️ Não esqueça de exportar o glossary.json!`
+            // Auto-save glossary to GitHub
+            await saveGlossaryToGitHub('rename', normalizedNewId, oldId);
+            
+            showToast(
+                `✅ Variável renomeada: ${oldVarName} → ${newVarName}`,
+                'success'
             );
         } else if (response.status === 404) {
             alert(
@@ -648,44 +780,11 @@ function importGlossary(event) {
     event.target.value = '';
 }
 
-// ========== SAVE REMINDER ==========
+// ========== SAVE REMINDER (DEPRECATED - kept for backwards compatibility) ==========
+// Note: Auto-save is now enabled, this function is no longer needed
 function showSaveReminder() {
-    // Create or update reminder
-    let reminder = document.getElementById('save-reminder');
-    if (!reminder) {
-        reminder = document.createElement('div');
-        reminder.id = 'save-reminder';
-        reminder.style.cssText = `
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #0a0a0f;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            z-index: 1000;
-            font-weight: 600;
-        `;
-        reminder.innerHTML = `
-            <i class="fas fa-exclamation-triangle"></i>
-            <span>Alterações não salvas! Exporte o JSON para salvar.</span>
-            <button onclick="exportGlossary(); this.parentElement.remove();" style="
-                background: rgba(0,0,0,0.2);
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 6px;
-                cursor: pointer;
-                font-weight: 600;
-            ">
-                <i class="fas fa-download"></i> Exportar
-            </button>
-        `;
-        document.body.appendChild(reminder);
-    }
+    // No-op - auto-save handles everything now
+    console.log('[Glossary] showSaveReminder called - auto-save is active');
 }
 
 // ========== HELPERS ==========

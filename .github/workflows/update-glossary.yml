@@ -1,0 +1,92 @@
+# Recebe atualizações do glossário via repository_dispatch
+# e atualiza docs/glossary.json automaticamente
+#
+# REPOSITÓRIO: wwm_brasileiro
+# Disparado pelo glossary-admin.js quando admin salva alterações
+
+name: Update Glossary
+
+on:
+  repository_dispatch:
+    types: [update-glossary]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      
+      - name: Display update info
+        run: |
+          echo "📚 Atualizando glossário..."
+          echo "Termos: ${{ github.event.client_payload.terms_count }}"
+          echo "Disparado por: @${{ github.event.client_payload.triggered_by }}"
+          echo "Ação: ${{ github.event.client_payload.action }}"
+      
+      - name: Update glossary.json
+        run: |
+          # Decodifica o conteúdo base64 do glossary
+          echo '${{ github.event.client_payload.glossary_base64 }}' | base64 -d > docs/glossary.json
+          
+          # Valida se é JSON válido
+          if ! jq empty docs/glossary.json 2>/dev/null; then
+            echo "❌ JSON inválido!"
+            exit 1
+          fi
+          
+          # Mostra stats
+          TERMS=$(jq '.terms | length' docs/glossary.json)
+          echo "✅ Glossário válido com $TERMS termos"
+      
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --quiet docs/glossary.json && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+      
+      - name: Commit changes
+        if: steps.git-check.outputs.changed == 'true'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add docs/glossary.json
+          
+          # Mensagem de commit baseada na ação
+          ACTION="${{ github.event.client_payload.action }}"
+          TERM_ID="${{ github.event.client_payload.term_id }}"
+          
+          case "$ACTION" in
+            "add")
+              MSG="📚 Glossário: Adicionado termo \`$TERM_ID\`"
+              ;;
+            "edit")
+              MSG="📚 Glossário: Editado termo \`$TERM_ID\`"
+              ;;
+            "delete")
+              MSG="📚 Glossário: Removido termo \`$TERM_ID\`"
+              ;;
+            "rename")
+              MSG="📚 Glossário: Renomeado \`${{ github.event.client_payload.old_id }}\` → \`$TERM_ID\`"
+              ;;
+            *)
+              MSG="📚 Glossário: Atualização geral"
+              ;;
+          esac
+          
+          git commit -m "$MSG
+
+          Disparado via glossary-admin por @${{ github.event.client_payload.triggered_by }}"
+          git push origin main
+          
+          echo "✅ Commit realizado!"
+      
+      - name: No changes needed
+        if: steps.git-check.outputs.changed == 'false'
+        run: |
+          echo "ℹ️ Nenhuma alteração detectada no glossário."
