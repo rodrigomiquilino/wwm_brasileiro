@@ -1303,6 +1303,13 @@
       "aliases": [
         "Jadewood Court"
       ]
+    },
+    {
+      "id": "npc_beard_guang",
+      "original": "Beard Guang",
+      "translation": "Beard Guang",
+      "category": "npcs",
+      "doNotTranslate": true
     }
   ]
 }
