@@ -1310,6 +1310,13 @@
       "translation": "Beard Guang",
       "category": "npcs",
       "doNotTranslate": true
+    },
+    {
+      "id": "npc_horse_tamer",
+      "original": "Horse Tamer",
+      "translation": "Domador de Cavalos",
+      "category": "npcs",
+      "doNotTranslate": true
     }
   ]
 }
