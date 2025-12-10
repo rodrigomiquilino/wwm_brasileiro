@@ -134,4 +134,7 @@ jobs:
 
           Glossário usado: rodrigomiquilino/wwm_brasileiro/docs/glossary.json
           Compilado automaticamente via GitHub Actions"
-          git push
+          
+          # Pull com rebase para evitar conflitos de race condition
+          git pull --rebase origin main || true
+          git push origin main

@@ -580,6 +580,70 @@ function findGlossaryTerms(text) {
     return found;
 }
 
+// Renderiza hints do glossário para o modal de revisão do admin
+// Versão compacta similar ao modal de tradução
+function renderAdminGlossaryHints(originalText) {
+    if (!glossaryData || !originalText) return '';
+    
+    const terms = findGlossaryTerms(originalText);
+    if (terms.length === 0) return '';
+    
+    const termsHtml = terms.map(term => {
+        const category = glossaryData?.categories?.[term.category];
+        const categoryColor = category?.color || '#c9a227';
+        const statusClass = term.doNotTranslate ? 'no-translate' : 'translate';
+        const statusIcon = term.doNotTranslate ? 'fa-ban' : 'fa-check';
+        const varName = `{{${term.id.toUpperCase().replace(/-/g, '_')}}}`;
+        
+        return `
+            <div class="admin-glossary-term" style="--term-color: ${categoryColor}">
+                <div class="admin-glossary-term-header">
+                    <span class="admin-glossary-original">${escapeHtml(term.original)}</span>
+                    ${term.chinese ? `<span class="admin-glossary-chinese">${escapeHtml(term.chinese)}</span>` : ''}
+                </div>
+                <div class="admin-glossary-translation">
+                    <i class="fas ${statusIcon} ${statusClass}"></i>
+                    ${escapeHtml(term.translation)}
+                </div>
+                <div class="admin-glossary-variable">
+                    <code class="admin-var-code">${varName}</code>
+                    <button type="button" class="admin-copy-var-btn" onclick="copyVarToClipboard('${varName}', this)" title="Copiar variável">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <a href="glossary#${encodeURIComponent(term.id)}" class="admin-glossary-link" target="_blank" title="Ver no Glossário">
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                ${term.context ? `<div class="admin-glossary-context">${escapeHtml(term.context)}</div>` : ''}
+            </div>
+        `;
+    }).join('');
+    
+    return `
+        <div class="admin-glossary-hints">
+            <div class="admin-glossary-header">
+                <i class="fas fa-book"></i> Glossário (${terms.length} termo${terms.length !== 1 ? 's' : ''})
+            </div>
+            <div class="admin-glossary-terms">
+                ${termsHtml}
+            </div>
+        </div>
+    `;
+}
+
+// Copia variável para clipboard no modal admin
+function copyVarToClipboard(varName, btn) {
+    navigator.clipboard.writeText(varName).then(() => {
+        const originalIcon = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i>';
+        btn.style.color = 'var(--success)';
+        setTimeout(() => {
+            btn.innerHTML = originalIcon;
+            btn.style.color = '';
+        }, 1000);
+    });
+}
+
 // ========== NPC DETECTION ==========
 // Lista de NPCs do glossário (category='npcs' com doNotTranslate=true)
 let npcNames = new Set();
@@ -2642,6 +2706,7 @@ async function openAdminIssueModal(issueNumber) {
                                                 <div class="admin-text-label"><i class="fas fa-globe"></i> Original (EN)</div>
                                                 <div class="admin-text-content original">${escapeHtml(originalText)}</div>
                                             </div>
+                                            ${renderAdminGlossaryHints(originalText)}
                                             ${hasCurrentTranslation ? `
                                                 <div class="admin-text-row">
                                                     <div class="admin-text-label"><i class="fas fa-check-circle" style="color: var(--success);"></i> Já Traduzido (PT-BR)</div>

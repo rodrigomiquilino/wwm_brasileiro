@@ -2799,3 +2799,141 @@ footer a {
     from { opacity: 0; transform: translateY(-5px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* ========== ADMIN MODAL GLOSSARY HINTS ========== */
+.admin-glossary-hints {
+    background: rgba(124, 58, 237, 0.08);
+    border: 1px solid rgba(124, 58, 237, 0.2);
+    border-radius: 10px;
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+}
+
+.admin-glossary-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #a78bfa;
+    margin-bottom: 0.5rem;
+}
+
+.admin-glossary-header i {
+    font-size: 0.9rem;
+}
+
+.admin-glossary-terms {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.admin-glossary-term {
+    background: rgba(0, 0, 0, 0.2);
+    border-left: 3px solid var(--term-color, #c9a227);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+}
+
+.admin-glossary-term-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.admin-glossary-original {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+}
+
+.admin-glossary-chinese {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.8;
+}
+
+.admin-glossary-translation {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.admin-glossary-translation i.translate {
+    color: var(--success);
+}
+
+.admin-glossary-translation i.no-translate {
+    color: #ef4444;
+}
+
+.admin-glossary-variable {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.admin-var-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    background: rgba(201, 162, 39, 0.15);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    color: var(--gold-primary);
+}
+
+.admin-copy-var-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-copy-var-btn:hover {
+    background: rgba(201, 162, 39, 0.15);
+    border-color: var(--gold-primary);
+    color: var(--gold-primary);
+}
+
+.admin-glossary-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: var(--text-muted);
+    font-size: 0.6rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.admin-glossary-link:hover {
+    background: rgba(124, 58, 237, 0.15);
+    border-color: #a78bfa;
+    color: #a78bfa;
+}
+
+.admin-glossary-context {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 0.25rem;
+    opacity: 0.8;
+}
