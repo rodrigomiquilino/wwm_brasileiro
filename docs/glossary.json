@@ -1317,6 +1317,13 @@
       "translation": "Domador de Cavalos",
       "category": "npcs",
       "doNotTranslate": true
+    },
+    {
+      "id": "npc_iron_hammer_wang",
+      "original": "Iron Hammer Wang",
+      "translation": "Iron Hammer Wang",
+      "category": "npcs",
+      "doNotTranslate": true
     }
   ]
 }
