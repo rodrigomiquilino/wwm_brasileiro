@@ -415,346 +415,52 @@ async function loadCelebrationContributors() {
     }
 }
 
-// ========== 🎵 MUSIC PLAYER - WUXIA AMBIENT ==========
-const MusicPlayer = {
-    audio: null,
-    isPlaying: false,
-    volume: 0.3, // Volume padrão (30%)
-    
-    // URL da música local
-    tracks: [
-        {
-            name: 'Epic Drums',
-            url: 'assets/epic_drums.mp3'
-        }
-    ],
-    currentTrackIndex: 0,
-    
-    init() {
-        // Criar o player HTML
-        this.createPlayerHTML();
-        
-        // Inicializar o áudio
-        this.audio = new Audio();
-        this.audio.loop = true; // Loop ativado!
-        this.audio.volume = this.volume;
-        
-        // Carregar preferências salvas
-        this.loadPreferences();
-        
-        // Eventos
-        this.bindEvents();
-        
-        // Quando a música terminar, tocar a próxima
-        this.audio.addEventListener('ended', () => {
-            this.nextTrack();
-        });
-        
-        console.log('🎵 Music Player initialized');
-    },
-    
-    createPlayerHTML() {
-        const container = document.createElement('div');
-        container.className = 'music-player-container';
-        container.innerHTML = `
-            <div class="music-volume-control" id="music-volume-control">
-                <div class="music-volume-header">
-                    <span><i class="fas fa-volume-up"></i> Volume</span>
-                    <span id="music-volume-value">30%</span>
-                </div>
-                <input type="range" class="music-volume-slider" id="music-volume-slider" min="0" max="100" value="30">
-                <div class="music-track-info">
-                    <i class="fas fa-music"></i>
-                    <span id="music-track-name">Ancient Chinese Music</span>
-                </div>
-            </div>
-            <button type="button" class="music-player-btn" id="music-player-btn" title="Música Ambiente Wuxia">
-                <i class="fas fa-music"></i>
-            </button>
-            <div class="music-player-tooltip">
-                <div class="music-tooltip-title">
-                    <i class="fas fa-music"></i> Música Wuxia
-                </div>
-                <div class="music-tooltip-track">Clique para tocar</div>
-            </div>
-        `;
-        document.body.appendChild(container);
-    },
-    
-    bindEvents() {
-        const btn = document.getElementById('music-player-btn');
-        const volumeControl = document.getElementById('music-volume-control');
-        const volumeSlider = document.getElementById('music-volume-slider');
-        
-        // Toggle play/pause com clique simples
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.togglePlay();
-        });
-        
-        // Clique direito abre controle de volume
-        btn.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            volumeControl.classList.toggle('active');
-        });
-        
-        // Volume slider
-        volumeSlider.addEventListener('input', (e) => {
-            const value = e.target.value / 100;
-            this.setVolume(value);
-        });
-        
-        // Fechar volume control ao clicar fora
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.music-player-container')) {
-                volumeControl.classList.remove('active');
-            }
-        });
-        
-        // Tecla de atalho (M para música)
-        document.addEventListener('keydown', (e) => {
-            if (e.key.toLowerCase() === 'm' && !e.ctrlKey && !e.altKey && !e.metaKey) {
-                // Ignorar se estiver em um input
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-                this.togglePlay();
-            }
-        });
-    },
-    
-    loadTrack() {
-        const track = this.tracks[this.currentTrackIndex];
-        this.audio.src = track.url;
-        
-        // Atualizar nome da track na UI
-        const trackNameEl = document.getElementById('music-track-name');
-        if (trackNameEl) {
-            trackNameEl.textContent = track.name;
-        }
-    },
-    
-    nextTrack() {
-        this.currentTrackIndex = (this.currentTrackIndex + 1) % this.tracks.length;
-        this.loadTrack();
-        if (this.isPlaying) {
-            this.audio.play().catch(console.warn);
-        }
-        this.savePreferences();
-    },
-    
-    togglePlay() {
-        if (this.isPlaying) {
-            this.pause();
-        } else {
-            this.play();
-        }
-    },
-    
-    play() {
-        // Carregar track se ainda não carregou
-        if (!this.audio.src) {
-            this.loadTrack();
-        }
-        
-        this.audio.play()
-            .then(() => {
-                this.isPlaying = true;
-                this.updateUI();
-                this.savePreferences();
-                console.log('🎵 Playing:', this.tracks[this.currentTrackIndex].name);
-            })
-            .catch(err => {
-                console.warn('🎵 Autoplay blocked:', err.message);
-                // Mostrar tooltip de que precisa interagir
-                const tooltip = document.querySelector('.music-player-tooltip .music-tooltip-track');
-                if (tooltip) {
-                    tooltip.textContent = 'Clique para iniciar';
-                }
-            });
-    },
-    
-    pause() {
-        this.audio.pause();
-        this.isPlaying = false;
-        this.updateUI();
-        this.savePreferences();
-        console.log('🎵 Paused');
-    },
-    
-    setVolume(value) {
-        this.volume = Math.max(0, Math.min(1, value));
-        this.audio.volume = this.volume;
-        
-        // Atualizar UI
-        const volumeValue = document.getElementById('music-volume-value');
-        if (volumeValue) {
-            volumeValue.textContent = Math.round(this.volume * 100) + '%';
-        }
-        
-        this.savePreferences();
-    },
-    
-    updateUI() {
-        const btn = document.getElementById('music-player-btn');
-        const tooltip = document.querySelector('.music-player-tooltip .music-tooltip-track');
-        
-        if (this.isPlaying) {
-            btn.classList.add('playing');
-            btn.querySelector('i').className = 'fas fa-pause';
-            if (tooltip) {
-                tooltip.textContent = this.tracks[this.currentTrackIndex].name;
-            }
-        } else {
-            btn.classList.remove('playing');
-            btn.querySelector('i').className = 'fas fa-music';
-            if (tooltip) {
-                tooltip.textContent = 'Clique para tocar';
-            }
-        }
-    },
-    
-    savePreferences() {
-        try {
-            localStorage.setItem('wwm_music_prefs', JSON.stringify({
-                volume: this.volume,
-                currentTrackIndex: this.currentTrackIndex,
-                wasPlaying: this.isPlaying
-            }));
-        } catch (e) {
-            console.warn('Could not save music preferences');
-        }
-    },
-    
-    loadPreferences() {
-        try {
-            const prefs = JSON.parse(localStorage.getItem('wwm_music_prefs'));
-            if (prefs) {
-                this.volume = prefs.volume ?? 0.3;
-                this.currentTrackIndex = prefs.currentTrackIndex ?? 0;
-                
-                // Atualizar slider de volume
-                const slider = document.getElementById('music-volume-slider');
-                const volumeValue = document.getElementById('music-volume-value');
-                if (slider) slider.value = this.volume * 100;
-                if (volumeValue) volumeValue.textContent = Math.round(this.volume * 100) + '%';
-                
-                this.audio.volume = this.volume;
-                
-                // Se estava tocando antes, tentar continuar
-                // (provavelmente será bloqueado pelo navegador)
-                if (prefs.wasPlaying) {
-                    // Esperamos interação do usuário
-                    const tooltip = document.querySelector('.music-player-tooltip .music-tooltip-track');
-                    if (tooltip) {
-                        tooltip.textContent = 'Clique para continuar';
-                    }
-                }
-            }
-        } catch (e) {
-            console.warn('Could not load music preferences');
-        }
+// ========== CELEBRATION MODAL - CLOSE FUNCTION ==========
+function closeCelebrationModal() {
+    const modal = document.getElementById('celebration-modal');
+    if (modal) {
+        modal.style.transition = 'opacity 0.3s ease, visibility 0.3s ease';
+        modal.style.opacity = '0';
+        modal.style.visibility = 'hidden';
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
     }
-};
+    // Salvar preferência (não mostrar novamente nesta sessão)
+    sessionStorage.setItem('wwm_celebration_closed', 'true');
+}
 
-// ========== 🎵 MUSIC ENTRY MODAL - FORÇA AUTOPLAY ==========
-const MusicEntryModal = {
-    hasEntered: false,
-    
-    init() {
-        // Verificar se já entrou antes (sessão atual)
-        if (sessionStorage.getItem('wwm_music_entered')) {
-            this.hasEntered = true;
-            // Se já entrou, iniciar música diretamente
-            MusicPlayer.init();
-            MusicPlayer.play();
-            return;
-        }
-        
-        // Criar o modal de entrada
-        this.createModal();
-        
-        // Aguardar página carregar completamente antes de mostrar
-        if (document.readyState === 'complete') {
-            this.showModal();
-        } else {
-            window.addEventListener('load', () => {
-                // Pequeno delay para garantir que tudo está carregado
-                setTimeout(() => this.showModal(), 300);
-            });
-        }
-    },
-    
-    createModal() {
-        const overlay = document.createElement('div');
-        overlay.className = 'music-entry-overlay';
-        overlay.id = 'music-entry-overlay';
-        overlay.innerHTML = `
-            <div class="music-entry-modal">
-                <div class="music-entry-icon">⚔️</div>
-                <h2 class="music-entry-title">WWM Brasileiro</h2>
-                <p class="music-entry-subtitle">
-                    Bem-vindo ao projeto de tradução<br>
-                    de Where Winds Meet para PT-BR!
-                </p>
-                <button type="button" class="music-entry-btn" id="music-entry-btn">
-                    <i class="fas fa-torii-gate"></i>
-                    Entrar
-                </button>
-                <p class="music-entry-hint">
-                    <i class="fas fa-music"></i> Música ambiente será ativada
-                </p>
-            </div>
-        `;
-        document.body.appendChild(overlay);
-        
-        // Evento do botão
-        document.getElementById('music-entry-btn').addEventListener('click', () => {
-            this.enter();
-        });
-        
-        // Permitir entrar com Enter ou Espaço
-        document.addEventListener('keydown', (e) => {
-            if (!this.hasEntered && (e.key === 'Enter' || e.key === ' ')) {
-                e.preventDefault();
-                this.enter();
+// Verificar se o modal deve ser mostrado
+function checkCelebrationModal() {
+    const modal = document.getElementById('celebration-modal');
+    if (modal && sessionStorage.getItem('wwm_celebration_closed')) {
+        modal.style.display = 'none';
+    }
+}
+
+// Fechar modal ao clicar fora dele
+function setupCelebrationModalClose() {
+    const overlay = document.getElementById('celebration-modal');
+    if (overlay) {
+        overlay.addEventListener('click', (e) => {
+            // Se clicou no overlay (fora do modal), fechar
+            if (e.target === overlay) {
+                closeCelebrationModal();
             }
         });
-    },
-    
-    showModal() {
-        const overlay = document.getElementById('music-entry-overlay');
-        if (overlay) {
-            overlay.classList.add('active');
-        }
-    },
-    
-    enter() {
-        if (this.hasEntered) return;
-        this.hasEntered = true;
         
-        // Marcar como entrado na sessão
-        sessionStorage.setItem('wwm_music_entered', 'true');
-        
-        // Inicializar e tocar música
-        MusicPlayer.init();
-        MusicPlayer.play();
-        
-        // Fechar modal com animação
-        const overlay = document.getElementById('music-entry-overlay');
-        if (overlay) {
-            overlay.classList.add('fade-out');
-            setTimeout(() => {
-                overlay.remove();
-            }, 500);
-        }
-        
-        console.log('🎵 User entered, music started!');
+        // Fechar com tecla Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && overlay.style.display !== 'none') {
+                closeCelebrationModal();
+            }
+        });
     }
-};
+}
 
-// Inicializar modal de celebração e sistema de entrada quando a página carregar
+// Inicializar quando a página carregar
 document.addEventListener('DOMContentLoaded', function() {
     loadCelebrationContributors();
-    
-    // Inicializar Modal de Entrada (que vai iniciar o Music Player ao clicar)
-    MusicEntryModal.init();
+    checkCelebrationModal();
+    setupCelebrationModalClose();
 });

@@ -48,7 +48,7 @@
     <link rel="stylesheet" href="assets/css/shared.css">
     <link rel="stylesheet" href="assets/css/index.css">
 </head>
-<body style="overflow: hidden;">
+<body>
     <!-- 🏆 MODAL DE CELEBRAÇÃO - LANÇAMENTO OFICIAL DA TRADUÇÃO 🏆 -->
     <div class="celebration-modal-overlay" id="celebration-modal">
         <!-- Partículas flutuantes -->
@@ -66,6 +66,11 @@
         </div>
         
         <div class="celebration-modal">
+            <!-- Botão Fechar -->
+            <button type="button" class="celebration-close-btn" onclick="closeCelebrationModal()" title="Fechar">
+                <i class="fas fa-times"></i>
+            </button>
+            
             <!-- Header COMPACTO -->
             <div class="celebration-header">
                 <span class="celebration-trophy">🏆</span>
@@ -151,8 +156,8 @@
         <div class="fixed-banner-content">
             <span class="fixed-banner-confetti">🎊</span>
             <span class="fixed-banner-text">
-                <strong>🎉 Marco Histórico!</strong> 
-                Tradução <span class="highlight-percentage">99,6%</span> concluída! 
+                <strong>🎉 NOVIDADE </strong> 
+                Tradução foi oficialmente lançada em <span class="highlight-percentage">10/12/2025</span>, 
                 Obrigado à nossa incrível comunidade! 
             </span>
             <span class="fixed-banner-confetti">🎊</span>
